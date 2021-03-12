@@ -89,6 +89,13 @@ select {
 }
 
 
+.Source {
+    margin-top:15px;
+    font-family:'Ubuntu Mono', monospace;
+    text-transform:uppercase;
+}
+
+
 .Toolbar {        
     width:var(--rteWidth);   
     display:flex;

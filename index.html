@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Oswald:wght@200;300;400;500;600;700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+    <link rel="stylesheet" href="/index.css">
+
+</head>
+<body>
+    
+    <script src="/Main.js"></script>
+
+    <script>
+        var app = Elm.Main.init();
+
+        app.ports.copyToClipboard.subscribe(txt => {
+            navigator.clipboard.writeText(txt).then(function() {
+            // Copied from app to clipboard
+            }, function(err) {
+                console.log(err)
+            });
+        });
+
+        window.addEventListener('keydown', (event) => {
+            // prevent Chrome from scrolling when space or an arrow is hit
+            if (event.key == " " || event.key.startsWith("Arrow")) {
+                event.preventDefault()
+            }
+        })
+
+        window.addEventListener('paste', (event) => {            
+            app.ports.clipboardText.send(event.clipboardData.getData('text'))                        
+        })
+    </script>
+    
+</body>
+</html>

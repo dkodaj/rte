@@ -1053,7 +1053,12 @@ currentLink e =
     case linkAt e.cursor e.content of
         Just x -> Just x
         Nothing ->
-            linkAt (e.cursor - 1) e.content
+            case e.selection of
+                Just (beg,end) ->
+                    linkAt end e.content
+
+                Nothing ->
+                    Nothing
 
 
 currentLinkPos : Editor -> Maybe (Int,Int)
@@ -2946,7 +2951,7 @@ showChar editing selection selectionStyle cursor cursorScreen typing idx fontSiz
     in
     ( id        
     , Html.span
-        ( Attr.id id ::
+        ( Attr.id id ::          
           attributes (Char ch) ++
           fontFamilyAttr ++
           position ++
@@ -3042,7 +3047,8 @@ showPara editing cursor cursorScreen maybeIndentUnit selection selectionStyle ty
                     f html ::
                     ys
 
-        zeroSpace idx id = show idx (defaultCharacter zeroWidthSpace id)
+        zeroSpace idx id =
+            show idx (defaultCharacter zeroWidthSpace id)
 
         indentUnit =
             Maybe.withDefault (50,"px") maybeIndentUnit

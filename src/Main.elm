@@ -272,6 +272,18 @@ view model =
                         [ Attr.style "position" "relative" ]
                         [ Html.map Internal (Rte.view css model.rte) ]
                 -}
+
+            , Html.a
+                [ Attr.href "https://github.com/dkodaj/rte" 
+                , Attr.class "Source"
+                ]
+                [ text "Source" ]
+
+            , Html.a
+                [ Attr.href "/rte/icon-credits.html" 
+                , Attr.class "Source"
+                ]
+                [ text "Icon Credits" ]
             ]
         ]
     }
@@ -346,7 +358,7 @@ inputBoxProps x =
 icon : String -> Msg -> Html Msg
 icon img msg =
     Html.img
-        [ Attr.src ("/icon/" ++ img ++ ".svg")
+        [ Attr.src ("/rte/icon/" ++ img ++ ".svg")
         , Attr.class "Icon"
         , Events.onClick msg
         ]
@@ -452,7 +464,7 @@ toolbar model =
         , icon "Undo" Undo
         , icon "Left" (TextAlign Rte.Left)
         , icon "Center" (TextAlign Rte.Center)
-        , icon "Right" (TextAlign Rte.Right)        
+        , icon "Right" (TextAlign Rte.Right)
         , icon "Unindent"  Unindent
         , icon "Indent"  Indent
         , icon "Heading"  Heading

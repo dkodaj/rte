@@ -21,9 +21,11 @@
             });
         });
 
+        var troublemakers = [" ", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "Home", "End", "PageDown", "PageUp"];
+
         window.addEventListener('keydown', (event) => {
-            // prevent Chrome from scrolling when space or an arrow is hit
-            if (event.key == " " || event.key.startsWith("Arrow")) {
+            // prevent Chrome from scrolling automatically
+            if (troublemakers.includes(event.key)) {
                 event.preventDefault()
             }
         })

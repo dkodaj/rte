@@ -1,3 +1,3 @@
 # Rich text editor in Elm
 
-[https://dkodaj.github.io/rte](Demo)
+[Demo](https://dkodaj.github.io/rte)

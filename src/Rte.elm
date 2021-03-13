@@ -413,32 +413,13 @@ subscriptions e =
 
 
 update : Msg -> Editor -> ( Editor, Cmd Msg )
-update msg e =
-    let
-        throttleCursor x =
-            case msg of
-                KeyDown _ key ->
-                    if String.startsWith "Arrow" key then
-                        { x |
-                            cursorThrottled = True
-                          , cursorVisible = True
-                        }
-                    else
-                        { x |
-                            cursorThrottled = True
-                          , cursorVisible = False
-                        }
-
-                _ ->
-                    x
-    in
-    updateRest msg (updateUndo msg (throttleCursor e))
-
-
-updateRest : Msg -> Editor -> ( Editor, Cmd Msg )
-updateRest msg e =
+update msg e0 =
     let       
-        maxIdx = List.length e.content - 1
+        maxIdx =
+            List.length e.content - 1
+
+        e =
+            updateUndo msg e0
     in
     case msg of
         AddText txt ->
@@ -476,8 +457,21 @@ updateRest msg e =
             ( e, placeCursor NoScroll e.editorID )
 
 
-        KeyDown timeStamp str ->
-            keydownUpdate timeStamp str e
+        KeyDown timeStamp key ->
+            let
+                f x =
+                    if String.startsWith "Arrow" key then
+                        { x |
+                            cursorThrottled = True
+                          , cursorVisible = True
+                        }
+                    else
+                        { x |
+                            cursorThrottled = True
+                          , cursorVisible = False
+                        }
+            in
+            keyDown timeStamp key (f e)
 
 
         KeyUp str ->
@@ -1658,8 +1652,8 @@ jumpSize : Int
 jumpSize = 100
 
 
-keydownUpdate : Float -> String -> Editor -> (Editor, Cmd Msg)
-keydownUpdate timeStamp str e =
+keyDown : Float -> String -> Editor -> (Editor, Cmd Msg)
+keyDown timeStamp str e =
     let
         like : String -> ( Editor, Cmd Msg )
         like x =

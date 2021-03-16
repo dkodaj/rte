@@ -42,9 +42,7 @@ port module Rte exposing (
     , unicode
     , unlink
     , update
-    , viewActive
-    , viewEncoded
-    , viewInactive
+    , view
     )
 
 import Browser.Dom as Dom exposing (Error, Viewport)
@@ -766,8 +764,8 @@ updateUndo msg e =
             e
 
 
-viewActive : Attributes -> Editor -> Html Msg
-viewActive userDefinedStyles e =        
+view : Attributes -> Editor -> Html Msg
+view userDefinedStyles e =        
     let
         f _ =
             showContent userDefinedStyles e
@@ -775,26 +773,14 @@ viewActive userDefinedStyles e =
         g _ =
             cursorHtml e.cursorScreen e.box e.cursorVisible e.typing e.selection e.cursor
     in
-    Html.div
-        [ ]
-        [ (Lazy.lazy f) e.sentry
-        , (Lazy.lazy g) e.sentry
-        ]
-
-
-viewEncoded : Attributes -> Maybe (Content -> Content) -> Maybe (Float, String) -> Maybe String -> String -> Html Msg
-viewEncoded userDefinedStyles highlighter indentUnit fontSizeUnit json =
-    case Decode.decodeString decodeContent json of
-        Ok content ->
-            showContentEncoded userDefinedStyles highlighter indentUnit fontSizeUnit content
-
-        Err err ->
-            Html.div [] []
-
-
-viewInactive : Attributes -> Editor -> Html Msg
-viewInactive userDefinedStyles e =
-    showContent userDefinedStyles { e | active = False }
+    if e.active then
+        Html.div
+            [ ]
+            [ (Lazy.lazy f) e.sentry
+            , (Lazy.lazy g) e.sentry
+            ]
+    else
+        showContent userDefinedStyles e
 
 
 

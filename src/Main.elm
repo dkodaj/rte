@@ -270,12 +270,6 @@ view model =
                 [ Attr.class "RTE" ]
             else
                 [ Attr.class "Blogpost" ]
-
-        show =
-            if model.rte.active then
-                Rte.viewActive rteCss
-            else
-                Rte.viewInactive rteCss
     in
     { title = "RTE demo"
     , body =        
@@ -285,7 +279,7 @@ view model =
 
             , inputBox model.inputBox
 
-            , Html.map Internal (show model.rte)
+            , Html.map Internal (Rte.view rteCss model.rte)
                 {- The editor must be positioned relative to the html body,
                    (= it should never be inside a "position: relative" node),
                    because the cursor is positioned using absolute coordinates.
@@ -293,7 +287,7 @@ view model =
                     
                     div
                         [ Attr.style "position" "relative" ]
-                        [ Html.map Internal (show model.rte) ]
+                        [ Html.map Internal (Rte.view model.rte) ]
                 -}
 
             , Html.a

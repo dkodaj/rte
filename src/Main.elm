@@ -101,162 +101,165 @@ apply f model =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =    
-    case msg of
-        Bold ->
-            apply Rte.toggleBold model
+update msg model =
+    if not model.editMode && msg /= Switch True then
+        ( model, Cmd.none )
+    else
+        case msg of
+            Bold ->
+                apply Rte.toggleBold model
 
 
-        Code ->
-            apply (Rte.toggleParaClass "Code") model
+            Code ->
+                apply (Rte.toggleParaClass "Code") model
 
 
-        Emoji ->
-            apply (Rte.addContent emoji) model
+            Emoji ->
+                apply (Rte.addContent emoji) model
 
 
-        Font family ->
-            apply (Rte.fontFamily family) model
+            Font family ->
+                apply (Rte.fontFamily family) model
 
 
-        FontSize float ->
-            apply (Rte.fontSize float) model
+            FontSize float ->
+                apply (Rte.fontSize float) model
 
 
-        Heading ->
-            apply (Rte.toggleNodeType "h1") model
+            Heading ->
+                apply (Rte.toggleNodeType "h1") model
 
 
-        ImageAdd str ->
-            if str == "" then
-                ( { model | inputBox = Nothing }, Cmd.none )
-            else
-                let
-                    ( rte, rteCmd ) =
-                        Rte.addImage str (Rte.active True model.rte)
-                in
-                ( { model |
-                      rte = rte
-                    , inputBox = Nothing
-                  }  
-                , Cmd.map Internal rteCmd
+            ImageAdd str ->
+                if str == "" then
+                    ( { model | inputBox = Nothing }, Cmd.none )
+                else
+                    let
+                        ( rte, rteCmd ) =
+                            Rte.addImage str (Rte.active True model.rte)
+                    in
+                    ( { model |
+                          rte = rte
+                        , inputBox = Nothing
+                      }  
+                    , Cmd.map Internal rteCmd
+                    )
+
+
+            ImageInput str ->
+                ( { model | inputBox = Just (ImageInputBox str) }
+                , Cmd.none 
                 )
 
-
-        ImageInput str ->
-            ( { model | inputBox = Just (ImageInputBox str) }
-            , Cmd.none 
-            )
-
-        
-        Indent ->
-            apply (Rte.changeIndent 1) model
+            
+            Indent ->
+                apply (Rte.changeIndent 1) model
 
 
-        Internal rteMsg ->
-            apply (Rte.update rteMsg) model
+            Internal rteMsg ->
+                apply (Rte.update rteMsg) model
 
 
-        Italic ->
-            apply Rte.toggleItalic model
+            Italic ->
+                apply Rte.toggleItalic model
 
 
-        LinkAdd href -> 
-            if href == "" then
-                ( { model | inputBox = Nothing }, Cmd.none )
-            else
-                ( { model |
-                      rte = Rte.link href (Rte.active True model.rte)
-                    , inputBox = Nothing  
-                  }
+            LinkAdd href -> 
+                if href == "" then
+                    ( { model | inputBox = Nothing }, Cmd.none )
+                else
+                    ( { model |
+                          rte = Rte.link href (Rte.active True model.rte)
+                        , inputBox = Nothing  
+                      }
+                    , Cmd.none 
+                    )
+
+
+            LinkInput str ->
+                ( { model | inputBox = Just (LinkInputBox str) }
                 , Cmd.none 
                 )
 
 
-        LinkInput str ->
-            ( { model | inputBox = Just (LinkInputBox str) }
-            , Cmd.none 
-            )
+            NoOp ->
+                ( model, Cmd.none )
 
 
-        NoOp ->
-            ( model, Cmd.none )
+            Switch bool ->
+                ( { model |
+                      editMode = bool
+                    , rte = Rte.active bool model.rte 
+                  }
+                , Cmd.none 
+                )
+
+            StrikeThrough ->
+                apply Rte.toggleStrikeThrough model
 
 
-        Switch bool ->
-            ( { model |
-                  editMode = bool
-                , rte = Rte.active bool model.rte 
-              }
-            , Cmd.none 
-            )
-
-        StrikeThrough ->
-            apply Rte.toggleStrikeThrough model
+            TextAlign alignment ->
+                apply (Rte.textAlign alignment) model
 
 
-        TextAlign alignment ->
-            apply (Rte.textAlign alignment) model
+            ToggleImageBox ->                   
+                case model.inputBox of
+                    Just (ImageInputBox _) ->
+                        ( { model |
+                              inputBox = Nothing 
+                            , rte = Rte.active True model.rte  
+                          }
+                        , Cmd.none 
+                        )
+
+                    _ ->
+                        ( { model |
+                              inputBox = Just (ImageInputBox "") 
+                            , rte = Rte.active False model.rte  
+                          }
+                        , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
+                        )
 
 
-        ToggleImageBox ->                   
-            case model.inputBox of
-                Just (ImageInputBox _) ->
-                    ( { model |
-                          inputBox = Nothing 
-                        , rte = Rte.active True model.rte  
-                      }
-                    , Cmd.none 
-                    )
+            ToggleLinkBox ->
+                case model.inputBox of
+                    Just (LinkInputBox _) ->
+                        ( { model |
+                              inputBox = Nothing
+                            , rte = Rte.active True model.rte   
+                          }
+                        , Cmd.none 
+                        )
 
-                _ ->
-                    ( { model |
-                          inputBox = Just (ImageInputBox "") 
-                        , rte = Rte.active False model.rte  
-                      }
-                    , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
-                    )
-
-
-        ToggleLinkBox ->
-            case model.inputBox of
-                Just (LinkInputBox _) ->
-                    ( { model |
-                          inputBox = Nothing
-                        , rte = Rte.active True model.rte   
-                      }
-                    , Cmd.none 
-                    )
-
-                _ ->
-                    let
-                        currentLink =
-                            Maybe.withDefault "" (Rte.currentLink model.rte)
-                    in
-                    ( { model |
-                          inputBox = Just (LinkInputBox currentLink) 
-                        , rte = Rte.active False model.rte
-                      }
-                    , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
-                    )
+                    _ ->
+                        let
+                            currentLink =
+                                Maybe.withDefault "" (Rte.currentLink model.rte)
+                        in
+                        ( { model |
+                              inputBox = Just (LinkInputBox currentLink) 
+                            , rte = Rte.active False model.rte
+                          }
+                        , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
+                        )
 
 
-        Underline ->
-            apply Rte.toggleUnderline model
+            Underline ->
+                apply Rte.toggleUnderline model
 
 
-        Undo ->
-            apply Rte.undo model
+            Undo ->
+                apply Rte.undo model
 
 
-        Unindent ->
-            apply (Rte.changeIndent -1) model
+            Unindent ->
+                apply (Rte.changeIndent -1) model
 
 
-        Unlink ->
-            ( { model | rte = Rte.unlink model.rte }
-            , Cmd.none 
-            )
+            Unlink ->
+                ( { model | rte = Rte.unlink model.rte }
+                , Cmd.none 
+                )
 
 
 view : Model -> Browser.Document Msg

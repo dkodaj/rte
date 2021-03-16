@@ -22,7 +22,8 @@ main =
 
 
 type alias Model =
-    { inputBox : Maybe InputBox
+    { editMode : Bool
+    , inputBox : Maybe InputBox
     , rte : Rte.Editor 
     }
 
@@ -43,6 +44,7 @@ type Msg =
     | LinkInput String
     | NoOp
     | StrikeThrough
+    | Switch Bool
     | TextAlign Rte.TextAlign
     | ToggleImageBox
     | ToggleLinkBox
@@ -71,7 +73,8 @@ init _ =
         ( rte, rteCmd ) =
             Rte.initWith Sample.content "MyRTE"
     in
-    ( { inputBox = Nothing      
+    ( { editMode = True
+      , inputBox = Nothing      
       , rte =
             { rte |
                 highlighter = Just Highlight.code 
@@ -130,7 +133,7 @@ update msg model =
             else
                 let
                     ( rte, rteCmd ) =
-                        Rte.addImage str (Rte.activate model.rte)
+                        Rte.addImage str (Rte.active True model.rte)
                 in
                 ( { model |
                       rte = rte
@@ -163,7 +166,7 @@ update msg model =
                 ( { model | inputBox = Nothing }, Cmd.none )
             else
                 ( { model |
-                      rte = Rte.link href (Rte.activate model.rte)
+                      rte = Rte.link href (Rte.active True model.rte)
                     , inputBox = Nothing  
                   }
                 , Cmd.none 
@@ -180,6 +183,14 @@ update msg model =
             ( model, Cmd.none )
 
 
+        Switch bool ->
+            ( { model |
+                  editMode = bool
+                , rte = Rte.active bool model.rte 
+              }
+            , Cmd.none 
+            )
+
         StrikeThrough ->
             apply Rte.toggleStrikeThrough model
 
@@ -193,7 +204,7 @@ update msg model =
                 Just (ImageInputBox _) ->
                     ( { model |
                           inputBox = Nothing 
-                        , rte = Rte.activate model.rte  
+                        , rte = Rte.active True model.rte  
                       }
                     , Cmd.none 
                     )
@@ -201,7 +212,7 @@ update msg model =
                 _ ->
                     ( { model |
                           inputBox = Just (ImageInputBox "") 
-                        , rte = Rte.inactivate model.rte  
+                        , rte = Rte.active False model.rte  
                       }
                     , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                     )
@@ -212,7 +223,7 @@ update msg model =
                 Just (LinkInputBox _) ->
                     ( { model |
                           inputBox = Nothing
-                        , rte = Rte.activate model.rte   
+                        , rte = Rte.active True model.rte   
                       }
                     , Cmd.none 
                     )
@@ -224,7 +235,7 @@ update msg model =
                     in
                     ( { model |
                           inputBox = Just (LinkInputBox currentLink) 
-                        , rte = Rte.inactivate model.rte
+                        , rte = Rte.active False model.rte
                       }
                     , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                     )
@@ -252,7 +263,16 @@ view : Model -> Browser.Document Msg
 view model =   
     let
         rteCss =
-            [ Attr.class "RTE" ]
+            if model.editMode then
+                [ Attr.class "RTE" ]
+            else
+                [ Attr.class "Blogpost" ]
+
+        show =
+            if model.rte.active then
+                Rte.viewActive rteCss
+            else
+                Rte.viewInactive rteCss
     in
     { title = "RTE demo"
     , body =        
@@ -262,15 +282,15 @@ view model =
 
             , inputBox model.inputBox
 
-            , Html.map Internal (Rte.view rteCss model.rte)
+            , Html.map Internal (show model.rte)
                 {- The editor must be positioned relative to the html body,
-                   (= it should never be inside a node with a "position: relative" style attribute),
+                   (= it should never be inside a "position: relative" node),
                    because the cursor is positioned using absolute coordinates.
                    To see what goes wrong otherwise, try replacing the line above with this:
                     
                     div
                         [ Attr.style "position" "relative" ]
-                        [ Html.map Internal (Rte.view css model.rte) ]
+                        [ Html.map Internal (show model.rte) ]
                 -}
 
             , Html.a
@@ -453,11 +473,28 @@ selectFontSize maybeSize =
         ( placeholder :: List.map o (range 6 30) )
 
 
+switch : Bool -> Html Msg
+switch checked =
+    let
+        class =
+            if checked then "slider checked" else "slider"
+    in
+    Html.label
+        [ Attr.class "switch" ]
+        [ Html.span
+            [ Attr.class class 
+            , Events.onClick (Switch (not checked))
+            ]
+            []
+        ]
+
+
 toolbar : Model -> Html Msg
 toolbar model =
     div
         [ Attr.class "Toolbar" ]
-        [ icon "Bold" Bold
+        [ switch model.editMode
+        , icon "Bold" Bold
         , icon "Italic"  Italic
         , icon "Underline"  Underline
         , icon "Strikethrough"  StrikeThrough

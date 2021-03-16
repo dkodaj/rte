@@ -1,5 +1,5 @@
 port module Rte exposing (
-      activate
+      active
     , addContent
     , addImage
     , Box
@@ -19,7 +19,6 @@ port module Rte exposing (
     , encode
     , fontFamily
     , fontSize
-    , inactivate
     , init
     , initWith
     , initWithText
@@ -43,7 +42,9 @@ port module Rte exposing (
     , unicode
     , unlink
     , update
-    , view
+    , viewActive
+    , viewEncoded
+    , viewInactive
     )
 
 import Browser.Dom as Dom exposing (Error, Viewport)
@@ -765,8 +766,8 @@ updateUndo msg e =
             e
 
 
-view : Attributes -> Editor -> Html Msg
-view userDefinedStyles e =        
+viewActive : Attributes -> Editor -> Html Msg
+viewActive userDefinedStyles e =        
     let
         f _ =
             showContent userDefinedStyles e
@@ -779,13 +780,29 @@ view userDefinedStyles e =
         [ (Lazy.lazy f) e.sentry
         , (Lazy.lazy g) e.sentry
         ]
-    
+
+
+viewEncoded : Attributes -> Maybe (Content -> Content) -> Maybe (Float, String) -> Maybe String -> String -> Html Msg
+viewEncoded userDefinedStyles highlighter indentUnit fontSizeUnit json =
+    case Decode.decodeString decodeContent json of
+        Ok content ->
+            showContentEncoded userDefinedStyles highlighter indentUnit fontSizeUnit content
+
+        Err err ->
+            Html.div [] []
+
+
+viewInactive : Attributes -> Editor -> Html Msg
+viewInactive userDefinedStyles e =
+    showContent userDefinedStyles { e | active = False }
+
+
 
 --- === Helper functions === ---
 
-activate : Editor -> Editor
-activate e =
-    { e | active = True }
+active : Bool -> Editor -> Editor
+active bool e =
+    { e | active = bool }
 
 
 addContent : Content -> Editor -> ( Editor, Cmd Msg )
@@ -1439,11 +1456,6 @@ idSet id elem =
         Break br -> Break { br | id = id }
         Char ch -> Char { ch | id = id }
         Embedded html -> Embedded { html | id = id }
-
-
-inactivate : Editor -> Editor
-inactivate e =
-    { e | active = False }
 
 
 insertBreak : LineBreak -> Maybe Float -> Editor -> Editor
@@ -2986,6 +2998,60 @@ showContent userDefinedStyles e =
         paragraphs
 
 
+showContentEncoded : Attributes -> Maybe (Content -> Content) -> Maybe (Float, String) -> Maybe String -> Content -> Html Msg
+showContentEncoded userDefinedStyles highlighter indentUnit fontSizeUnit content =
+    let
+        attrs =
+            ( userDefinedStyles ++ 
+            [ Attr.style "cursor" "text"
+            , Attr.style "overflow" "auto"
+            , Attr.style "user-select" "none"
+            , Attr.style "white-space" "pre-wrap"
+            , Attr.style "word-break" "break-word"
+            ])
+
+        highlight =
+            case highlighter of
+                Just f -> f << List.map dehighlight
+                Nothing -> identity
+
+        paragraphs =
+            List.map
+                (showPara False -1 null indentUnit Nothing [] False fontSizeUnit)
+                (breakIntoParas (highlight content))
+    in
+    Keyed.node "div"
+        attrs
+        paragraphs
+
+
+showContentInactive : Attributes -> Editor -> Html Msg
+showContentInactive userDefinedStyles e =
+    let
+        attrs =
+            ( userDefinedStyles ++ 
+            [ Attr.style "cursor" "text"
+            , Attr.style "overflow" "auto"
+            , Attr.style "user-select" "none"
+            , Attr.style "white-space" "pre-wrap"
+            , Attr.style "word-break" "break-word"
+            ])
+
+        highlight =
+            case e.highlighter of
+                Just f -> f << List.map dehighlight
+                Nothing -> identity
+
+        paragraphs =
+            List.map
+                (showPara False -1 null e.indentUnit Nothing [] False e.fontSizeUnit)
+                (breakIntoParas (highlight e.content))
+    in
+    Keyed.node "div"
+        attrs
+        paragraphs
+
+
 showEmbedded : EmbeddedHtml -> Node
 showEmbedded html =
     let
@@ -3018,8 +3084,8 @@ showEmbedded html =
 showPara : Bool -> Int -> Position -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
 showPara editing cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
-        show : Int -> Character -> KeyedNode
-        show idx ch =
+        print : Int -> Character -> KeyedNode
+        print idx ch =
             showChar editing selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
             
         f : EmbeddedHtml -> KeyedNode
@@ -3034,7 +3100,7 @@ showPara editing cursor cursorScreen maybeIndentUnit selection selectionStyle ty
                     --never occurs because of breakIntoParas
                 
                 Char ch ->
-                    show idx ch :: ys
+                    print idx ch :: ys
                 
                 Embedded html ->
                     zeroSpace idx html.id ::
@@ -3042,7 +3108,7 @@ showPara editing cursor cursorScreen maybeIndentUnit selection selectionStyle ty
                     ys
 
         zeroSpace idx id =
-            show idx (defaultCharacter zeroWidthSpace id)
+            print idx (defaultCharacter zeroWidthSpace id)
 
         indentUnit =
             Maybe.withDefault (50,"px") maybeIndentUnit

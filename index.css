@@ -2,10 +2,16 @@
     --rteWidth:min(80vw,1000px);
 }
 
+.Blogpost {    
+    padding:30px;
+    width:var(--rteWidth);    
+    word-break:break-word;
+    font-family:'Playfair Display',serif;
+    font-size:20px;    
+}
 
 body {    
-    user-select:none;                 
-    overflow:hidden;
+    user-select:none;                     
 }
 
 .Code {
@@ -36,6 +42,7 @@ body {
     justify-content:center;
     padding:20px;
 }
+
 
 .InputBox {    
     width:calc(0.6*var(--rteWidth));
@@ -68,6 +75,7 @@ body {
     font-size:17px;    
 }
 
+
 .RTE {            
     border: 2px solid gray;
     padding:30px;
@@ -86,6 +94,48 @@ select {
     font-family:'Ubuntu Mono',monospace;
     cursor:pointer;
     font-size:15px;
+}
+
+ .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  box-shadow: 0 0 1px #2196F3;
+  border-radius: 50%;
+}
+
+.slider.checked {
+  background-color: #2196F3;
+}
+
+.slider.checked:before {
+  transform: translateX(26px);
 }
 
 

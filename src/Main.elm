@@ -190,7 +190,8 @@ update msg model =
                         if bool then Rte.Edit else Rte.Display
                 in
                 ( { model |
-                      rte = Rte.state state model.rte 
+                      inputBox = Nothing
+                    , rte = Rte.state state model.rte 
                   }
                 , Cmd.none 
                 )

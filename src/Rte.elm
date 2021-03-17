@@ -1,6 +1,5 @@
 port module Rte exposing (
-      active
-    , addContent
+      addContent
     , addImage
     , Box
     , Character
@@ -29,7 +28,9 @@ port module Rte exposing (
     , replaceText
     , Msg(..)
     , setSelection
+    , state
     , subscriptions  
+    , State(..)
     , textAlign
     , TextAlign(..)
     , toggleBold
@@ -61,8 +62,7 @@ import Time
 
 
 type alias Editor =
-    { active : Bool
-    , box : Box
+    { box : Box
     , clipboard : Maybe Content
     , content : Content
     , ctrlDown : Bool
@@ -87,6 +87,7 @@ type alias Editor =
     , selectionStyle : Attributes
     , sentry : Int
     , shiftDown : Bool
+    , state : State
     , textContent : String
     , typing : Bool
     , undo : List Undo
@@ -264,6 +265,12 @@ type Select =
     SelectNone | SelectWord
 
 
+type State =
+      Display
+    | Edit
+    | Freeze
+
+
 type alias StyleTags =
     List (String, String)
 
@@ -301,8 +308,7 @@ init editorID =
 
 init1 : String -> Editor
 init1 editorID =
-    { active = True
-    , box = null
+    { box = null
     , clipboard = Nothing
     , content = [Break (defaultLineBreak 0)]
     , ctrlDown = False
@@ -327,6 +333,7 @@ init1 editorID =
     , selectionStyle = defaultSelectionStyle
     , sentry = 0
     , shiftDown = False
+    , state = Edit
     , textContent = ""
     , typing = False
     , undo = []
@@ -400,7 +407,7 @@ subscriptions e =
         mouseMove =
             Browser.Events.onMouseMove (decodeTargetIdAndTime MouseMove) 
     in
-    if e.active then
+    if e.state == Edit then
         case e.drag of
             NoDrag ->
                 Sub.batch default
@@ -773,22 +780,27 @@ view userDefinedStyles e =
         g _ =
             cursorHtml e.cursorScreen e.box e.cursorVisible e.typing e.selection e.cursor
     in
-    if e.active then
-        Html.div
-            [ ]
-            [ (Lazy.lazy f) e.sentry
-            , (Lazy.lazy g) e.sentry
-            ]
-    else
-        showContent userDefinedStyles e
+    case e.state of
+        Display ->
+            showContent userDefinedStyles { e | selection = Nothing }
+
+        Edit ->
+            Html.div
+                [ ]
+                [ (Lazy.lazy f) e.sentry
+                , (Lazy.lazy g) e.sentry
+                ]
+
+        Freeze ->
+            Html.div
+                [ ]
+                [ (Lazy.lazy f) e
+                , (Lazy.lazy g) { e | cursorVisible = True }
+                ]
 
 
 
 --- === Helper functions === ---
-
-active : Bool -> Editor -> Editor
-active bool e =
-    { e | active = bool }
 
 
 addContent : Content -> Editor -> ( Editor, Cmd Msg )
@@ -2071,9 +2083,9 @@ loadContent raw e =
     in
     undoAddNew
         { i |        
-          active = e.active
-        , content = addIds content
+          content = addIds content
         , idCounter = List.length content
+        , state = Edit
         , textContent = toText content    
         }
 
@@ -2122,9 +2134,9 @@ loadTextHelp txt editor shell =
                     g txt [] ++ [Break (defaultLineBreak 0)]
     in    
     { shell |        
-        active = editor.active
-      , content = addIds content
+        content = addIds content
       , idCounter = List.length content
+      , state = Edit
       , textContent = txt
     }
 
@@ -2883,8 +2895,8 @@ setSelection (a,b) e =
     )
 
 
-showChar : Bool -> Maybe (Int,Int) -> Attributes -> Int -> Position -> Bool -> Int -> Maybe String -> Character -> KeyedNode
-showChar editing selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch =
+showChar : Maybe (Int,Int) -> Attributes -> Int -> Position -> Bool -> Int -> Maybe String -> Character -> KeyedNode
+showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch =
     let
         id =
             String.fromInt ch.id
@@ -2976,35 +2988,8 @@ showContent userDefinedStyles e =
 
         paragraphs =
             List.map
-                (showPara e.active e.cursor e.cursorScreen e.indentUnit e.selection e.selectionStyle e.typing e.fontSizeUnit)
+                (showPara e.cursor e.cursorScreen e.indentUnit e.selection e.selectionStyle e.typing e.fontSizeUnit)
                 (breakIntoParas (highlight e.content))
-    in
-    Keyed.node "div"
-        attrs
-        paragraphs
-
-
-showContentEncoded : Attributes -> Maybe (Content -> Content) -> Maybe (Float, String) -> Maybe String -> Content -> Html Msg
-showContentEncoded userDefinedStyles highlighter indentUnit fontSizeUnit content =
-    let
-        attrs =
-            ( userDefinedStyles ++ 
-            [ Attr.style "cursor" "text"
-            , Attr.style "overflow" "auto"
-            , Attr.style "user-select" "none"
-            , Attr.style "white-space" "pre-wrap"
-            , Attr.style "word-break" "break-word"
-            ])
-
-        highlight =
-            case highlighter of
-                Just f -> f << List.map dehighlight
-                Nothing -> identity
-
-        paragraphs =
-            List.map
-                (showPara False -1 null indentUnit Nothing [] False fontSizeUnit)
-                (breakIntoParas (highlight content))
     in
     Keyed.node "div"
         attrs
@@ -3030,7 +3015,7 @@ showContentInactive userDefinedStyles e =
 
         paragraphs =
             List.map
-                (showPara False -1 null e.indentUnit Nothing [] False e.fontSizeUnit)
+                (showPara -1 null e.indentUnit Nothing [] False e.fontSizeUnit)
                 (breakIntoParas (highlight e.content))
     in
     Keyed.node "div"
@@ -3067,12 +3052,12 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : Bool -> Int -> Position -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
-showPara editing cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
+showPara : Int -> Position -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
+showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
         print : Int -> Character -> KeyedNode
         print idx ch =
-            showChar editing selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
+            showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
             
         f : EmbeddedHtml -> KeyedNode
         f html =
@@ -3140,6 +3125,11 @@ spaceOrLineBreakAt idx content =
 
         Nothing ->
             False
+
+
+state : State -> Editor -> Editor
+state new e =
+    { e | state = new }
 
 
 strikeThrough : Bool -> Editor -> ( Editor, Cmd Msg )

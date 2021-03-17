@@ -22,8 +22,7 @@ main =
 
 
 type alias Model =
-    { editMode : Bool
-    , inputBox : Maybe InputBox
+    { inputBox : Maybe InputBox
     , rte : Rte.Editor 
     }
 
@@ -73,8 +72,7 @@ init _ =
         ( rte, rteCmd ) =
             Rte.initWith Sample.content "MyRTE"
     in
-    ( { editMode = True
-      , inputBox = Nothing      
+    ( { inputBox = Nothing      
       , rte =
             { rte |
                 highlighter = Just Highlight.code 
@@ -102,7 +100,7 @@ apply f model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    if not model.editMode && msg /= Switch True then
+    if model.rte.state == Rte.Display && msg /= Switch True then
         ( model, Cmd.none )
     else
         case msg of
@@ -136,7 +134,7 @@ update msg model =
                 else
                     let
                         ( rte, rteCmd ) =
-                            Rte.addImage str (Rte.active True model.rte)
+                            Rte.addImage str (Rte.state Rte.Edit model.rte)
                     in
                     ( { model |
                           rte = rte
@@ -169,7 +167,7 @@ update msg model =
                     ( { model | inputBox = Nothing }, Cmd.none )
                 else
                     ( { model |
-                          rte = Rte.link href (Rte.active True model.rte)
+                          rte = Rte.link href (Rte.state Rte.Edit model.rte)
                         , inputBox = Nothing  
                       }
                     , Cmd.none 
@@ -187,9 +185,12 @@ update msg model =
 
 
             Switch bool ->
+                let
+                    state =
+                        if bool then Rte.Edit else Rte.Display
+                in
                 ( { model |
-                      editMode = bool
-                    , rte = Rte.active bool model.rte 
+                      rte = Rte.state state model.rte 
                   }
                 , Cmd.none 
                 )
@@ -207,7 +208,7 @@ update msg model =
                     Just (ImageInputBox _) ->
                         ( { model |
                               inputBox = Nothing 
-                            , rte = Rte.active True model.rte  
+                            , rte = Rte.state Rte.Edit model.rte  
                           }
                         , Cmd.none 
                         )
@@ -215,7 +216,7 @@ update msg model =
                     _ ->
                         ( { model |
                               inputBox = Just (ImageInputBox "") 
-                            , rte = Rte.active False model.rte  
+                            , rte = Rte.state Rte.Freeze model.rte  
                           }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                         )
@@ -226,7 +227,7 @@ update msg model =
                     Just (LinkInputBox _) ->
                         ( { model |
                               inputBox = Nothing
-                            , rte = Rte.active True model.rte   
+                            , rte = Rte.state Rte.Edit model.rte   
                           }
                         , Cmd.none 
                         )
@@ -238,7 +239,7 @@ update msg model =
                         in
                         ( { model |
                               inputBox = Just (LinkInputBox currentLink) 
-                            , rte = Rte.active False model.rte
+                            , rte = Rte.state Rte.Freeze model.rte
                           }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                         )
@@ -266,10 +267,10 @@ view : Model -> Browser.Document Msg
 view model =   
     let
         rteCss =
-            if model.editMode then
-                [ Attr.class "RTE" ]
-            else
+            if model.rte.state == Rte.Display then
                 [ Attr.class "Blogpost" ]
+            else
+                [ Attr.class "RTE" ]
     in
     { title = "RTE demo"
     , body =        
@@ -490,7 +491,7 @@ toolbar : Model -> Html Msg
 toolbar model =
     div
         [ Attr.class "Toolbar" ]
-        [ switch model.editMode
+        [ switch (model.rte.state /= Rte.Display)
         , icon "Bold" Bold
         , icon "Italic"  Italic
         , icon "Underline"  Underline

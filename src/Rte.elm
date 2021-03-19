@@ -691,7 +691,7 @@ update msg e0 =
 
 
         SwitchTo newState ->
-            ( state newState e, Cmd.none )
+            state newState e
 
 
         UndoAction ->
@@ -3159,9 +3159,16 @@ spaceOrLineBreakAt idx content =
             False
 
 
-state : State -> Editor -> Editor
+state : State -> Editor -> ( Editor, Cmd Msg )
 state new e =
-    { e | state = new }
+    let
+        cmd =
+            if new == Edit then
+                focusOnEditor Edit e.editorID
+            else
+                Cmd.none
+    in
+    ( { e | state = new }, cmd )
 
 
 strikeThrough : Bool -> Editor -> ( Editor, Cmd Msg )

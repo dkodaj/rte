@@ -133,14 +133,20 @@ update msg model =
                     ( { model | inputBox = Nothing }, Cmd.none )
                 else
                     let
-                        ( rte, rteCmd ) =
-                            Rte.addImage str (Rte.state Rte.Edit model.rte)
+                        ( rte1, rteCmd1 ) =
+                            Rte.addImage str model.rte
+
+                        ( rte2, rteCmd2 ) =
+                            Rte.state Rte.Edit rte1
+
+                        toCmd =
+                            Cmd.map Internal
                     in
                     ( { model |
-                          rte = rte
-                        , inputBox = Nothing
-                      }  
-                    , Cmd.map Internal rteCmd
+                          inputBox = Nothing 
+                        , rte = rte1
+                      }
+                    , Cmd.batch (List.map toCmd [rteCmd1, rteCmd2])
                     )
 
 
@@ -166,12 +172,12 @@ update msg model =
                 if href == "" then
                     ( { model | inputBox = Nothing }, Cmd.none )
                 else
-                    ( { model |
-                          rte = Rte.link href (Rte.state Rte.Edit model.rte)
-                        , inputBox = Nothing  
-                      }
-                    , Cmd.none 
-                    )
+                    apply
+                        (Rte.state Rte.Edit)
+                        { model |
+                            inputBox = Nothing 
+                          , rte = Rte.link href model.rte
+                        }
 
 
             LinkInput str ->
@@ -189,12 +195,8 @@ update msg model =
                     state =
                         if bool then Rte.Edit else Rte.Display
                 in
-                ( { model |
-                      inputBox = Nothing
-                    , rte = Rte.state state model.rte 
-                  }
-                , Cmd.none 
-                )
+                apply (Rte.state state) { model | inputBox = Nothing }
+
 
             StrikeThrough ->
                 apply Rte.toggleStrikeThrough model
@@ -207,18 +209,14 @@ update msg model =
             ToggleImageBox ->                   
                 case model.inputBox of
                     Just (ImageInputBox _) ->
-                        ( { model |
-                              inputBox = Nothing 
-                            , rte = Rte.state Rte.Edit model.rte  
-                          }
-                        , Cmd.none 
-                        )
+                        apply (Rte.state Rte.Edit) { model | inputBox = Nothing }
 
                     _ ->
-                        ( { model |
-                              inputBox = Just (ImageInputBox "") 
-                            , rte = Rte.state Rte.Freeze model.rte  
-                          }
+                        let
+                            ( newmodel, cmd ) = 
+                                apply (Rte.state Rte.Freeze) model
+                        in
+                        ( { newmodel | inputBox = Just (ImageInputBox "") }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                         )
 
@@ -226,22 +224,17 @@ update msg model =
             ToggleLinkBox ->
                 case model.inputBox of
                     Just (LinkInputBox _) ->
-                        ( { model |
-                              inputBox = Nothing
-                            , rte = Rte.state Rte.Edit model.rte   
-                          }
-                        , Cmd.none 
-                        )
+                        apply (Rte.state Rte.Edit) { model | inputBox = Nothing }
 
                     _ ->
                         let
+                            ( newmodel, cmd ) = 
+                                apply (Rte.state Rte.Freeze) model
+
                             currentLink =
                                 Maybe.withDefault "" (Rte.currentLink model.rte)
                         in
-                        ( { model |
-                              inputBox = Just (LinkInputBox currentLink) 
-                            , rte = Rte.state Rte.Freeze model.rte
-                          }
+                        ( { newmodel |  inputBox = Just (LinkInputBox currentLink) }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
                         )
 

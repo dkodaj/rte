@@ -21,15 +21,6 @@
             });
         });
 
-        var troublemakers = [" ", "/", "'", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp", "Home", "End", "PageDown", "PageUp"];
-
-        window.addEventListener('keydown', (event) => {
-            // prevent Chrome from scrolling automatically
-            if (troublemakers.includes(event.key)) {
-                event.preventDefault()
-            }
-        })
-
         window.addEventListener('paste', (event) => {            
             app.ports.clipboardText.send(event.clipboardData.getData('text'))                        
         })

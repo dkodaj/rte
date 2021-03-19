@@ -113,6 +113,7 @@ type Msg =
     | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
     | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
     | Scrolled (Maybe Float)
+    | SwitchTo State
     | UndoAction
 
 
@@ -360,7 +361,7 @@ init3 editorID highlighter selectionStyle =
 
 initCmd : String -> Cmd Msg
 initCmd editorID =
-    focusOnEditor editorID
+    focusOnEditor Edit editorID
 
 
 initWith : String -> String -> ( Editor, Cmd Msg )
@@ -535,18 +536,22 @@ update msg e0 =
 
 
         MouseDown (x,y) timeStamp ->
+            let
+                f (a,b) =
+                    (a, Cmd.batch [ focusOnEditor e.state e.editorID, b] )
+            in
             if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
                 case e.locating of
                     Idle ->
-                        ( selectCurrentWord e, Cmd.none )
+                        f (selectCurrentWord e, Cmd.none )
 
                     Mouse a b c ->
-                        ( { e | locating = Mouse SelectWord b c }, Cmd.none )
+                        f ( { e | locating = Mouse SelectWord b c }, Cmd.none )
 
                     _ ->
-                        mouseDown (x,y) timeStamp e
+                        f (mouseDown (x,y) timeStamp e)
             else
-                mouseDown (x,y) timeStamp e
+                f (mouseDown (x,y) timeStamp e)
 
 
         MouseMove targetId timeStamp ->
@@ -685,6 +690,10 @@ update msg e0 =
                     ( g (f e), Cmd.none )
 
 
+        SwitchTo newState ->
+            ( state newState e, Cmd.none )
+
+
         UndoAction ->
             undoAction e
 
@@ -779,6 +788,17 @@ view userDefinedStyles e =
 
         g _ =
             cursorHtml e.cursorScreen e.box e.cursorVisible e.typing e.selection e.cursor
+
+        dummy =
+            Html.input
+                [ Attr.type_ "text"
+                , Attr.id (dummyID e.editorID)
+                , Events.on "focus" (Decode.succeed (SwitchTo Edit))
+                , Attr.value ""
+                , Attr.style "position" "absolute"
+                , Attr.style "left" "-100vw"
+                , Attr.style "width" "10vw"
+                ] []
     in
     case e.state of
         Display ->
@@ -789,6 +809,7 @@ view userDefinedStyles e =
                 [ ]
                 [ (Lazy.lazy f) e.sentry
                 , (Lazy.lazy g) e.sentry
+                , dummy
                 ]
 
         Freeze ->
@@ -1377,9 +1398,17 @@ emptyFontStyle =
     }
 
 
-focusOnEditor : String -> Cmd Msg
-focusOnEditor editorID =
-    Task.attempt (\_ -> NoOp) (Dom.focus editorID)
+dummyID : String -> String
+dummyID x =
+    x ++ "_dummy_"
+
+
+focusOnEditor : State -> String -> Cmd Msg
+focusOnEditor editorState editorID =
+    if editorState == Edit then
+        Task.attempt (\_ -> NoOp) (Dom.focus (dummyID editorID))
+    else
+        Cmd.none
 
 
 fontFamily : List String -> Editor -> ( Editor, Cmd Msg )
@@ -1925,6 +1954,9 @@ keyDown timeStamp str e =
         "Shift" ->
             ( { e | shiftDown = True }, Cmd.none )
 
+        "Tab" ->
+            ( e, Cmd.none )
+
         _ ->
             ( e, Cmd.none )
 
@@ -2173,7 +2205,7 @@ locateChars e (a,b) func =
         , locating = func (beg,end)
         , cursorVisible = False
       }
-    , Cmd.batch (focusOnEditor e.editorID :: cmds)
+    , Cmd.batch (focusOnEditor e.state e.editorID :: cmds)
     )
 
 

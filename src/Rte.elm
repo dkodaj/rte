@@ -691,7 +691,10 @@ update msg e0 =
 
 
         SwitchTo newState ->
-            state newState e
+            if newState /= e.state then
+                state newState e
+            else
+                ( e, Cmd.none )
 
 
         UndoAction ->

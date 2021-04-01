@@ -113,7 +113,7 @@ update msg model =
 
 
             Emoji ->
-                apply (Rte.addContent emoji) model
+                apply (Rte.addText "🤪") model
 
 
             Font family ->
@@ -302,11 +302,6 @@ view model =
 
 
 --== Helpers in ABC order ==--
-
-
-emoji : Rte.Content
-emoji =
-    Rte.unicode 128537
 
 
 inputBox : Maybe InputBox -> Html Msg

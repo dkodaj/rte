@@ -63,13 +63,13 @@ highlight (isCode, elem) a =
 
             Char ch ->
                 case ch.char of
-                    "<" ->
+                    '<' ->
                         { a |
                             content = red ch :: a.content
                           , scope = TagOpened
                         }
 
-                    ">" ->
+                    '>' ->
                         case a.scope of
                             NeutralZone ->
                                 { a | content = elem :: a.content }
@@ -95,7 +95,7 @@ highlight (isCode, elem) a =
                                   , scope = OpeningTagEnded
                                 }
 
-                    "/" ->
+                    '/' ->
                         case a.scope of
                             NeutralZone ->
                                 { a | content = elem :: a.content }

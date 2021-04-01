@@ -1,5 +1,6 @@
 port module Rte exposing (
       addContent
+    , addText
     , addImage
     , Box
     , Character
@@ -33,6 +34,7 @@ port module Rte exposing (
     , State(..)
     , textAlign
     , TextAlign(..)
+    , textContent
     , toggleBold
     , toggleItalic
     , toggleNodeType  
@@ -88,7 +90,6 @@ type alias Editor =
     , sentry : Int
     , shiftDown : Bool
     , state : State
-    , textContent : String
     , typing : Bool
     , undo : List Undo
     , viewport : Viewport
@@ -108,7 +109,7 @@ type Msg =
     | MouseMove String Float
     | MouseUp
     | NoOp
-    | Paste (Maybe String)
+    | Paste String
     | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
     | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
     | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
@@ -133,7 +134,7 @@ type alias Box =
 
 
 type alias Character =
-    { char : String
+    { char : Char
     , fontStyle : FontStyle
     , highlightClasses : List String
     , highlightStyling : StyleTags
@@ -335,7 +336,6 @@ init1 editorID =
     , sentry = 0
     , shiftDown = False
     , state = Edit
-    , textContent = ""
     , typing = False
     , undo = []
     , viewport =
@@ -391,7 +391,7 @@ subscriptions e =
             [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
             , Browser.Events.onKeyUp (decodeKey KeyUp)
             , Browser.Events.onMouseUp (Decode.succeed MouseUp) 
-            , clipboardText (\x -> Paste (Just x))
+            , clipboardText Paste
             , cursorBlink
             , detectViewport
             ]
@@ -430,7 +430,7 @@ update msg e0 =
     in
     case msg of
         AddText txt ->
-            typed txt e Nothing
+            typed txt e Nothing False
 
         Blink time ->
             let
@@ -452,7 +452,7 @@ update msg e0 =
             )
 
 
-        Copy ->
+        Copy ->            
             copy e
 
 
@@ -536,22 +536,18 @@ update msg e0 =
 
 
         MouseDown (x,y) timeStamp ->
-            let
-                f (a,b) =
-                    (a, Cmd.batch [ focusOnEditor e.state e.editorID, b] )
-            in
             if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
                 case e.locating of
                     Idle ->
-                        f (selectCurrentWord e, Cmd.none )
+                        (selectCurrentWord e, Cmd.none )
 
                     Mouse a b c ->
-                        f ( { e | locating = Mouse SelectWord b c }, Cmd.none )
+                        ( { e | locating = Mouse SelectWord b c }, Cmd.none )
 
                     _ ->
-                        f (mouseDown (x,y) timeStamp e)
+                        mouseDown (x,y) timeStamp e
             else
-                f (mouseDown (x,y) timeStamp e)
+                mouseDown (x,y) timeStamp e
 
 
         MouseMove targetId timeStamp ->
@@ -598,18 +594,16 @@ update msg e0 =
             ( e, Cmd.none )
 
 
-        Paste this ->
-            case this of
+        Paste str ->           
+            case e.clipboard of
                 Nothing ->
-                        case e.clipboard of
-                            Nothing ->
-                                ( e, Cmd.none )
+                    typed str e Nothing True
 
-                            Just copied ->
-                                pasteContent copied e
-
-                Just txt ->
-                    typed txt { e | clipboard = Nothing } Nothing
+                Just internalClipboard ->
+                    if toText internalClipboard /= str then
+                        typed str e Nothing True
+                    else
+                        pasteContent internalClipboard e                    
 
 
         PlaceCursor1_EditorPos scroll (Ok data) ->
@@ -826,6 +820,10 @@ view userDefinedStyles e =
 
 --- === Helper functions === ---
 
+addText : String -> Editor -> ( Editor, Cmd Msg )
+addText str e =
+    typed str e Nothing False
+
 
 addContent : Content -> Editor -> ( Editor, Cmd Msg )
 addContent content e =
@@ -873,13 +871,8 @@ addImage src e =
 alphaNumAt : Int -> Content -> Bool
 alphaNumAt idx content =
     case get idx content of
-        Just (Char ch) ->
-            case String.toList ch.char of
-                [char] ->
-                    Char.isAlphaNum char || diacritical char
-
-                _ ->
-                    False
+        Just (Char ch) ->            
+            Char.isAlphaNum ch.char || diacritical ch.char
 
         _ ->
             False
@@ -1050,8 +1043,8 @@ contentChanged msg e =
                     False
 
 
-        Paste this ->
-            this /= Nothing || e.clipboard /= Nothing
+        Paste str ->
+            str /= "" || Maybe.map toText e.clipboard /= Just ""
 
 
         UndoAction ->
@@ -1069,10 +1062,12 @@ copy e =
             ( e, Cmd.none )
 
         Just (beg,end) ->
-            ( { e |
-                  clipboard = Just <| List.take (end - beg + 1) <| List.drop beg e.content
-              }
-            , copyToClipboard (String.left (end - beg + 1) <| String.dropLeft beg e.textContent)
+            let
+                clipboard =
+                    List.take (end - beg + 1) <| List.drop beg e.content
+            in
+            ( { e | clipboard = Just clipboard }
+            , copyToClipboard (toText clipboard)
             )
 
 
@@ -1145,8 +1140,9 @@ currentSelection e =
 
         Just (beg,end) ->
             Just
-             <| String.left (end-beg+1)
-                <| String.dropLeft beg e.textContent
+                <| toText                
+                    <| List.take (end-beg+1)
+                        <| List.drop beg e.content
 
 
 currentWord : Editor -> (Int, Int)
@@ -1227,7 +1223,6 @@ cut e =
                     content = List.take beg e.content ++ (List.drop (end-beg+1) (List.drop beg e.content))
                   , cursor = beg
                   , selection = Nothing
-                  , textContent = String.left beg e.textContent ++ (String.dropLeft (end-beg+1) (String.dropLeft beg e.textContent))
                 }
             , Cmd.batch
                 [ copyCmd
@@ -1278,17 +1273,6 @@ decodeTargetIdAndTime f =
             ]
         )
         ( Decode.field "timeStamp" Decode.float )
-
-
-defaultCharacter : String -> Int -> Character
-defaultCharacter char id =
-    { char = char
-    , fontStyle = emptyFontStyle
-    , highlightClasses = []
-    , highlightStyling = []
-    , id = id
-    , link = Nothing
-    }
 
 
 defaultFont : List String -> Editor -> Editor
@@ -1386,7 +1370,6 @@ embed html e =
           content = List.take e.cursor e.content ++ [elem] ++ List.drop e.cursor e.content
         , cursor = e.cursor + 1
         , idCounter = e.idCounter + 1
-        , textContent = String.left e.cursor e.textContent ++ "\n" ++ String.dropLeft e.cursor e.textContent
       }
     , placeCursor NoScroll e.editorID
     )
@@ -1506,7 +1489,6 @@ insertBreak br maybeTimeStamp editor0 =
               content = List.take e.cursor e.content ++ [Break br] ++ List.drop e.cursor e.content                    
             , cursor = e.cursor + 1
             , idCounter = e.idCounter + 1
-            , textContent = String.left e.cursor e.textContent ++ elemTxt ++ String.dropLeft e.cursor e.textContent
             }
 
         Just (beg,end) ->
@@ -1515,7 +1497,6 @@ insertBreak br maybeTimeStamp editor0 =
               , cursor = beg + 1
               , idCounter = e.idCounter + 1
               , selection = Nothing
-              , textContent = String.left beg e.textContent ++ elemTxt ++ String.dropLeft (end+1) e.textContent
             }
 
 
@@ -1705,14 +1686,14 @@ keyDown timeStamp str e =
     in
     if String.length str == 1 then
         if not e.ctrlDown then
-            typed str e (Just timeStamp)
+            typed str e (Just timeStamp) False
         else
             case str of
                 "0" ->
-                    typed "–" e (Just timeStamp)  -- N dash                            
+                    typed "–" e (Just timeStamp) False  -- N dash                            
 
                 "1" ->
-                    typed "—" e (Just timeStamp) -- M dash
+                    typed "—" e (Just timeStamp) False -- M dash
 
                 "a" ->                      
                     ( { e |
@@ -1729,12 +1710,6 @@ keyDown timeStamp str e =
 
                 "C" ->
                     like "c"
-
-                "v" ->
-                    update (Paste Nothing) e
-
-                "V" ->
-                    like "v"
 
                 "x" ->                            
                     update Cut e
@@ -1853,7 +1828,6 @@ keyDown timeStamp str e =
                               { e |
                                  content = List.take (e.cursor-1) e.content ++ List.drop e.cursor e.content
                                , cursor = e.cursor - 1
-                               , textContent = String.left (e.cursor-1) e.textContent ++ String.dropLeft e.cursor e.textContent
                               }
                         , placeCursor ScrollIfNeeded e.editorID
                         )
@@ -1866,7 +1840,6 @@ keyDown timeStamp str e =
                              content = List.take beg e.content ++ List.drop (end+1) e.content
                            , cursor = beg
                            , selection = Nothing
-                           , textContent = String.left beg e.textContent ++ String.dropLeft (end+1) e.textContent
                           }
                     , placeCursor ScrollIfNeeded e.editorID
                     )
@@ -1890,7 +1863,6 @@ keyDown timeStamp str e =
                     if e.cursor < maxIdx then
                         ( { e |
                              content = h e.cursor (e.cursor+1) e.content
-                           , textContent = String.left e.cursor e.textContent ++ String.dropLeft (e.cursor+1) e.textContent  
                           }
                         , placeCursor ScrollIfNeeded e.editorID
                         )
@@ -1903,7 +1875,6 @@ keyDown timeStamp str e =
                              content = h beg (end+1) e.content
                            , cursor = beg
                            , selection = Nothing  
-                           , textContent = String.left beg e.textContent ++ String.dropLeft (end+1) e.textContent
                           }
                     , placeCursor ScrollIfNeeded e.editorID
                     )
@@ -2121,7 +2092,6 @@ loadContent raw e =
           content = addIds content
         , idCounter = List.length content
         , state = Edit
-        , textContent = toText content    
         }
 
  
@@ -2137,10 +2107,10 @@ loadText txt editor =
 loadTextHelp : String -> Editor -> Editor -> Editor
 loadTextHelp txt editor shell =
     let
-        f : String -> Element
+        f : Char -> Element
         f x =
             case x of
-                "\n" ->
+                '\n' ->
                     Break (defaultLineBreak 0)
 
                 _ ->
@@ -2153,26 +2123,27 @@ loadTextHelp txt editor shell =
                         , link = Nothing
                         }
 
-        g : String -> Content -> Content
-        g x ys =
-            case x of
-                "" -> ys
-                _ ->
-                    g (String.dropRight 1 x) (f (String.right 1 x) :: ys)        
+        g : List Char -> Content -> Content
+        g xs ys =
+            case xs of
+                [] -> ys
+                x :: rest ->
+                    g rest (f x :: ys)
         
         content =
-            case String.right 1 txt of
+            g (List.reverse (String.toList txt)) []
+            {- case String.right 1 txt of
                 "\n" ->
-                    g txt []
+                    g (List.reverse (String.toList txt)) []
 
                 _ ->
-                    g txt [] ++ [Break (defaultLineBreak 0)]
+                    g (List.reverse (String.toList txt)) [] ++ [Break (defaultLineBreak 0)]
+            -}
     in    
     { shell |        
         content = addIds content
       , idCounter = List.length content
       , state = Edit
-      , textContent = txt
     }
 
 
@@ -2647,7 +2618,6 @@ pasteContent copied e =
                   content = j e.cursor e.content e.cursor
                 , cursor = e.cursor + List.length copied
                 , idCounter = e.idCounter + List.length copied
-                , textContent = String.left e.cursor e.textContent ++ toText copied ++ String.dropLeft e.cursor e.textContent 
               }
             , placeCursor ScrollIfNeeded e.editorID
             )
@@ -2658,7 +2628,6 @@ pasteContent copied e =
                 , cursor = beg + List.length copied
                 , idCounter = e.idCounter + List.length copied
                 , selection = Nothing
-                , textContent = String.left beg e.textContent ++ toText copied ++ String.dropLeft (end+1) e.textContent 
               }
             , placeCursor ScrollIfNeeded e.editorID
             )
@@ -2735,7 +2704,6 @@ restore x editor =
       , cursor = x.cursor
       , fontStyle = x.fontStyle
       , selection = x.selection
-      , textContent = toText x.content
     }
 
 
@@ -2956,11 +2924,11 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
 
         child =
             if typing && idx == cursor then
-                [ linked (text ch.char) 
+                [ linked (text (String.fromChar ch.char))
                 , cursorHtml2 cursorScreen selection cursor
                 ]
             else
-                [ linked (text ch.char) ]
+                [ linked (text (String.fromChar ch.char)) ]
 
         position =
             if typing && idx == cursor then
@@ -3114,7 +3082,7 @@ showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fon
                     ys
 
         zeroSpace idx id =
-            print idx (defaultCharacter zeroWidthSpace id)
+            print idx (zeroWidthCharacter id)
 
         indentUnit =
             Maybe.withDefault (50,"px") maybeIndentUnit
@@ -3153,7 +3121,7 @@ spaceOrLineBreakAt idx content =
             True
 
         Just (Char ch) ->
-            ch.char == " "
+            ch.char == ' '
 
         Just (Embedded _) ->
             False
@@ -3203,6 +3171,11 @@ textAlign alignment e =
             }
     in
     setPara f e
+
+
+textContent : Editor -> String
+textContent e =
+    toText e.content
 
 
 tickPeriod : Float
@@ -3287,7 +3260,7 @@ toText content =
         f x =
             case x of
                 Break _ -> "\n"
-                Char ch -> ch.char
+                Char ch -> String.fromChar ch.char
                 Embedded html -> zeroWidthSpace
 
         g : Element -> String -> String
@@ -3297,8 +3270,8 @@ toText content =
     List.foldl g "" content
 
 
-typed : String -> Editor -> Maybe Float -> ( Editor, Cmd Msg )
-typed txt editor0 maybeTimeStamp =
+typed : String -> Editor -> Maybe Float -> Bool -> ( Editor, Cmd Msg )
+typed txt editor0 maybeTimeStamp modifyClipboard =
     let
         e = 
             case maybeTimeStamp of
@@ -3310,15 +3283,15 @@ typed txt editor0 maybeTimeStamp =
 
                 Nothing -> editor0
 
-        txtLength = String.length txt
+        txtLength = List.length (String.toList txt)
 
         activeLink =
             currentLink e
 
-        f : Int -> String -> Element
-        f id ch =
+        f : Int -> Char -> Element
+        f id char =
             Char
-                { char = ch
+                { char = char
                 , fontStyle = e.fontStyle
                 , highlightClasses = []
                 , highlightStyling = []
@@ -3326,24 +3299,24 @@ typed txt editor0 maybeTimeStamp =
                 , link = activeLink
                 }
 
-        g : String -> (Int, Content) -> (Int, Content)
-        g x (id,ys) =
-            case x of
-                "" -> (id, ys)
-                _ ->
-                    g (String.dropRight 1 x) (id - 1, f id (String.right 1 x) :: ys)
+        g : List Char -> (Int, Content) -> (Int, Content)
+        g xs (id, content) =
+            case xs of
+                [] -> (id, content)
+                x :: rest ->
+                    g rest (id - 1, f id x :: content)
 
         newIdCounter = e.idCounter + txtLength
 
         newContent =
             Tuple.second 
-                <| g txt (newIdCounter - 1, [])
+                <| g (List.reverse (String.toList txt)) (newIdCounter - 1, [])
 
         newClipboard =
-            case maybeTimeStamp of
-                Just _ -> e.clipboard
-                Nothing ->
-                    Just newContent
+            if modifyClipboard then
+                Just newContent
+            else
+                e.clipboard
 
         maxIdx = List.length e.content - 1
     in
@@ -3354,7 +3327,6 @@ typed txt editor0 maybeTimeStamp =
                 , content = List.take e.cursor e.content ++ newContent ++ List.drop e.cursor e.content                    
                 , cursor = e.cursor + txtLength
                 , idCounter = newIdCounter
-                , textContent = String.left e.cursor e.textContent ++ txt ++ String.dropLeft e.cursor e.textContent
               }
             , placeCursor ScrollIfNeeded e.editorID
             )
@@ -3371,7 +3343,6 @@ typed txt editor0 maybeTimeStamp =
                 , cursor = beg + 1
                 , idCounter = newIdCounter
                 , selection = Nothing
-                , textContent = String.left beg e.textContent ++ txt ++ String.dropLeft (end+1) e.textContent
               }
             , placeCursor ScrollIfNeeded e.editorID
             )
@@ -3442,16 +3413,13 @@ undoMaxDepth = 10
 
 unicode : Int -> Content
 unicode code =
-    [ Embedded
-        { attributes = []
-        , classes = []
-        , children = []
+    [ Char
+        { char = Char.fromCode code
+        , fontStyle = emptyFontStyle
         , highlightClasses = []
         , highlightStyling = []
         , id = -1
-        , nodeType = Nothing
-        , styling = []
-        , text = Just (String.fromChar <| Char.fromCode code)
+        , link = Nothing
         }
     ]
 
@@ -3502,10 +3470,24 @@ wrap (amount, unit) l =
             addId (str l.id "wrap") (Keyed.node nodeType <| indentAttr ++ attributes (Break l))
 
 
+zeroWidthChar =
+    Char.fromCode 8203
+
+
+zeroWidthCharacter : Int -> Character
+zeroWidthCharacter id =
+    { char = zeroWidthChar
+    , fontStyle = emptyFontStyle
+    , highlightClasses = []
+    , highlightStyling = []
+    , id = id
+    , link = Nothing
+    }
+
 
 zeroWidthSpace : String
 zeroWidthSpace =
-    String.fromChar (Char.fromCode 8203)
+    String.fromChar zeroWidthChar
 
 
 --=== Encoding / decoding content
@@ -3522,9 +3504,18 @@ decode x =
 
 decodeCharacter : Decode.Decoder Character
 decodeCharacter =
+    let
+        toChar x =
+            case String.uncons x of
+                Just (char, _) ->
+                    Decode.succeed char
+
+                Nothing ->
+                    Decode.fail ("Not convertible into a Char: " ++ x)
+    in
     Decode.map6
         Character
-            ( Decode.field "char" Decode.string )
+            ( Decode.field "char" ( Decode.string |> Decode.andThen toChar ) )
             ( Decode.field "fontStyle" decodeFontStyle )
             ( Decode.succeed [] )  --"highlightClasses"
             ( Decode.succeed [] )  --"highlightStyling"
@@ -3657,7 +3648,7 @@ encode e =
 encodeCharacter : Character -> Decode.Value
 encodeCharacter a =
     Encode.object
-        [ ("char", Encode.string a.char)
+        [ ("char", Encode.string (String.fromChar a.char))
         , ("fontStyle", encodeFontStyle a.fontStyle)
         , ("link", encodeMaybe Encode.string a.link)
         ]

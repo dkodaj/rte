@@ -66,6 +66,8 @@ import Time
 type alias Editor =
     { box : Box
     , clipboard : Maybe Content
+    , compositionStart : Content
+    , compositionUpdate : String
     , content : Content
     , ctrlDown : Bool
     , cursor : Int
@@ -99,6 +101,9 @@ type alias Editor =
 type Msg =
       AddText String
     | Blink Float
+    | CompositionEnd String
+    | CompositionStart
+    | CompositionUpdate String
     | DetectViewport
     | Copy
     | Cut
@@ -312,6 +317,8 @@ init1 : String -> Editor
 init1 editorID =
     { box = null
     , clipboard = Nothing
+    , compositionStart = []
+    , compositionUpdate = ""
     , content = [Break (defaultLineBreak 0)]
     , ctrlDown = False
     , cursor = 0
@@ -449,6 +456,63 @@ update msg e0 =
                 , typing = typing       
               }
             , Cmd.none
+            )
+
+
+        CompositionEnd txt ->
+            if txt == "" then
+                addContent e.compositionStart e
+            else
+                let
+                    newLength =
+                        List.length (String.toList txt)
+
+                    ( new, newMsg ) =
+                        update (CompositionUpdate txt) e
+                in
+                ( { new | cursor = new.cursor + newLength }
+                , newMsg
+                )
+
+
+        CompositionStart ->
+            case e.selection of
+                Nothing ->
+                    ( { e |
+                          compositionStart = [] 
+                        , compositionUpdate = ""
+                      }
+                    , Cmd.none 
+                    )
+
+                Just (beg,end) ->
+                    ( { e |
+                          compositionStart = List.take (end-beg+1) (List.drop beg e.content)
+                        , compositionUpdate = ""
+                        , content = delete beg (end+1) e
+                        , cursor = beg
+                        , selection = Nothing
+                      }
+                    , placeCursor ScrollIfNeeded e.editorID
+                    )
+
+
+        CompositionUpdate txt ->
+            let
+                oldEnd =
+                    e.cursor + List.length (String.toList e.compositionUpdate)
+
+                newLength =
+                    List.length (String.toList txt)
+
+                ( new, newMsg ) =
+                    typed txt { e | content = delete e.cursor oldEnd e } Nothing False
+            in
+            ( { new |
+                  compositionUpdate = txt
+                , cursor = e.cursor
+              }
+            , newMsg
             )
 
 
@@ -603,7 +667,7 @@ update msg e0 =
                     if toText internalClipboard /= str then
                         typed str e Nothing True
                     else
-                        pasteContent internalClipboard e                    
+                        addContent internalClipboard e                    
 
 
         PlaceCursor1_EditorPos scroll (Ok data) ->
@@ -791,7 +855,9 @@ view userDefinedStyles e =
                 [ Attr.type_ "text"
                 , Attr.id (dummyID e.editorID)
                 , Events.on "focus" (Decode.succeed (SwitchTo Edit))
-                , Attr.value ""
+                , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
+                , Events.on "compositionstart" (Decode.succeed CompositionStart)
+                , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
                 , Attr.style "position" "absolute"
                 , Attr.style "left" "-100vw"
                 , Attr.style "width" "10vw"
@@ -826,8 +892,52 @@ addText str e =
 
 
 addContent : Content -> Editor -> ( Editor, Cmd Msg )
-addContent content e =
-    pasteContent content e
+addContent added e =
+    let
+        f : (Int, Content) -> Content -> Content
+        f (id, output) input =
+            case input of
+                [] ->
+                    List.reverse output
+
+                x :: rest ->
+                    f (id + 1, idSet id x :: output) rest
+
+        g : Content -> Content
+        g xs =
+            f (e.idCounter, []) xs
+
+        h : Int -> Content -> Int -> Content
+        h x y z =
+            List.take x y ++ (g added) ++ List.drop z y
+
+        i : Content -> Content
+        i x =
+            if x == [] then [Break (defaultLineBreak 0)] else x
+            -- prevent last Break from being deleted
+
+        j : Int -> Content -> Int -> Content
+        j x y z = i (h x y z)                
+    in
+    case e.selection of
+        Nothing ->
+            ( { e |
+                  content = j e.cursor e.content e.cursor
+                , cursor = e.cursor + List.length added
+                , idCounter = e.idCounter + List.length added
+              }
+            , placeCursor ScrollIfNeeded e.editorID
+            )
+
+        Just (beg,end) ->
+            ( { e |
+                  content = j beg e.content (end+1)
+                , cursor = beg + List.length added
+                , idCounter = e.idCounter + List.length added
+                , selection = Nothing
+              }
+            , placeCursor ScrollIfNeeded e.editorID
+            )
 
 
 addIds : Content -> Content
@@ -1339,6 +1449,19 @@ dehighlight elem =
                 }
 
 
+delete : Int -> Int -> Editor -> Content
+delete beg end e =
+    let
+        f x y z =
+            List.take x z ++ List.drop y z
+
+        g x =
+            if x == [] then [Break (defaultLineBreak 0)] else x
+            -- prevent last Break from being deleted
+    in
+    g (f beg end e.content)
+
+
 detectFontStyle : Int -> Editor -> Editor
 detectFontStyle idx e =
     case get (idx-1) e.content of
@@ -1847,22 +1970,13 @@ keyDown timeStamp str e =
         "Control" ->
             ( { e | ctrlDown = True }, Cmd.none )
 
+
         "Delete" ->
-            let
-                f x y z =
-                    List.take x z ++ List.drop y z
-
-                g x =
-                    if x == [] then [Break (defaultLineBreak 0)] else x
-                    -- prevent last Break from being deleted
-
-                h x y z = g (f x y z)
-            in
             case e.selection of
                 Nothing ->
                     if e.cursor < maxIdx then
                         ( { e |
-                             content = h e.cursor (e.cursor+1) e.content
+                             content = delete e.cursor (e.cursor+1) e
                           }
                         , placeCursor ScrollIfNeeded e.editorID
                         )
@@ -1872,7 +1986,7 @@ keyDown timeStamp str e =
                 Just (beg,end) ->
                     ( detectFontStyle beg
                           { e |
-                             content = h beg (end+1) e.content
+                             content = delete beg (end+1) e
                            , cursor = beg
                            , selection = Nothing  
                           }
@@ -2584,55 +2698,6 @@ parasInSelection e =
                     g (beg,end) e.content
 
 
-pasteContent : Content -> Editor -> ( Editor, Cmd Msg )
-pasteContent copied e =
-    let
-        f : (Int, Content) -> Content -> Content
-        f (id, output) input =
-            case input of
-                [] ->
-                    List.reverse output
-
-                x :: rest ->
-                    f (id + 1, idSet id x :: output) rest
-
-        g : Content -> Content
-        g xs =
-            f (e.idCounter, []) xs
-
-        h : Int -> Content -> Int -> Content
-        h x y z =
-            List.take x y ++ (g copied) ++ List.drop z y
-
-        i : Content -> Content
-        i x =
-            if x == [] then [Break (defaultLineBreak 0)] else x
-            -- prevent last Break from being deleted
-
-        j : Int -> Content -> Int -> Content
-        j x y z = i (h x y z)                
-    in
-    case e.selection of
-        Nothing ->
-            ( { e |
-                  content = j e.cursor e.content e.cursor
-                , cursor = e.cursor + List.length copied
-                , idCounter = e.idCounter + List.length copied
-              }
-            , placeCursor ScrollIfNeeded e.editorID
-            )
-
-        Just (beg,end) ->
-            ( { e |
-                  content = j beg e.content (end+1)
-                , cursor = beg + List.length copied
-                , idCounter = e.idCounter + List.length copied
-                , selection = Nothing
-              }
-            , placeCursor ScrollIfNeeded e.editorID
-            )
-
-
 placeCursor : ScrollMode -> String -> Cmd Msg
 placeCursor scroll editorID =    
     Task.attempt (PlaceCursor1_EditorPos scroll) (Dom.getElement editorID)
@@ -2958,7 +3023,7 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
     in
     ( id        
     , Html.span
-        ( Attr.id id ::          
+        ( Attr.id id ::   
           attributes (Char ch) ++
           fontFamilyAttr ++
           position ++
@@ -2978,7 +3043,7 @@ showContent userDefinedStyles e =
             , Attr.style "overflow" "auto"
             , Attr.style "user-select" "none"
             , Attr.style "white-space" "pre-wrap"
-            , Attr.style "word-break" "break-word"
+            , Attr.style "word-break" "break-word"            
             , Attr.id e.editorID 
             , Events.on "mousedown" (decodeMouse MouseDown)
             , Events.on "scroll" (Decode.map ( Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
@@ -3340,7 +3405,7 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
             ( { e |
                   clipboard = newClipboard
                 , content = List.take beg e.content ++ newContent ++ List.drop (end+1) e.content                    
-                , cursor = beg + 1
+                , cursor = beg + txtLength
                 , idCounter = newIdCounter
                 , selection = Nothing
               }

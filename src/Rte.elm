@@ -50,11 +50,12 @@ port module Rte exposing (
 
 import Browser.Dom as Dom exposing (Error, Viewport)
 import Browser.Events
-import Html exposing (Attribute, Html, text)
-import Html.Attributes as Attr
-import Html.Events as Events
-import Html.Keyed as Keyed
-import Html.Lazy as Lazy
+import Css exposing (..)
+import Html.Styled as Html exposing (Attribute, Html, text)
+import Html.Styled.Attributes as Attr exposing (css)
+import Html.Styled.Events as Events
+import Html.Styled.Keyed as Keyed
+import Html.Styled.Lazy as Lazy
 import IntDict exposing (IntDict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
@@ -71,7 +72,7 @@ type alias Editor =
     , content : Content
     , ctrlDown : Bool
     , cursor : Int
-    , cursorScreen : Position
+    , cursorScreen : Box
     , cursorThrottled : Bool
     , cursorVisible : Bool
     , drag : Drag
@@ -86,7 +87,7 @@ type alias Editor =
     , locateBacklog : Int
     , located : IntDict ScreenElement
     , locating : Locating
-    , nextCursorScreen : Maybe Position
+    , nextCursorScreen : Maybe Box
     , selection : Maybe (Int,Int)
     , selectionStyle : Attributes
     , sentry : Int
@@ -246,14 +247,6 @@ type alias Paragraph =
 
 type alias Paragraphs =
     List Paragraph
-
-
-type alias Position =
-    { x : Float
-    , y : Float
-    , height : Float
-    , width : Float
-    }
 
 
 type alias ScreenElement =
@@ -858,9 +851,11 @@ view userDefinedStyles e =
                 , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
                 , Events.on "compositionstart" (Decode.succeed CompositionStart)
                 , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
-                , Attr.style "position" "absolute"
-                , Attr.style "left" "-100vw"
-                , Attr.style "width" "10vw"
+                , css
+                    [ position absolute
+                    , left (vw -100)
+                    , width (vw 10)
+                    ]
                 ] []
     in
     case e.state of
@@ -1268,21 +1263,17 @@ currentWord e =
             (beg, List.length e.content - 1)
 
 
-cursorColor : Html.Attribute Msg
-cursorColor =
-    Attr.style "border-color" "black"
-
-
-cursorHtml : Position -> Box -> Bool -> Bool -> Maybe (Int,Int) -> Int -> Html Msg
+cursorHtml : Box -> Box -> Bool -> Bool -> Maybe (Int,Int) -> Int -> Html Msg
 cursorHtml cursor box visible typing selection idx =
     if typing || not visible then
         Html.div [] []    
     else
         let
-            cHeight = cursor.height
+            visibleHeight =
+                min cursor.height (box.y + box.height - cursor.y)
 
             onScreen =
-                cursor.y + cHeight >= box.y
+                cursor.y >= box.y
                 && cursor.y <= box.y + box.height
                 && cursor.x >= box.x
                 && cursor.x <= box.x + box.width
@@ -1291,30 +1282,31 @@ cursorHtml cursor box visible typing selection idx =
             Html.div [] []
         else
             Html.div
-                [ Attr.style "border-left" "3px solid"
-                , cursorColor
-                , Attr.style "box-sizing" "border-box"
-                , Attr.style "height" (px cHeight)
-                , Attr.style "left" (px cursor.x)
-                , Attr.style "position" "absolute"
-                , Attr.style "top" (px cursor.y)
+                [ css
+                    [ borderLeft2 (px 3) solid
+                    , property "border-color" "black"
+                    , boxSizing borderBox
+                    , height (px visibleHeight)
+                    , left (px cursor.x)
+                    , position absolute
+                    , top (px cursor.y)
+                    ]
                 ]
                 [ ]
 
 
-cursorHtml2 : Position -> Maybe (Int,Int) -> Int -> Html Msg
-cursorHtml2 cursor selection idx =
-    let
-        cHeight = cursor.height
-    in
+cursorHtml2 : Box -> Html Msg
+cursorHtml2 cursor  =
     Html.div
-        [ Attr.style "border-left" "3px solid"
-        , cursorColor
-        , Attr.style "box-sizing" "border-box"
-        , Attr.style "height" (px cHeight)
-        , Attr.style "left" "0"
-        , Attr.style "position" "absolute"
-        , Attr.style "top" "0"
+        [ css
+            [ borderLeft2 (px 3) solid
+            , property "border-color" "black"
+            , boxSizing borderBox
+            , height (px cursor.height)
+            , left (px 0)
+            , position absolute
+            , top (px 0)
+            ]
         ]
         [ ]
 
@@ -1418,8 +1410,10 @@ defaultLineBreak id =
 
 defaultSelectionStyle : Attributes
 defaultSelectionStyle =
-    [ Attr.style "background" "hsl(217, 71%, 53%)"    
-    , Attr.style "color" "white"
+    [ css
+        [ backgroundColor (hsl 217 71 53)    
+        , property "color" "white"
+        ]
     ]
 
 
@@ -2524,7 +2518,7 @@ mouseDown (mouseX,mouseY) timeStamp e =
 
         guess : Int
         guess =
-            round (toFloat maxIdx * ((mouseY - pY) + vY) / sceneHeight)
+            Basics.round (toFloat maxIdx * ((mouseY - pY) + vY) / sceneHeight)
 
         bounds =
             (guess - jumpSize, guess + jumpSize)
@@ -2597,7 +2591,7 @@ nonAlphaNumAt idx content =
     not (alphaNumAt idx content)
 
 
-null : Position
+null : Box
 null =
     { x = 0
     , y = 0
@@ -2633,7 +2627,7 @@ pageEstimate direction maxIdx cursor viewport =
         v = viewport.viewport
 
         pageSizeGuess =            
-            round (toFloat (maxIdx + 1) * v.height / scene.height)
+            Basics.round (toFloat (maxIdx + 1) * v.height / scene.height)
 
         cursorGuess =
             case direction of
@@ -2739,12 +2733,6 @@ previousWordBoundary e =
                 <| previous alphaNumAt e.cursor e.content
 
 
-px : Float -> String
-px x =
-    String.fromFloat x ++ "px"
-
-
-
 replaceLink : String -> Editor -> Editor
 replaceLink href editor =
     let
@@ -2772,7 +2760,7 @@ restore x editor =
     }
 
 
-scrollIfNeeded : Position -> Box -> Viewport -> String -> Cmd Msg
+scrollIfNeeded : Box -> Box -> Viewport -> String -> Cmd Msg
 scrollIfNeeded cursor box viewport editorID =
     let
         viewY = viewport.viewport.y
@@ -2963,7 +2951,7 @@ setSelection (a,b) e =
     )
 
 
-showChar : Maybe (Int,Int) -> Attributes -> Int -> Position -> Bool -> Int -> Maybe String -> Character -> KeyedNode
+showChar : Maybe (Int,Int) -> Attributes -> Int -> Box -> Bool -> Int -> Maybe String -> Character -> KeyedNode
 showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch =
     let
         id =
@@ -2973,9 +2961,8 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
             if ch.fontStyle.fontFamily == [] then
                 []
             else
-                [ Attr.style
-                    "font-family"
-                    ( String.join "," <| List.map singleQuote ch.fontStyle.fontFamily )
+                [ css
+                    [ fontFamilies ch.fontStyle.fontFamily ]
                 ]
 
         linked : Node -> Node
@@ -2990,14 +2977,14 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
         child =
             if typing && idx == cursor then
                 [ linked (text (String.fromChar ch.char))
-                , cursorHtml2 cursorScreen selection cursor
+                , cursorHtml2 cursorScreen
                 ]
             else
                 [ linked (text (String.fromChar ch.char)) ]
 
-        position =
+        pos =
             if typing && idx == cursor then
-                [ Attr.style "position" "relative" ]
+                [ css [position relative] ]
             else
                 []
 
@@ -3026,7 +3013,7 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
         ( Attr.id id ::   
           attributes (Char ch) ++
           fontFamilyAttr ++
-          position ++
+          pos ++
           select ++
           size
         )  
@@ -3039,11 +3026,13 @@ showContent userDefinedStyles e =
     let
         attrs =
             ( userDefinedStyles ++ 
-            [ Attr.style "cursor" "text"
-            , Attr.style "overflow" "auto"
-            , Attr.style "user-select" "none"
-            , Attr.style "white-space" "pre-wrap"
-            , Attr.style "word-break" "break-word"            
+            [ css
+                [ property "cursor" "text"
+                , overflowY scroll
+                , property "user-select" "none"
+                , whiteSpace preWrap
+                , property "word-break" "break-word"
+                ]
             , Attr.id e.editorID 
             , Events.on "mousedown" (decodeMouse MouseDown)
             , Events.on "scroll" (Decode.map ( Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
@@ -3069,11 +3058,13 @@ showContentInactive userDefinedStyles e =
     let
         attrs =
             ( userDefinedStyles ++ 
-            [ Attr.style "cursor" "text"
-            , Attr.style "overflow" "auto"
-            , Attr.style "user-select" "none"
-            , Attr.style "white-space" "pre-wrap"
-            , Attr.style "word-break" "break-word"
+            [ css
+                [ property "cursor" "text"
+                , overflowY scroll
+                , property "user-select" "none"
+                , whiteSpace preWrap
+                , property "word-break" "break-word"
+                ]
             ])
 
         highlight =
@@ -3120,7 +3111,7 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : Int -> Position -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
+showPara : Int -> Box -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
 showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
         print : Int -> Character -> KeyedNode
@@ -3153,21 +3144,6 @@ showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fon
             Maybe.withDefault (50,"px") maybeIndentUnit
     in
     (wrap indentUnit p.lineBreak) (List.foldr g [zeroSpace p.idx p.lineBreak.id] p.children)
-    
-
-singleQuote : String -> String
-singleQuote x =
-    let
-        trimmed =
-            String.trim x
-
-        reserved =
-            ["monospace","serif","sans-serif"]
-    in
-    if List.member trimmed reserved then
-        trimmed
-    else
-        "'" ++ trimmed ++ "'"
 
 
 snapshot : Editor -> Undo

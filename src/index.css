@@ -84,7 +84,7 @@ body {
     width:var(--rteWidth);    
     word-break:break-word;
     font-family:'Playfair Display',serif;
-    font-size:20px;
+    font-size:20px;    
 }
 
 select {

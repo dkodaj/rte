@@ -3,9 +3,9 @@ module Main exposing (main)
 import Browser
 import Browser.Dom as Dom
 import Highlight
-import Html exposing (div, Html, text)
-import Html.Attributes as Attr
-import Html.Events as Events
+import Html.Styled as Html exposing (div, Html, text)
+import Html.Styled.Attributes as Attr
+import Html.Styled.Events as Events
 import Json.Decode as Decode
 import Rte
 import Sample
@@ -268,7 +268,8 @@ view model =
     in
     { title = "RTE demo"
     , body =        
-        [ div
+        [ Html.toUnstyled
+        <| div
             [ Attr.class "Wrap" ]
             [ toolbar model
 

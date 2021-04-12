@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Rte exposing (main)
 
 import Browser
 import Browser.Dom as Dom
@@ -7,7 +7,7 @@ import Html.Styled as Html exposing (div, Html, text)
 import Html.Styled.Attributes as Attr
 import Html.Styled.Events as Events
 import Json.Decode as Decode
-import Rte
+import Rte.Core
 import Sample
 import Task
 
@@ -23,7 +23,7 @@ main =
 
 type alias Model =
     { inputBox : Maybe InputBox
-    , rte : Rte.Editor 
+    , rte : Rte.Core.Editor 
     }
 
 
@@ -37,14 +37,14 @@ type Msg =
     | ImageAdd String
     | ImageInput String
     | Indent
-    | Internal Rte.Msg
+    | Internal Rte.Core.Msg
     | Italic
     | LinkAdd String
     | LinkInput String
     | NoOp
     | StrikeThrough
     | Switch Bool
-    | TextAlign Rte.TextAlign
+    | TextAlign Rte.Core.TextAlign
     | ToggleImageBox
     | ToggleLinkBox
     | Underline
@@ -70,7 +70,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         ( rte, rteCmd ) =
-            Rte.initWith Sample.content "MyRTE"
+            Rte.Core.initWith Sample.content "MyRTE"
     in
     ( { inputBox = Nothing      
       , rte =
@@ -84,10 +84,10 @@ init _ =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map Internal (Rte.subscriptions model.rte)
+    Sub.map Internal (Rte.Core.subscriptions model.rte)
 
 
-apply : ( Rte.Editor -> (Rte.Editor, Cmd Rte.Msg) ) -> Model -> ( Model, Cmd Msg )
+apply : ( Rte.Core.Editor -> (Rte.Core.Editor, Cmd Rte.Core.Msg) ) -> Model -> ( Model, Cmd Msg )
 apply f model =
     let
         ( rte, rteCmd ) =
@@ -100,32 +100,32 @@ apply f model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    if model.rte.state == Rte.Display && msg /= Switch True then
+    if model.rte.state == Rte.Core.Display && msg /= Switch True then
         ( model, Cmd.none )
     else
         case msg of
             Bold ->
-                apply Rte.toggleBold model
+                apply Rte.Core.toggleBold model
 
 
             Code ->
-                apply (Rte.toggleParaClass "Code") model
+                apply (Rte.Core.toggleParaClass "Code") model
 
 
             Emoji ->
-                apply (Rte.addText "🤪") model
+                apply (Rte.Core.addText "🤪") model
 
 
             Font family ->
-                apply (Rte.fontFamily family) model
+                apply (Rte.Core.fontFamily family) model
 
 
             FontSize float ->
-                apply (Rte.fontSize float) model
+                apply (Rte.Core.fontSize float) model
 
 
             Heading ->
-                apply (Rte.toggleNodeType "h1") model
+                apply (Rte.Core.toggleNodeType "h1") model
 
 
             ImageAdd str ->
@@ -134,10 +134,10 @@ update msg model =
                 else
                     let
                         ( rte1, rteCmd1 ) =
-                            Rte.addImage str model.rte
+                            Rte.Core.addImage str model.rte
 
                         ( rte2, rteCmd2 ) =
-                            Rte.state Rte.Edit rte1
+                            Rte.Core.state Rte.Core.Edit rte1
 
                         toCmd =
                             Cmd.map Internal
@@ -157,15 +157,15 @@ update msg model =
 
             
             Indent ->
-                apply (Rte.changeIndent 1) model
+                apply (Rte.Core.changeIndent 1) model
 
 
             Internal rteMsg ->
-                apply (Rte.update rteMsg) model
+                apply (Rte.Core.update rteMsg) model
 
 
             Italic ->
-                apply Rte.toggleItalic model
+                apply Rte.Core.toggleItalic model
 
 
             LinkAdd href -> 
@@ -173,10 +173,10 @@ update msg model =
                     ( { model | inputBox = Nothing }, Cmd.none )
                 else
                     apply
-                        (Rte.state Rte.Edit)
+                        (Rte.Core.state Rte.Core.Edit)
                         { model |
                             inputBox = Nothing 
-                          , rte = Rte.link href model.rte
+                          , rte = Rte.Core.link href model.rte
                         }
 
 
@@ -193,28 +193,28 @@ update msg model =
             Switch bool ->
                 let
                     state =
-                        if bool then Rte.Edit else Rte.Display
+                        if bool then Rte.Core.Edit else Rte.Core.Display
                 in
-                apply (Rte.state state) { model | inputBox = Nothing }
+                apply (Rte.Core.state state) { model | inputBox = Nothing }
 
 
             StrikeThrough ->
-                apply Rte.toggleStrikeThrough model
+                apply Rte.Core.toggleStrikeThrough model
 
 
             TextAlign alignment ->
-                apply (Rte.textAlign alignment) model
+                apply (Rte.Core.textAlign alignment) model
 
 
             ToggleImageBox ->                   
                 case model.inputBox of
                     Just (ImageInputBox _) ->
-                        apply (Rte.state Rte.Edit) { model | inputBox = Nothing }
+                        apply (Rte.Core.state Rte.Core.Edit) { model | inputBox = Nothing }
 
                     _ ->
                         let
                             ( newmodel, cmd ) = 
-                                apply (Rte.state Rte.Freeze) model
+                                apply (Rte.Core.state Rte.Core.Freeze) model
                         in
                         ( { newmodel | inputBox = Just (ImageInputBox "") }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
@@ -224,15 +224,15 @@ update msg model =
             ToggleLinkBox ->
                 case model.inputBox of
                     Just (LinkInputBox _) ->
-                        apply (Rte.state Rte.Edit) { model | inputBox = Nothing }
+                        apply (Rte.Core.state Rte.Core.Edit) { model | inputBox = Nothing }
 
                     _ ->
                         let
                             ( newmodel, cmd ) = 
-                                apply (Rte.state Rte.Freeze) model
+                                apply (Rte.Core.state Rte.Core.Freeze) model
 
                             currentLink =
-                                Maybe.withDefault "" (Rte.currentLink model.rte)
+                                Maybe.withDefault "" (Rte.Core.currentLink model.rte)
                         in
                         ( { newmodel |  inputBox = Just (LinkInputBox currentLink) }
                         , Task.attempt (\_ -> NoOp) (Dom.focus "InputBox")
@@ -240,19 +240,19 @@ update msg model =
 
 
             Underline ->
-                apply Rte.toggleUnderline model
+                apply Rte.Core.toggleUnderline model
 
 
             Undo ->
-                apply Rte.undo model
+                apply Rte.Core.undo model
 
 
             Unindent ->
-                apply (Rte.changeIndent -1) model
+                apply (Rte.Core.changeIndent -1) model
 
 
             Unlink ->
-                ( { model | rte = Rte.unlink model.rte }
+                ( { model | rte = Rte.Core.unlink model.rte }
                 , Cmd.none 
                 )
 
@@ -261,7 +261,7 @@ view : Model -> Browser.Document Msg
 view model =   
     let
         rteCss =
-            if model.rte.state == Rte.Display then
+            if model.rte.state == Rte.Core.Display then
                 [ Attr.class "Blogpost" ]
             else
                 [ Attr.class "RTE" ]
@@ -275,7 +275,7 @@ view model =
 
             , inputBox model.inputBox
 
-            , Html.map Internal (Rte.view rteCss model.rte)
+            , Html.map Internal (Rte.Core.view rteCss model.rte)
                 {- The editor must be positioned relative to the html body,
                    (= it should never be inside a "position: relative" node),
                    because the cursor is positioned using absolute coordinates.
@@ -283,7 +283,7 @@ view model =
                     
                     div
                         [ Attr.style "position" "relative" ]
-                        [ Html.map Internal (Rte.view model.rte) ]
+                        [ Html.map Internal (Rte.Core.view model.rte) ]
                 -}
 
             , Html.a
@@ -481,15 +481,15 @@ toolbar : Model -> Html Msg
 toolbar model =
     div
         [ Attr.class "Toolbar" ]
-        [ switch (model.rte.state /= Rte.Display)
+        [ switch (model.rte.state /= Rte.Core.Display)
         , icon "Bold" Bold
         , icon "Italic"  Italic
         , icon "Underline"  Underline
         , icon "Strikethrough"  StrikeThrough
         , icon "Undo" Undo
-        , icon "Left" (TextAlign Rte.Left)
-        , icon "Center" (TextAlign Rte.Center)
-        , icon "Right" (TextAlign Rte.Right)
+        , icon "Left" (TextAlign Rte.Core.Left)
+        , icon "Center" (TextAlign Rte.Core.Center)
+        , icon "Right" (TextAlign Rte.Core.Right)
         , icon "Unindent"  Unindent
         , icon "Indent"  Indent
         , icon "Heading"  Heading

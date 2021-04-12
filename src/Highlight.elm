@@ -1,10 +1,10 @@
 module Highlight exposing (code)
 
-import Rte exposing (Character, Content, Element(..))
+import Rte.Core exposing (Character, Content, Element(..))
 
 
 type alias Accumulator =
-    { content : Rte.Content
+    { content : Content
     , indent : Int
     , scope : Scope
     }
@@ -18,7 +18,7 @@ type Scope =
     | WithinOpeningTag
 
 
-code : Rte.Content -> Rte.Content
+code : Content -> Content
 code content =
     let
         init : Accumulator
@@ -33,7 +33,7 @@ code content =
             <| List.foldl highlight init (markCode content)
 
 
-highlight : (Bool, Rte.Element) -> Accumulator -> Accumulator
+highlight : (Bool, Element) -> Accumulator -> Accumulator
 highlight (isCode, elem) a =
     let
         indent x br =

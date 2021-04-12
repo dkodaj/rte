@@ -1,4 +1,4 @@
-port module Rte exposing (
+port module Rte.Core exposing (
       addContent
     , addText
     , addImage
@@ -1412,7 +1412,7 @@ defaultSelectionStyle : Attributes
 defaultSelectionStyle =
     [ css
         [ backgroundColor (hsl 217 71 53)    
-        , property "color" "white"
+        , property "color" "blue"
         ]
     ]
 

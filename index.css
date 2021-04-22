@@ -8,6 +8,7 @@
     word-break:break-word;
     font-family:'Playfair Display',serif;
     font-size:20px;    
+    overflow-y: auto;
 }
 
 body {    

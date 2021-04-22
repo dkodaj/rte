@@ -35,8 +35,8 @@ body {
 }
 
 .icon {
-    width:max(20px,1vw);
-    margin:max(14px,0.7vw);
+    width:20px;
+    margin:14px;
     cursor:pointer;
     transform:scale(1);
     transition:transform;

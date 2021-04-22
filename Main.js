@@ -5230,23 +5230,32 @@ var $elm$browser$Browser$document = _Browser_document;
 var $author$project$Main$Internal = function (a) {
 	return {$: 'Internal', a: a};
 };
-var $author$project$Highlight$NeutralZone = {$: 'NeutralZone'};
-var $author$project$Rte$Break = function (a) {
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$App$Highlight$NeutralZone = {$: 'NeutralZone'};
+var $author$project$Rte$Types$Break = function (a) {
 	return {$: 'Break', a: a};
 };
-var $author$project$Rte$Char = function (a) {
+var $author$project$Rte$Types$Char = function (a) {
 	return {$: 'Char', a: a};
 };
-var $author$project$Highlight$OpeningTagEnded = {$: 'OpeningTagEnded'};
-var $author$project$Highlight$TagOpened = {$: 'TagOpened'};
-var $author$project$Highlight$WithinClosingTag = {$: 'WithinClosingTag'};
+var $author$project$App$Highlight$OpeningTagEnded = {$: 'OpeningTagEnded'};
+var $author$project$App$Highlight$TagOpened = {$: 'TagOpened'};
+var $author$project$App$Highlight$WithinClosingTag = {$: 'WithinClosingTag'};
 var $elm$core$Basics$not = _Basics_not;
-var $author$project$Highlight$highlight = F2(
+var $author$project$App$Highlight$highlight = F2(
 	function (_v0, a) {
 		var isCode = _v0.a;
 		var elem = _v0.b;
 		var red = function (ch) {
-			return $author$project$Rte$Char(
+			return $author$project$Rte$Types$Char(
 				_Utils_update(
 					ch,
 					{
@@ -5258,7 +5267,7 @@ var $author$project$Highlight$highlight = F2(
 		};
 		var indent = F2(
 			function (x, br) {
-				return $author$project$Rte$Break(
+				return $author$project$Rte$Types$Break(
 					_Utils_update(
 						br,
 						{indent: x}));
@@ -5284,7 +5293,7 @@ var $author$project$Highlight$highlight = F2(
 									A2(indent, a.indent, br),
 									a.content),
 								indent: a.indent + 1,
-								scope: $author$project$Highlight$NeutralZone
+								scope: $author$project$App$Highlight$NeutralZone
 							});
 					} else {
 						return _Utils_update(
@@ -5308,7 +5317,7 @@ var $author$project$Highlight$highlight = F2(
 										$elm$core$List$cons,
 										red(ch),
 										a.content),
-									scope: $author$project$Highlight$TagOpened
+									scope: $author$project$App$Highlight$TagOpened
 								});
 						case '>':
 							var _v4 = a.scope;
@@ -5333,7 +5342,7 @@ var $author$project$Highlight$highlight = F2(
 												$elm$core$List$cons,
 												red(ch),
 												a.content),
-											scope: $author$project$Highlight$OpeningTagEnded
+											scope: $author$project$App$Highlight$OpeningTagEnded
 										});
 								case 'WithinClosingTag':
 									return _Utils_update(
@@ -5343,7 +5352,7 @@ var $author$project$Highlight$highlight = F2(
 												$elm$core$List$cons,
 												red(ch),
 												a.content),
-											scope: $author$project$Highlight$NeutralZone
+											scope: $author$project$App$Highlight$NeutralZone
 										});
 								default:
 									return _Utils_update(
@@ -5353,7 +5362,7 @@ var $author$project$Highlight$highlight = F2(
 												$elm$core$List$cons,
 												red(ch),
 												a.content),
-											scope: $author$project$Highlight$OpeningTagEnded
+											scope: $author$project$App$Highlight$OpeningTagEnded
 										});
 							}
 						case '/':
@@ -5380,7 +5389,7 @@ var $author$project$Highlight$highlight = F2(
 												red(ch),
 												a.content),
 											indent: a.indent - 1,
-											scope: $author$project$Highlight$WithinClosingTag
+											scope: $author$project$App$Highlight$WithinClosingTag
 										});
 								case 'WithinClosingTag':
 									return _Utils_update(
@@ -5470,7 +5479,7 @@ var $elm$core$Tuple$second = function (_v0) {
 	var y = _v0.b;
 	return y;
 };
-var $author$project$Highlight$markCode = function (content) {
+var $author$project$App$Highlight$markCode = function (content) {
 	var f = F2(
 		function (elem, _v1) {
 			var isCode = _v1.a;
@@ -5499,31 +5508,38 @@ var $author$project$Highlight$markCode = function (content) {
 		_Utils_Tuple2(false, _List_Nil),
 		content).b;
 };
-var $author$project$Highlight$code = function (content) {
-	var init = {content: _List_Nil, indent: 0, scope: $author$project$Highlight$NeutralZone};
+var $author$project$App$Highlight$code = function (content) {
+	var init = {content: _List_Nil, indent: 0, scope: $author$project$App$Highlight$NeutralZone};
 	return $elm$core$List$reverse(
 		A3(
 			$elm$core$List$foldl,
-			$author$project$Highlight$highlight,
+			$author$project$App$Highlight$highlight,
 			init,
-			$author$project$Highlight$markCode(content)).content);
+			$author$project$App$Highlight$markCode(content)).content);
 };
-var $author$project$Sample$content = '\n[{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"?\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":\"h1\",\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"x\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"4\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"5\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"D\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"F\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"M\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"(\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"E\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"x\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"G\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"E\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\")\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"w\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"4\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"5\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"R\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"\\\"\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"\\\"\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Embedded\",\"A1\":{\"attributes\":[{\"A1\":\"src\",\"A2\":\"data:image/jpeg;base64,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\"}],\"classes\":[],\"children\":[],\"nodeType\":\"img\",\"styling\":[],\"text\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[{\"A1\":\"text-align\",\"A2\":\"center\"}]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"&\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[{\"A1\":\"text-align\",\"A2\":\"center\"}]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"-\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"w\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"/\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"/\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}}]\n';
+var $author$project$Rte$Core = function (a) {
+	return {$: 'Core', a: a};
+};
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
 var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $author$project$Rte$Embedded = function (a) {
+var $author$project$Rte$Types$Embedded = function (a) {
 	return {$: 'Embedded', a: a};
 };
-var $author$project$Rte$Character = F6(
+var $author$project$Rte$Types$Character = F6(
 	function (_char, fontStyle, highlightClasses, highlightStyling, id, link) {
 		return {_char: _char, fontStyle: fontStyle, highlightClasses: highlightClasses, highlightStyling: highlightStyling, id: id, link: link};
 	});
-var $author$project$Rte$FontStyle = F4(
+var $author$project$Rte$Types$FontStyle = F4(
 	function (classes, fontFamily, fontSize, styling) {
 		return {classes: classes, fontFamily: fontFamily, fontSize: fontSize, styling: styling};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Rte$decodeTuple_String_String_ = A3(
+var $author$project$Rte$Core$decodeTuple_String_String_ = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
 		function (a1, a2) {
@@ -5532,7 +5548,7 @@ var $author$project$Rte$decodeTuple_String_String_ = A3(
 	A2($elm$json$Json$Decode$field, 'A1', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'A2', $elm$json$Json$Decode$string));
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Rte$decodeStyleTags = $elm$json$Json$Decode$list($author$project$Rte$decodeTuple_String_String_);
+var $author$project$Rte$Core$decodeStyleTags = $elm$json$Json$Decode$list($author$project$Rte$Core$decodeTuple_String_String_);
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$json$Json$Decode$map4 = _Json_map4;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
@@ -5544,9 +5560,9 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
 			]));
 };
-var $author$project$Rte$decodeFontStyle = A5(
+var $author$project$Rte$Core$decodeFontStyle = A5(
 	$elm$json$Json$Decode$map4,
-	$author$project$Rte$FontStyle,
+	$author$project$Rte$Types$FontStyle,
 	A2(
 		$elm$json$Json$Decode$field,
 		'classes',
@@ -5559,13 +5575,13 @@ var $author$project$Rte$decodeFontStyle = A5(
 		$elm$json$Json$Decode$field,
 		'fontSize',
 		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$float)),
-	A2($elm$json$Json$Decode$field, 'styling', $author$project$Rte$decodeStyleTags));
+	A2($elm$json$Json$Decode$field, 'styling', $author$project$Rte$Core$decodeStyleTags));
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$json$Json$Decode$map6 = _Json_map6;
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$Rte$decodeCharacter = function () {
+var $author$project$Rte$Core$decodeCharacter = function () {
 	var toChar = function (x) {
 		var _v0 = $elm$core$String$uncons(x);
 		if (_v0.$ === 'Just') {
@@ -5578,12 +5594,12 @@ var $author$project$Rte$decodeCharacter = function () {
 	};
 	return A7(
 		$elm$json$Json$Decode$map6,
-		$author$project$Rte$Character,
+		$author$project$Rte$Types$Character,
 		A2(
 			$elm$json$Json$Decode$field,
 			'char',
 			A2($elm$json$Json$Decode$andThen, toChar, $elm$json$Json$Decode$string)),
-		A2($elm$json$Json$Decode$field, 'fontStyle', $author$project$Rte$decodeFontStyle),
+		A2($elm$json$Json$Decode$field, 'fontStyle', $author$project$Rte$Core$decodeFontStyle),
 		$elm$json$Json$Decode$succeed(_List_Nil),
 		$elm$json$Json$Decode$succeed(_List_Nil),
 		$elm$json$Json$Decode$succeed(-1),
@@ -5592,10 +5608,10 @@ var $author$project$Rte$decodeCharacter = function () {
 			'link',
 			$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)));
 }();
-var $author$project$Rte$Child = function (a) {
+var $author$project$Rte$Types$Child = function (a) {
 	return {$: 'Child', a: a};
 };
-var $author$project$Rte$EmbeddedHtml = F9(
+var $author$project$Rte$Types$EmbeddedHtml = F9(
 	function (attributes, classes, children, highlightClasses, highlightStyling, id, nodeType, styling, text) {
 		return {attributes: attributes, children: children, classes: classes, highlightClasses: highlightClasses, highlightStyling: highlightStyling, id: id, nodeType: nodeType, styling: styling, text: text};
 	});
@@ -5618,7 +5634,7 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 			A2($elm$json$Json$Decode$field, key, valDecoder),
 			decoder);
 	});
-function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
+function $author$project$Rte$Core$cyclic$decodeEmbeddedHtml() {
 	var h = F2(
 		function (x, ys) {
 			h:
@@ -5635,7 +5651,7 @@ function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
 						var rest = ys.b;
 						var _v2 = A2(
 							$elm$json$Json$Decode$decodeString,
-							$author$project$Rte$cyclic$decodeEmbeddedHtml(),
+							$author$project$Rte$Core$cyclic$decodeEmbeddedHtml(),
 							y);
 						if (_v2.$ === 'Ok') {
 							var result = _v2.a;
@@ -5666,7 +5682,7 @@ function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
 				_Utils_update(
 					x,
 					{
-						children: A2($elm$core$List$map, $author$project$Rte$Child, children)
+						children: A2($elm$core$List$map, $author$project$Rte$Types$Child, children)
 					}));
 		} else {
 			var err = _v3.a;
@@ -5681,7 +5697,7 @@ function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 			'styling',
-			$author$project$Rte$decodeStyleTags,
+			$author$project$Rte$Core$decodeStyleTags,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 				'nodeType',
@@ -5705,8 +5721,8 @@ function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
 									A3(
 										$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
 										'attributes',
-										$elm$json$Json$Decode$list($author$project$Rte$decodeTuple_String_String_),
-										$elm$json$Json$Decode$succeed($author$project$Rte$EmbeddedHtml))))))))));
+										$elm$json$Json$Decode$list($author$project$Rte$Core$decodeTuple_String_String_),
+										$elm$json$Json$Decode$succeed($author$project$Rte$Types$EmbeddedHtml))))))))));
 	var g = A3(
 		$elm$json$Json$Decode$map2,
 		$elm$core$Tuple$pair,
@@ -5718,21 +5734,21 @@ function $author$project$Rte$cyclic$decodeEmbeddedHtml() {
 	return A2($elm$json$Json$Decode$andThen, i, g);
 }
 try {
-	var $author$project$Rte$decodeEmbeddedHtml = $author$project$Rte$cyclic$decodeEmbeddedHtml();
-	$author$project$Rte$cyclic$decodeEmbeddedHtml = function () {
-		return $author$project$Rte$decodeEmbeddedHtml;
+	var $author$project$Rte$Core$decodeEmbeddedHtml = $author$project$Rte$Core$cyclic$decodeEmbeddedHtml();
+	$author$project$Rte$Core$cyclic$decodeEmbeddedHtml = function () {
+		return $author$project$Rte$Core$decodeEmbeddedHtml;
 	};
 } catch ($) {
-	throw 'Some top-level definitions from `Rte` are causing infinite recursion:\n\n  ┌─────┐\n  │    decodeEmbeddedHtml\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
-var $author$project$Rte$LineBreak = F8(
+	throw 'Some top-level definitions from `Rte.Core` are causing infinite recursion:\n\n  ┌─────┐\n  │    decodeEmbeddedHtml\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
+var $author$project$Rte$Types$LineBreak = F8(
 	function (classes, highlightClasses, highlightIndent, highlightStyling, id, indent, nodeType, styling) {
 		return {classes: classes, highlightClasses: highlightClasses, highlightIndent: highlightIndent, highlightStyling: highlightStyling, id: id, indent: indent, nodeType: nodeType, styling: styling};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map8 = _Json_map8;
-var $author$project$Rte$decodeLineBreak = A9(
+var $author$project$Rte$Core$decodeLineBreak = A9(
 	$elm$json$Json$Decode$map8,
-	$author$project$Rte$LineBreak,
+	$author$project$Rte$Types$LineBreak,
 	A2(
 		$elm$json$Json$Decode$field,
 		'classes',
@@ -5746,36 +5762,36 @@ var $author$project$Rte$decodeLineBreak = A9(
 		$elm$json$Json$Decode$field,
 		'nodeType',
 		$elm$json$Json$Decode$maybe($elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'styling', $author$project$Rte$decodeStyleTags));
-var $author$project$Rte$decodeElementHelp = function (constructor) {
+	A2($elm$json$Json$Decode$field, 'styling', $author$project$Rte$Core$decodeStyleTags));
+var $author$project$Rte$Core$decodeElementHelp = function (constructor) {
 	switch (constructor) {
 		case 'Break':
 			return A2(
 				$elm$json$Json$Decode$map,
-				$author$project$Rte$Break,
-				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$decodeLineBreak));
+				$author$project$Rte$Types$Break,
+				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$Core$decodeLineBreak));
 		case 'Char':
 			return A2(
 				$elm$json$Json$Decode$map,
-				$author$project$Rte$Char,
-				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$decodeCharacter));
+				$author$project$Rte$Types$Char,
+				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$Core$decodeCharacter));
 		case 'Embedded':
 			return A2(
 				$elm$json$Json$Decode$map,
-				$author$project$Rte$Embedded,
-				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$decodeEmbeddedHtml));
+				$author$project$Rte$Types$Embedded,
+				A2($elm$json$Json$Decode$field, 'A1', $author$project$Rte$Core$decodeEmbeddedHtml));
 		default:
 			var other = constructor;
 			return $elm$json$Json$Decode$fail('Unknown constructor for type Element: ' + other);
 	}
 };
-var $author$project$Rte$decodeElement = A2(
+var $author$project$Rte$Core$decodeElement = A2(
 	$elm$json$Json$Decode$andThen,
-	$author$project$Rte$decodeElementHelp,
+	$author$project$Rte$Core$decodeElementHelp,
 	A2($elm$json$Json$Decode$field, 'Constructor', $elm$json$Json$Decode$string));
-var $author$project$Rte$decodeContent = $elm$json$Json$Decode$list($author$project$Rte$decodeElement);
-var $author$project$Rte$decode = function (x) {
-	var _v0 = A2($elm$json$Json$Decode$decodeString, $author$project$Rte$decodeContent, x);
+var $author$project$Rte$Core$decodeContent = $elm$json$Json$Decode$list($author$project$Rte$Core$decodeElement);
+var $author$project$Rte$Core$decode = function (x) {
+	var _v0 = A2($elm$json$Json$Decode$decodeString, $author$project$Rte$Core$decodeContent, x);
 	if (_v0.$ === 'Ok') {
 		var content = _v0.a;
 		return $elm$core$Maybe$Just(content);
@@ -5784,10 +5800,10 @@ var $author$project$Rte$decode = function (x) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Rte$Edit = {$: 'Edit'};
-var $author$project$Rte$Idle = {$: 'Idle'};
-var $author$project$Rte$NoDrag = {$: 'NoDrag'};
-var $author$project$Rte$defaultLineBreak = function (id) {
+var $author$project$Rte$Core$Edit = {$: 'Edit'};
+var $author$project$Rte$Core$Idle = {$: 'Idle'};
+var $author$project$Rte$Core$NoDrag = {$: 'NoDrag'};
+var $author$project$Rte$Core$defaultLineBreak = function (id) {
 	return {classes: _List_Nil, highlightClasses: _List_Nil, highlightIndent: 0, highlightStyling: _List_Nil, id: id, indent: 0, nodeType: $elm$core$Maybe$Nothing, styling: _List_Nil};
 };
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
@@ -5800,6 +5816,9 @@ var $rtfeldman$elm_css$Css$property = F2(
 var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
 };
+var $rtfeldman$elm_css$Css$color = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
+};
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 'Attribute', a: a, b: b, c: c};
@@ -5807,11 +5826,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 var $rtfeldman$elm_css$Css$Structure$UniversalSelectorSequence = function (a) {
 	return {$: 'UniversalSelectorSequence', a: a};
 };
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -7646,7 +7660,6 @@ var $elm$virtual_dom$VirtualDom$property = F2(
 			_VirtualDom_noInnerHtmlOrFormAction(key),
 			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	var classname = $rtfeldman$elm_css$VirtualDom$Styled$getClassname(styles);
 	var classProperty = A2(
@@ -7723,40 +7736,41 @@ var $rtfeldman$elm_css$Css$hsl = F3(
 		var value = A2($rtfeldman$elm_css$Css$cssFunction, 'hsl', valuesList);
 		return A5($rtfeldman$elm_css$Css$hslaToRgba, value, hueVal, saturationVal, lightnessVal, 1);
 	});
-var $author$project$Rte$defaultSelectionStyle = _List_fromArray(
+var $author$project$Rte$Core$defaultSelectionStyle = _List_fromArray(
 	[
 		$rtfeldman$elm_css$Html$Styled$Attributes$css(
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$backgroundColor(
-				A3($rtfeldman$elm_css$Css$hsl, 217, 71, 53)),
-				A2($rtfeldman$elm_css$Css$property, 'color', 'white')
+				A3($rtfeldman$elm_css$Css$hsl, 217, 0.71, 0.53)),
+				$rtfeldman$elm_css$Css$color(
+				A3($rtfeldman$elm_css$Css$hsl, 0, 0, 1))
 			]))
 	]);
 var $elm_community$intdict$IntDict$Empty = {$: 'Empty'};
 var $elm_community$intdict$IntDict$empty = $elm_community$intdict$IntDict$Empty;
-var $author$project$Rte$emptyFontStyle = {classes: _List_Nil, fontFamily: _List_Nil, fontSize: $elm$core$Maybe$Nothing, styling: _List_Nil};
-var $author$project$Rte$null = {height: 0, width: 0, x: 0, y: 0};
-var $author$project$Rte$init1 = function (editorID) {
+var $author$project$Rte$Core$emptyFontStyle = {classes: _List_Nil, fontFamily: _List_Nil, fontSize: $elm$core$Maybe$Nothing, styling: _List_Nil};
+var $author$project$Rte$Core$null = {height: 0, width: 0, x: 0, y: 0};
+var $author$project$Rte$Core$init1 = function (editorID) {
 	return {
-		box: $author$project$Rte$null,
+		box: $author$project$Rte$Core$null,
 		clipboard: $elm$core$Maybe$Nothing,
 		compositionStart: _List_Nil,
 		compositionUpdate: '',
 		content: _List_fromArray(
 			[
-				$author$project$Rte$Break(
-				$author$project$Rte$defaultLineBreak(0))
+				$author$project$Rte$Types$Break(
+				$author$project$Rte$Core$defaultLineBreak(0))
 			]),
 		ctrlDown: false,
 		cursor: 0,
-		cursorScreen: $author$project$Rte$null,
+		cursorScreen: $author$project$Rte$Core$null,
 		cursorThrottled: false,
 		cursorVisible: false,
-		drag: $author$project$Rte$NoDrag,
+		drag: $author$project$Rte$Core$NoDrag,
 		editorID: editorID,
 		fontSizeUnit: $elm$core$Maybe$Nothing,
-		fontStyle: $author$project$Rte$emptyFontStyle,
+		fontStyle: $author$project$Rte$Core$emptyFontStyle,
 		highlighter: $elm$core$Maybe$Nothing,
 		idCounter: 1,
 		indentUnit: $elm$core$Maybe$Nothing,
@@ -7764,22 +7778,22 @@ var $author$project$Rte$init1 = function (editorID) {
 		lastMouseDown: -1,
 		locateBacklog: 0,
 		located: $elm_community$intdict$IntDict$empty,
-		locating: $author$project$Rte$Idle,
+		locating: $author$project$Rte$Core$Idle,
 		nextCursorScreen: $elm$core$Maybe$Nothing,
 		selection: $elm$core$Maybe$Nothing,
-		selectionStyle: $author$project$Rte$defaultSelectionStyle,
+		selectionStyle: $author$project$Rte$Core$defaultSelectionStyle,
 		sentry: 0,
 		shiftDown: false,
-		state: $author$project$Rte$Edit,
+		state: $author$project$Rte$Core$Edit,
 		typing: false,
 		undo: _List_Nil,
 		viewport: {
 			scene: {height: 0, width: 0},
-			viewport: $author$project$Rte$null
+			viewport: $author$project$Rte$Core$null
 		}
 	};
 };
-var $author$project$Rte$NoOp = {$: 'NoOp'};
+var $author$project$Rte$Core$NoOp = {$: 'NoOp'};
 var $elm$core$Task$onError = _Scheduler_onError;
 var $elm$core$Task$attempt = F2(
 	function (resultToMessage, task) {
@@ -7799,50 +7813,50 @@ var $elm$core$Task$attempt = F2(
 							$elm$core$Result$Ok),
 						task))));
 	});
-var $author$project$Rte$dummyID = function (x) {
+var $author$project$Rte$Core$dummyID = function (x) {
 	return x + '_dummy_';
 };
 var $elm$browser$Browser$Dom$focus = _Browser_call('focus');
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Rte$focusOnEditor = F2(
+var $author$project$Rte$Core$focusOnEditor = F2(
 	function (editorState, editorID) {
-		return _Utils_eq(editorState, $author$project$Rte$Edit) ? A2(
+		return _Utils_eq(editorState, $author$project$Rte$Core$Edit) ? A2(
 			$elm$core$Task$attempt,
 			function (_v0) {
-				return $author$project$Rte$NoOp;
+				return $author$project$Rte$Core$NoOp;
 			},
 			$elm$browser$Browser$Dom$focus(
-				$author$project$Rte$dummyID(editorID))) : $elm$core$Platform$Cmd$none;
+				$author$project$Rte$Core$dummyID(editorID))) : $elm$core$Platform$Cmd$none;
 	});
-var $author$project$Rte$initCmd = function (editorID) {
-	return A2($author$project$Rte$focusOnEditor, $author$project$Rte$Edit, editorID);
+var $author$project$Rte$Core$initCmd = function (editorID) {
+	return A2($author$project$Rte$Core$focusOnEditor, $author$project$Rte$Core$Edit, editorID);
 };
-var $author$project$Rte$init = function (editorID) {
+var $author$project$Rte$Core$init = function (editorID) {
 	return _Utils_Tuple2(
-		$author$project$Rte$init1(editorID),
-		$author$project$Rte$initCmd(editorID));
+		$author$project$Rte$Core$init1(editorID),
+		$author$project$Rte$Core$initCmd(editorID));
 };
-var $author$project$Rte$addIds = function (content) {
+var $author$project$Rte$Core$addIds = function (content) {
 	var maxIdx = $elm$core$List$length(content) - 1;
 	var f = F2(
 		function (idx, elem) {
 			switch (elem.$) {
 				case 'Break':
 					var br = elem.a;
-					return $author$project$Rte$Break(
+					return $author$project$Rte$Types$Break(
 						_Utils_update(
 							br,
 							{id: idx}));
 				case 'Char':
 					var _char = elem.a;
-					return $author$project$Rte$Char(
+					return $author$project$Rte$Types$Char(
 						_Utils_update(
 							_char,
 							{id: idx}));
 				default:
 					var html = elem.a;
-					return $author$project$Rte$Embedded(
+					return $author$project$Rte$Types$Embedded(
 						_Utils_update(
 							html,
 							{id: idx}));
@@ -7886,20 +7900,20 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $author$project$Rte$init3 = F3(
+var $author$project$Rte$Core$init3 = F3(
 	function (editorID, highlighter, selectionStyle) {
-		var i = $author$project$Rte$init1(editorID);
+		var i = $author$project$Rte$Core$init1(editorID);
 		return _Utils_update(
 			i,
 			{highlighter: highlighter, selectionStyle: selectionStyle});
 	});
-var $author$project$Rte$snapshot = function (editor) {
+var $author$project$Rte$Core$snapshot = function (editor) {
 	return {content: editor.content, cursor: editor.cursor, fontStyle: editor.fontStyle, selection: editor.selection};
 };
-var $author$project$Rte$undoMaxDepth = 10;
-var $author$project$Rte$undoAddNew = function (e) {
+var $author$project$Rte$Core$undoMaxDepth = 10;
+var $author$project$Rte$Core$undoAddNew = function (e) {
 	var clip = function (xs) {
-		return A2($elm$core$List$take, $author$project$Rte$undoMaxDepth, xs);
+		return A2($elm$core$List$take, $author$project$Rte$Core$undoMaxDepth, xs);
 	};
 	return _Utils_update(
 		e,
@@ -7907,13 +7921,13 @@ var $author$project$Rte$undoAddNew = function (e) {
 			undo: clip(
 				A2(
 					$elm$core$List$cons,
-					$author$project$Rte$snapshot(e),
+					$author$project$Rte$Core$snapshot(e),
 					e.undo))
 		});
 };
-var $author$project$Rte$loadContent = F2(
+var $author$project$Rte$Core$loadContent = F2(
 	function (raw, e) {
-		var i = A3($author$project$Rte$init3, e.editorID, e.highlighter, e.selectionStyle);
+		var i = A3($author$project$Rte$Core$init3, e.editorID, e.highlighter, e.selectionStyle);
 		var content = function () {
 			var _v0 = A2(
 				$elm$core$List$drop,
@@ -7926,84 +7940,213 @@ var $author$project$Rte$loadContent = F2(
 					raw,
 					_List_fromArray(
 						[
-							$author$project$Rte$Break(
-							$author$project$Rte$defaultLineBreak(0))
+							$author$project$Rte$Types$Break(
+							$author$project$Rte$Core$defaultLineBreak(0))
 						]));
 			}
 		}();
-		return $author$project$Rte$undoAddNew(
+		return $author$project$Rte$Core$undoAddNew(
 			_Utils_update(
 				i,
 				{
-					content: $author$project$Rte$addIds(content),
+					content: $author$project$Rte$Core$addIds(content),
 					idCounter: $elm$core$List$length(content),
-					state: $author$project$Rte$Edit
+					state: $author$project$Rte$Core$Edit
 				}));
 	});
-var $author$project$Rte$initWithContent = F2(
+var $author$project$Rte$Core$initWithContent = F2(
 	function (content, id) {
 		return _Utils_Tuple2(
 			A2(
-				$author$project$Rte$loadContent,
+				$author$project$Rte$Core$loadContent,
 				content,
-				$author$project$Rte$init1(id)),
-			$author$project$Rte$initCmd(id));
+				$author$project$Rte$Core$init1(id)),
+			$author$project$Rte$Core$initCmd(id));
 	});
-var $author$project$Rte$initWith = F2(
-	function (encodedContent, id) {
-		var _v0 = $author$project$Rte$decode(encodedContent);
-		if (_v0.$ === 'Just') {
-			var content = _v0.a;
-			return A2($author$project$Rte$initWithContent, content, id);
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $author$project$Rte$Core$textToContent = function (txt) {
+	var f = function (x) {
+		if ('\n' === x.valueOf()) {
+			return $author$project$Rte$Types$Break(
+				$author$project$Rte$Core$defaultLineBreak(0));
 		} else {
-			return $author$project$Rte$init(id);
+			return $author$project$Rte$Types$Char(
+				{_char: x, fontStyle: $author$project$Rte$Core$emptyFontStyle, highlightClasses: _List_Nil, highlightStyling: _List_Nil, id: 0, link: $elm$core$Maybe$Nothing});
 		}
+	};
+	var g = F2(
+		function (xs, ys) {
+			g:
+			while (true) {
+				if (!xs.b) {
+					return ys;
+				} else {
+					var x = xs.a;
+					var rest = xs.b;
+					var $temp$xs = rest,
+						$temp$ys = A2(
+						$elm$core$List$cons,
+						f(x),
+						ys);
+					xs = $temp$xs;
+					ys = $temp$ys;
+					continue g;
+				}
+			}
+		});
+	return A2(
+		g,
+		$elm$core$List$reverse(
+			$elm$core$String$toList(txt)),
+		_List_Nil);
+};
+var $author$project$Rte$Core$loadTextHelp = F2(
+	function (txt, shell) {
+		var addCounter = function (x) {
+			return _Utils_update(
+				x,
+				{
+					idCounter: $elm$core$List$length(x.content)
+				});
+		};
+		return addCounter(
+			_Utils_update(
+				shell,
+				{
+					content: $author$project$Rte$Core$addIds(
+						$author$project$Rte$Core$textToContent(txt)),
+					state: $author$project$Rte$Core$Edit
+				}));
+	});
+var $author$project$Rte$Core$loadText = F2(
+	function (txt, editor) {
+		var shell = A3($author$project$Rte$Core$init3, editor.editorID, editor.highlighter, editor.selectionStyle);
+		return $author$project$Rte$Core$undoAddNew(
+			A2($author$project$Rte$Core$loadTextHelp, txt, shell));
+	});
+var $author$project$Rte$Core$initWithText = F2(
+	function (content, id) {
+		return _Utils_Tuple2(
+			A2(
+				$author$project$Rte$Core$loadText,
+				content,
+				$author$project$Rte$Core$init1(id)),
+			$author$project$Rte$Core$initCmd(id));
 	});
 var $elm$core$Platform$Cmd$map = _Platform_map;
-var $author$project$Main$init = function (_v0) {
-	var _v1 = A2($author$project$Rte$initWith, $author$project$Sample$content, 'MyRTE');
-	var rte = _v1.a;
-	var rteCmd = _v1.b;
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $rtfeldman$elm_css$VirtualDom$Styled$style = F2(
+	function (key, val) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$style, key, val),
+			_List_Nil,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Attributes$style = $rtfeldman$elm_css$VirtualDom$Styled$style;
+var $author$project$Rte$initFrame = function (parameters) {
+	var style = function (_v3) {
+		var x = _v3.a;
+		var y = _v3.b;
+		return A2($rtfeldman$elm_css$Html$Styled$Attributes$style, x, y);
+	};
+	var _v0 = function () {
+		var _v1 = parameters.content;
+		if (_v1.$ === 'Nothing') {
+			return $author$project$Rte$Core$init(parameters.id);
+		} else {
+			var txt = _v1.a;
+			var _v2 = $author$project$Rte$Core$decode(txt);
+			if (_v2.$ === 'Just') {
+				var content = _v2.a;
+				return A2($author$project$Rte$Core$initWithContent, content, parameters.id);
+			} else {
+				return A2($author$project$Rte$Core$initWithText, txt, parameters.id);
+			}
+		}
+	}();
+	var editor = _v0.a;
+	var cmd = _v0.b;
 	return _Utils_Tuple2(
 		{
+			emojiBox: false,
 			inputBox: $elm$core$Maybe$Nothing,
-			rte: _Utils_update(
-				rte,
+			styling: {active: parameters.styling.active, inactive: parameters.styling.inactive},
+			tagger: parameters.tagger,
+			textarea: _Utils_update(
+				editor,
 				{
-					highlighter: $elm$core$Maybe$Just($author$project$Highlight$code)
+					fontSizeUnit: parameters.fontSizeUnit,
+					highlighter: parameters.highlighter,
+					selectionStyle: _Utils_eq(parameters.selectionStyle, _List_Nil) ? editor.selectionStyle : A2($elm$core$List$map, style, parameters.selectionStyle)
 				})
 		},
-		A2($elm$core$Platform$Cmd$map, $author$project$Main$Internal, rteCmd));
+		A2(
+			$elm$core$Platform$Cmd$map,
+			A2($elm$core$Basics$composeL, parameters.tagger, $author$project$Rte$Core),
+			cmd));
 };
+var $author$project$Rte$init = $author$project$Rte$initFrame;
+var $author$project$App$Content$json = '\n[{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"?\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":\"h1\",\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"x\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"4\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"5\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"D\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"F\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"M\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-style\",\"A2\":\"italic\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"(\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"E\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"x\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"G\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"E\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\")\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"w\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"4\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"5\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"B\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"R\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"T\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"I\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"\\\"\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"L\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"\\\"\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"f\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"1\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"0\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"3\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"2\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[{\"A1\":\"font-weight\",\"A2\":\"bold\"}]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\".\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Embedded\",\"A1\":{\"attributes\":[{\"A1\":\"src\",\"A2\":\"data:image/jpeg;base64,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\"}],\"classes\":[],\"children\":[],\"nodeType\":\"img\",\"styling\":[],\"text\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[{\"A1\":\"text-align\",\"A2\":\"center\"}]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"C\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":\"https://en.wikipedia.org/wiki/Cicero\"}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\",\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"&\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[{\"A1\":\"text-align\",\"A2\":\"center\"}]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"h\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"v\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"p\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"y\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"-\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"r\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"w\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"u\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"/\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"t\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"e\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"d\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"b\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"k\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"<\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"/\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"c\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"l\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"o\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"s\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"g\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\" \",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"m\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"a\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"i\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\"n\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Char\",\"A1\":{\"char\":\">\",\"fontStyle\":{\"classes\":[],\"fontFamily\":[],\"fontSize\":null,\"styling\":[]},\"link\":null}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[\"Code\"],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}},{\"Constructor\":\"Break\",\"A1\":{\"classes\":[],\"indent\":0,\"nodeType\":null,\"styling\":[]}}]\n';
+var $author$project$Main$init = function (_v0) {
+	var parameters = {
+		content: $elm$core$Maybe$Just($author$project$App$Content$json),
+		fontSizeUnit: $elm$core$Maybe$Nothing,
+		highlighter: $elm$core$Maybe$Just($author$project$App$Highlight$code),
+		id: 'MyRTE',
+		indentUnit: $elm$core$Maybe$Nothing,
+		selectionStyle: _List_Nil,
+		styling: {
+			active: _List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('rte-wrap')
+				]),
+			inactive: _List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('blogpost')
+				])
+		},
+		tagger: $author$project$Main$Internal
+	};
+	var _v1 = $author$project$Rte$init(parameters);
+	var rte = _v1.a;
+	var cmd = _v1.b;
+	return _Utils_Tuple2(
+		{rte: rte},
+		cmd);
+};
+var $author$project$Rte$FromBrowserClipboard = function (a) {
+	return {$: 'FromBrowserClipboard', a: a};
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $author$project$Main$fromBrowserClipboard = _Platform_incomingPort('fromBrowserClipboard', $elm$json$Json$Decode$string);
 var $elm$core$Platform$Sub$map = _Platform_map;
-var $author$project$Rte$Blink = function (a) {
+var $author$project$Rte$Core$Blink = function (a) {
 	return {$: 'Blink', a: a};
 };
-var $author$project$Rte$DetectViewport = {$: 'DetectViewport'};
-var $author$project$Rte$KeyDown = F2(
+var $author$project$Rte$Core$DetectViewport = {$: 'DetectViewport'};
+var $author$project$Rte$Core$KeyDown = F2(
 	function (a, b) {
 		return {$: 'KeyDown', a: a, b: b};
 	});
-var $author$project$Rte$KeyUp = function (a) {
+var $author$project$Rte$Core$KeyUp = function (a) {
 	return {$: 'KeyUp', a: a};
 };
-var $author$project$Rte$MouseMove = F2(
+var $author$project$Rte$Core$MouseMove = F2(
 	function (a, b) {
 		return {$: 'MouseMove', a: a, b: b};
 	});
-var $author$project$Rte$MouseUp = {$: 'MouseUp'};
-var $author$project$Rte$Paste = function (a) {
-	return {$: 'Paste', a: a};
-};
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $author$project$Rte$clipboardText = _Platform_incomingPort('clipboardText', $elm$json$Json$Decode$string);
-var $author$project$Rte$decodeKey = function (f) {
+var $author$project$Rte$Core$MouseUp = {$: 'MouseUp'};
+var $author$project$Rte$Core$decodeKey = function (f) {
 	return A2(
 		$elm$json$Json$Decode$map,
 		f,
 		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
 };
-var $author$project$Rte$decodeKeyAndTime = function (f) {
+var $author$project$Rte$Core$decodeKeyAndTime = function (f) {
 	return A3(
 		$elm$json$Json$Decode$map2,
 		f,
@@ -8014,7 +8157,7 @@ var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
 	});
-var $author$project$Rte$decodeTargetIdAndTime = function (f) {
+var $author$project$Rte$Core$decodeTargetIdAndTime = function (f) {
 	return A3(
 		$elm$json$Json$Decode$map2,
 		f,
@@ -8539,36 +8682,35 @@ var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0.a;
 	return millis;
 };
-var $author$project$Rte$tickPeriod = 500;
-var $author$project$Rte$subscriptions = function (e) {
+var $author$project$Rte$Core$tickPeriod = 500;
+var $author$project$Rte$Core$subscriptions = function (e) {
 	var mouseMove = $elm$browser$Browser$Events$onMouseMove(
-		$author$project$Rte$decodeTargetIdAndTime($author$project$Rte$MouseMove));
+		$author$project$Rte$Core$decodeTargetIdAndTime($author$project$Rte$Core$MouseMove));
 	var detectViewport = (!e.typing) ? A2(
 		$elm$time$Time$every,
-		$author$project$Rte$tickPeriod / 5,
+		$author$project$Rte$Core$tickPeriod / 5,
 		function (_v1) {
-			return $author$project$Rte$DetectViewport;
+			return $author$project$Rte$Core$DetectViewport;
 		}) : $elm$core$Platform$Sub$none;
 	var cursorBlink = A2(
 		$elm$time$Time$every,
-		$author$project$Rte$tickPeriod,
+		$author$project$Rte$Core$tickPeriod,
 		function (x) {
-			return $author$project$Rte$Blink(
+			return $author$project$Rte$Core$Blink(
 				$elm$time$Time$posixToMillis(x));
 		});
 	var _default = _List_fromArray(
 		[
 			$elm$browser$Browser$Events$onKeyDown(
-			$author$project$Rte$decodeKeyAndTime($author$project$Rte$KeyDown)),
+			$author$project$Rte$Core$decodeKeyAndTime($author$project$Rte$Core$KeyDown)),
 			$elm$browser$Browser$Events$onKeyUp(
-			$author$project$Rte$decodeKey($author$project$Rte$KeyUp)),
+			$author$project$Rte$Core$decodeKey($author$project$Rte$Core$KeyUp)),
 			$elm$browser$Browser$Events$onMouseUp(
-			$elm$json$Json$Decode$succeed($author$project$Rte$MouseUp)),
-			$author$project$Rte$clipboardText($author$project$Rte$Paste),
+			$elm$json$Json$Decode$succeed($author$project$Rte$Core$MouseUp)),
 			cursorBlink,
 			detectViewport
 		]);
-	if (_Utils_eq(e.state, $author$project$Rte$Edit)) {
+	if (_Utils_eq(e.state, $author$project$Rte$Core$Edit)) {
 		var _v0 = e.drag;
 		if (_v0.$ === 'NoDrag') {
 			return $elm$core$Platform$Sub$batch(_default);
@@ -8580,40 +8722,56 @@ var $author$project$Rte$subscriptions = function (e) {
 		return $elm$core$Platform$Sub$none;
 	}
 };
-var $author$project$Main$subscriptions = function (model) {
+var $author$project$Rte$subscriptionsFrame = function (model) {
 	return A2(
 		$elm$core$Platform$Sub$map,
-		$author$project$Main$Internal,
-		$author$project$Rte$subscriptions(model.rte));
+		A2($elm$core$Basics$composeL, model.tagger, $author$project$Rte$Core),
+		$author$project$Rte$Core$subscriptions(model.textarea));
 };
-var $author$project$Rte$Display = {$: 'Display'};
-var $author$project$Rte$Freeze = {$: 'Freeze'};
-var $author$project$Main$ImageInputBox = function (a) {
+var $author$project$Rte$subscriptions = $author$project$Rte$subscriptionsFrame;
+var $author$project$Main$subscriptions = function (model) {
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				$author$project$Rte$subscriptions(model.rte),
+				$author$project$Main$fromBrowserClipboard(
+				A2($elm$core$Basics$composeL, $author$project$Main$Internal, $author$project$Rte$FromBrowserClipboard))
+			]));
+};
+var $author$project$Main$toBrowserClipboard = _Platform_outgoingPort('toBrowserClipboard', $elm$json$Json$Encode$string);
+var $author$project$Rte$Active = function (a) {
+	return {$: 'Active', a: a};
+};
+var $author$project$Rte$Core$Copy = {$: 'Copy'};
+var $author$project$Rte$Core$Cut = {$: 'Cut'};
+var $author$project$Rte$Core$Display = {$: 'Display'};
+var $author$project$Rte$Core$Freeze = {$: 'Freeze'};
+var $author$project$Rte$ImageInputBox = function (a) {
 	return {$: 'ImageInputBox', a: a};
 };
-var $author$project$Main$LinkInputBox = function (a) {
+var $author$project$Rte$LinkInputBox = function (a) {
 	return {$: 'LinkInputBox', a: a};
 };
-var $author$project$Main$NoOp = {$: 'NoOp'};
-var $author$project$Main$Switch = function (a) {
-	return {$: 'Switch', a: a};
+var $author$project$Rte$NoOp = {$: 'NoOp'};
+var $author$project$Rte$Core$Paste = function (a) {
+	return {$: 'Paste', a: a};
 };
-var $author$project$Rte$NoScroll = {$: 'NoScroll'};
-var $author$project$Rte$PlaceCursor1_EditorPos = F2(
+var $author$project$Rte$Core$NoScroll = {$: 'NoScroll'};
+var $author$project$Rte$Core$PlaceCursor1_EditorPos = F2(
 	function (a, b) {
 		return {$: 'PlaceCursor1_EditorPos', a: a, b: b};
 	});
 var $elm$browser$Browser$Dom$getElement = _Browser_getElement;
-var $author$project$Rte$placeCursor = F2(
+var $author$project$Rte$Core$placeCursor = F2(
 	function (scroll, editorID) {
 		return A2(
 			$elm$core$Task$attempt,
-			$author$project$Rte$PlaceCursor1_EditorPos(scroll),
+			$author$project$Rte$Core$PlaceCursor1_EditorPos(scroll),
 			$elm$browser$Browser$Dom$getElement(editorID));
 	});
-var $author$project$Rte$embed = F2(
+var $author$project$Rte$Core$embed = F2(
 	function (html, e) {
-		var elem = $author$project$Rte$Embedded(
+		var elem = $author$project$Rte$Types$Embedded(
 			_Utils_update(
 				html,
 				{id: e.idCounter}));
@@ -8630,9 +8788,9 @@ var $author$project$Rte$embed = F2(
 					cursor: e.cursor + 1,
 					idCounter: e.idCounter + 1
 				}),
-			A2($author$project$Rte$placeCursor, $author$project$Rte$NoScroll, e.editorID));
+			A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$NoScroll, e.editorID));
 	});
-var $author$project$Rte$addImage = F2(
+var $author$project$Rte$Core$addImage = F2(
 	function (src, e) {
 		var imgNode = {
 			attributes: _List_fromArray(
@@ -8648,10 +8806,10 @@ var $author$project$Rte$addImage = F2(
 			styling: _List_Nil,
 			text: $elm$core$Maybe$Nothing
 		};
-		return A2($author$project$Rte$embed, imgNode, e);
+		return A2($author$project$Rte$Core$embed, imgNode, e);
 	});
-var $author$project$Rte$ScrollIfNeeded = {$: 'ScrollIfNeeded'};
-var $author$project$Rte$get = F2(
+var $author$project$Rte$Core$ScrollIfNeeded = {$: 'ScrollIfNeeded'};
+var $author$project$Rte$Core$get = F2(
 	function (idx, content) {
 		var _v0 = A2($elm$core$List$drop, idx, content);
 		if (!_v0.b) {
@@ -8661,9 +8819,9 @@ var $author$project$Rte$get = F2(
 			return $elm$core$Maybe$Just(x);
 		}
 	});
-var $author$project$Rte$linkAt = F2(
+var $author$project$Rte$Core$linkAt = F2(
 	function (idx, content) {
-		var _v0 = A2($author$project$Rte$get, idx, content);
+		var _v0 = A2($author$project$Rte$Core$get, idx, content);
 		if ((_v0.$ === 'Just') && (_v0.a.$ === 'Char')) {
 			var ch = _v0.a.a;
 			return ch.link;
@@ -8671,8 +8829,8 @@ var $author$project$Rte$linkAt = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $author$project$Rte$currentLink = function (e) {
-	var _v0 = A2($author$project$Rte$linkAt, e.cursor, e.content);
+var $author$project$Rte$Core$currentLink = function (e) {
+	var _v0 = A2($author$project$Rte$Core$linkAt, e.cursor, e.content);
 	if (_v0.$ === 'Just') {
 		var x = _v0.a;
 		return $elm$core$Maybe$Just(x);
@@ -8682,17 +8840,13 @@ var $author$project$Rte$currentLink = function (e) {
 			var _v2 = _v1.a;
 			var beg = _v2.a;
 			var end = _v2.b;
-			return A2($author$project$Rte$linkAt, end, e.content);
+			return A2($author$project$Rte$Core$linkAt, end, e.content);
 		} else {
 			return $elm$core$Maybe$Nothing;
 		}
 	}
 };
-var $elm$core$String$foldr = _String_foldr;
-var $elm$core$String$toList = function (string) {
-	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $author$project$Rte$typed = F4(
+var $author$project$Rte$Core$typed = F4(
 	function (txt, editor0, maybeTimeStamp, modifyClipboard) {
 		var txtLength = $elm$core$List$length(
 			$elm$core$String$toList(txt));
@@ -8703,7 +8857,7 @@ var $author$project$Rte$typed = F4(
 					editor0,
 					{
 						lastKeyDown: timeStamp,
-						typing: _Utils_cmp(timeStamp - editor0.lastKeyDown, $author$project$Rte$tickPeriod) < 1
+						typing: _Utils_cmp(timeStamp - editor0.lastKeyDown, $author$project$Rte$Core$tickPeriod) < 1
 					});
 			} else {
 				return editor0;
@@ -8711,10 +8865,10 @@ var $author$project$Rte$typed = F4(
 		}();
 		var maxIdx = $elm$core$List$length(e.content) - 1;
 		var newIdCounter = e.idCounter + txtLength;
-		var activeLink = $author$project$Rte$currentLink(e);
+		var activeLink = $author$project$Rte$Core$currentLink(e);
 		var f = F2(
 			function (id, _char) {
-				return $author$project$Rte$Char(
+				return $author$project$Rte$Types$Char(
 					{_char: _char, fontStyle: e.fontStyle, highlightClasses: _List_Nil, highlightStyling: _List_Nil, id: id, link: activeLink});
 			});
 		var g = F2(
@@ -8762,7 +8916,7 @@ var $author$project$Rte$typed = F4(
 						cursor: e.cursor + txtLength,
 						idCounter: newIdCounter
 					}),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		} else {
 			var _v3 = _v2.a;
 			var beg = _v3.a;
@@ -8782,25 +8936,28 @@ var $author$project$Rte$typed = F4(
 						idCounter: newIdCounter,
 						selection: $elm$core$Maybe$Nothing
 					}),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		}
 	});
-var $author$project$Rte$addText = F2(
+var $author$project$Rte$Core$addText = F2(
 	function (str, e) {
-		return A4($author$project$Rte$typed, str, e, $elm$core$Maybe$Nothing, false);
+		return A4($author$project$Rte$Core$typed, str, e, $elm$core$Maybe$Nothing, false);
 	});
-var $author$project$Main$apply = F2(
+var $author$project$Rte$apply = F2(
 	function (f, model) {
-		var _v0 = f(model.rte);
-		var rte = _v0.a;
-		var rteCmd = _v0.b;
+		var _v0 = f(model.textarea);
+		var editor = _v0.a;
+		var cmd = _v0.b;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{rte: rte}),
-			A2($elm$core$Platform$Cmd$map, $author$project$Main$Internal, rteCmd));
+				{textarea: editor}),
+			A2(
+				$elm$core$Platform$Cmd$map,
+				A2($elm$core$Basics$composeL, model.tagger, $author$project$Rte$Core),
+				cmd));
 	});
-var $author$project$Rte$nextBreakFrom = F2(
+var $author$project$Rte$Core$nextBreakFrom = F2(
 	function (begIdx, content) {
 		var maxIdx = $elm$core$List$length(content) - 1;
 		var f = F2(
@@ -8808,7 +8965,7 @@ var $author$project$Rte$nextBreakFrom = F2(
 				if (result.$ === 'Just') {
 					return result;
 				} else {
-					var _v1 = A2($author$project$Rte$get, idx, content);
+					var _v1 = A2($author$project$Rte$Core$get, idx, content);
 					if ((_v1.$ === 'Just') && (_v1.a.$ === 'Break')) {
 						var br = _v1.a.a;
 						return $elm$core$Maybe$Just(
@@ -8824,7 +8981,7 @@ var $author$project$Rte$nextBreakFrom = F2(
 			$elm$core$Maybe$Nothing,
 			A2($elm$core$List$range, begIdx, maxIdx));
 	});
-var $author$project$Rte$parasInSelection = function (e) {
+var $author$project$Rte$Core$parasInSelection = function (e) {
 	var f = F2(
 		function (x, _v6) {
 			var y = _v6.a;
@@ -8856,7 +9013,7 @@ var $author$project$Rte$parasInSelection = function (e) {
 		});
 	var _v0 = e.selection;
 	if (_v0.$ === 'Nothing') {
-		var _v1 = A2($author$project$Rte$nextBreakFrom, e.cursor, e.content);
+		var _v1 = A2($author$project$Rte$Core$nextBreakFrom, e.cursor, e.content);
 		if (_v1.$ === 'Just') {
 			var x = _v1.a;
 			return _List_fromArray(
@@ -8868,7 +9025,7 @@ var $author$project$Rte$parasInSelection = function (e) {
 		var _v2 = _v0.a;
 		var beg = _v2.a;
 		var end = _v2.b;
-		var _v3 = A2($author$project$Rte$nextBreakFrom, end, e.content);
+		var _v3 = A2($author$project$Rte$Core$nextBreakFrom, end, e.content);
 		if (_v3.$ === 'Just') {
 			var x = _v3.a;
 			return A2(
@@ -8886,7 +9043,7 @@ var $author$project$Rte$parasInSelection = function (e) {
 		}
 	}
 };
-var $author$project$Rte$set = F3(
+var $author$project$Rte$Core$set = F3(
 	function (idx, elem, content) {
 		return _Utils_ap(
 			A2($elm$core$List$take, idx, content),
@@ -8895,25 +9052,25 @@ var $author$project$Rte$set = F3(
 					[elem]),
 				A2($elm$core$List$drop, idx + 1, content)));
 	});
-var $author$project$Rte$set2 = F3(
+var $author$project$Rte$Core$set2 = F3(
 	function (idx, elem, editor) {
 		var content = editor.content;
 		return _Utils_update(
 			editor,
 			{
-				content: A3($author$project$Rte$set, idx, elem, content)
+				content: A3($author$project$Rte$Core$set, idx, elem, content)
 			});
 	});
-var $author$project$Rte$setPara = F2(
+var $author$project$Rte$Core$setPara = F2(
 	function (f, e) {
 		var g = F2(
 			function (_v0, x) {
 				var idx = _v0.a;
 				var lineBreak = _v0.b;
 				return A3(
-					$author$project$Rte$set2,
+					$author$project$Rte$Core$set2,
 					idx,
-					$author$project$Rte$Break(
+					$author$project$Rte$Types$Break(
 						f(lineBreak)),
 					x);
 			});
@@ -8924,20 +9081,20 @@ var $author$project$Rte$setPara = F2(
 		return _Utils_Tuple2(
 			A2(
 				h,
-				$author$project$Rte$parasInSelection(e),
-				$author$project$Rte$undoAddNew(e)),
-			A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				$author$project$Rte$Core$parasInSelection(e),
+				$author$project$Rte$Core$undoAddNew(e)),
+			A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 	});
-var $author$project$Rte$changeIndent = F2(
+var $author$project$Rte$Core$changeIndent = F2(
 	function (amount, editor) {
 		var f = function (x) {
 			return _Utils_update(
 				x,
 				{indent: amount + x.indent});
 		};
-		return A2($author$project$Rte$setPara, f, editor);
+		return A2($author$project$Rte$Core$setPara, f, editor);
 	});
-var $author$project$Rte$setFontStyle = F2(
+var $author$project$Rte$Core$setFontStyle = F2(
 	function (mod, e) {
 		var j = function (x) {
 			return _Utils_update(
@@ -8949,7 +9106,7 @@ var $author$project$Rte$setFontStyle = F2(
 		var f = function (elem) {
 			if (elem.$ === 'Char') {
 				var c = elem.a;
-				return $author$project$Rte$Char(
+				return $author$project$Rte$Types$Char(
 					_Utils_update(
 						c,
 						{
@@ -8961,11 +9118,11 @@ var $author$project$Rte$setFontStyle = F2(
 		};
 		var g = F2(
 			function (idx, content) {
-				var _v4 = A2($author$project$Rte$get, idx, content);
+				var _v4 = A2($author$project$Rte$Core$get, idx, content);
 				if (_v4.$ === 'Just') {
 					var elem = _v4.a;
 					return A3(
-						$author$project$Rte$set,
+						$author$project$Rte$Core$set,
 						idx,
 						f(elem),
 						content);
@@ -9010,20 +9167,20 @@ var $author$project$Rte$setFontStyle = F2(
 					A2(
 						i,
 						_Utils_Tuple2(beg, end),
-						$author$project$Rte$undoAddNew(e))),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+						$author$project$Rte$Core$undoAddNew(e))),
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		}
 	});
-var $author$project$Rte$fontFamily = F2(
+var $author$project$Rte$Core$fontFamily = F2(
 	function (xs, e) {
 		var mod = function (x) {
 			return _Utils_update(
 				x,
 				{fontFamily: xs});
 		};
-		return A2($author$project$Rte$setFontStyle, mod, e);
+		return A2($author$project$Rte$Core$setFontStyle, mod, e);
 	});
-var $author$project$Rte$fontSize = F2(
+var $author$project$Rte$Core$fontSize = F2(
 	function (_float, e) {
 		var mod = function (x) {
 			return _Utils_update(
@@ -9032,29 +9189,29 @@ var $author$project$Rte$fontSize = F2(
 					fontSize: $elm$core$Maybe$Just(_float)
 				});
 		};
-		return A2($author$project$Rte$setFontStyle, mod, e);
+		return A2($author$project$Rte$Core$setFontStyle, mod, e);
 	});
-var $author$project$Rte$changeContent2 = F3(
+var $author$project$Rte$Core$changeContent2 = F3(
 	function (f, idx, e) {
-		var _v0 = A2($author$project$Rte$get, idx, e.content);
+		var _v0 = A2($author$project$Rte$Core$get, idx, e.content);
 		if (_v0.$ === 'Nothing') {
 			return e;
 		} else {
 			var elem = _v0.a;
 			return A3(
-				$author$project$Rte$set2,
+				$author$project$Rte$Core$set2,
 				idx,
 				f(elem),
 				e);
 		}
 	});
-var $author$project$Rte$currentLinkPos = function (e) {
+var $author$project$Rte$Core$currentLinkPos = function (e) {
 	var g = F2(
 		function (href, idx) {
 			g:
 			while (true) {
 				if (_Utils_eq(
-					A2($author$project$Rte$linkAt, idx + 1, e.content),
+					A2($author$project$Rte$Core$linkAt, idx + 1, e.content),
 					$elm$core$Maybe$Just(href))) {
 					var $temp$href = href,
 						$temp$idx = idx + 1;
@@ -9071,7 +9228,7 @@ var $author$project$Rte$currentLinkPos = function (e) {
 			f:
 			while (true) {
 				if (_Utils_eq(
-					A2($author$project$Rte$linkAt, idx - 1, e.content),
+					A2($author$project$Rte$Core$linkAt, idx - 1, e.content),
 					$elm$core$Maybe$Just(href))) {
 					var $temp$href = href,
 						$temp$idx = idx - 1;
@@ -9089,7 +9246,7 @@ var $author$project$Rte$currentLinkPos = function (e) {
 	var beg = function (href) {
 		return A2(f, href, e.cursor);
 	};
-	var _v0 = $author$project$Rte$currentLink(e);
+	var _v0 = $author$project$Rte$Core$currentLink(e);
 	if (_v0.$ === 'Just') {
 		var href = _v0.a;
 		return $elm$core$Maybe$Just(
@@ -9100,9 +9257,9 @@ var $author$project$Rte$currentLinkPos = function (e) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Rte$linkMod = F2(
+var $author$project$Rte$Core$linkMod = F2(
 	function (f, editor) {
-		var _v0 = $author$project$Rte$currentLinkPos(editor);
+		var _v0 = $author$project$Rte$Core$currentLinkPos(editor);
 		if (_v0.$ === 'Nothing') {
 			return editor;
 		} else {
@@ -9111,17 +9268,17 @@ var $author$project$Rte$linkMod = F2(
 			var end = _v1.b;
 			return A3(
 				$elm$core$List$foldl,
-				$author$project$Rte$changeContent2(f),
+				$author$project$Rte$Core$changeContent2(f),
 				editor,
 				A2($elm$core$List$range, beg, end));
 		}
 	});
-var $author$project$Rte$link = F2(
+var $author$project$Rte$Core$link = F2(
 	function (href, e) {
 		var f = function (elem) {
 			if (elem.$ === 'Char') {
 				var ch = elem.a;
-				return $author$project$Rte$Char(
+				return $author$project$Rte$Types$Char(
 					_Utils_update(
 						ch,
 						{
@@ -9133,7 +9290,7 @@ var $author$project$Rte$link = F2(
 		};
 		var g = F2(
 			function (idx, x) {
-				return A3($author$project$Rte$changeContent2, f, idx, x);
+				return A3($author$project$Rte$Core$changeContent2, f, idx, x);
 			});
 		var h = F2(
 			function (beg, end) {
@@ -9145,7 +9302,7 @@ var $author$project$Rte$link = F2(
 			});
 		var _v0 = e.selection;
 		if (_v0.$ === 'Nothing') {
-			return A2($author$project$Rte$linkMod, f, e);
+			return A2($author$project$Rte$Core$linkMod, f, e);
 		} else {
 			var _v1 = _v0.a;
 			var beg = _v1.a;
@@ -9153,23 +9310,21 @@ var $author$project$Rte$link = F2(
 			return A2(h, beg, end);
 		}
 	});
-var $author$project$Rte$state = F2(
+var $author$project$Rte$Core$state = F2(
 	function (_new, e) {
-		var cmd = _Utils_eq(_new, $author$project$Rte$Edit) ? A2($author$project$Rte$focusOnEditor, $author$project$Rte$Edit, e.editorID) : $elm$core$Platform$Cmd$none;
+		var cmd = _Utils_eq(_new, $author$project$Rte$Core$Edit) ? A2($author$project$Rte$Core$focusOnEditor, $author$project$Rte$Core$Edit, e.editorID) : $elm$core$Platform$Cmd$none;
 		return _Utils_Tuple2(
 			_Utils_update(
 				e,
 				{state: _new}),
 			cmd);
 	});
-var $author$project$Rte$textAlign = F2(
+var $author$project$Rte$Core$textAlign = F2(
 	function (alignment, e) {
 		var style = function () {
 			switch (alignment.$) {
 				case 'Center':
 					return 'center';
-				case 'Justify':
-					return 'justify';
 				case 'Left':
 					return 'left';
 				default:
@@ -9191,16 +9346,16 @@ var $author$project$Rte$textAlign = F2(
 						A2($elm$core$List$filter, keep, x.styling))
 				});
 		};
-		return A2($author$project$Rte$setPara, f, e);
+		return A2($author$project$Rte$Core$setPara, f, e);
 	});
-var $author$project$Rte$boldStyle = _Utils_Tuple2('font-weight', 'bold');
-var $author$project$Rte$is = F2(
+var $author$project$Rte$Core$boldStyle = _Utils_Tuple2('font-weight', 'bold');
+var $author$project$Rte$Core$is = F2(
 	function (attr, editor) {
 		return A2($elm$core$List$member, attr, editor.fontStyle.styling);
 	});
-var $author$project$Rte$isAt = F3(
+var $author$project$Rte$Core$isAt = F3(
 	function (attr, e, idx) {
-		var _v0 = A2($author$project$Rte$get, idx, e.content);
+		var _v0 = A2($author$project$Rte$Core$get, idx, e.content);
 		if ((_v0.$ === 'Just') && (_v0.a.$ === 'Char')) {
 			var c = _v0.a.a;
 			return $elm$core$Maybe$Just(
@@ -9209,7 +9364,7 @@ var $author$project$Rte$isAt = F3(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $author$project$Rte$isSelection = F2(
+var $author$project$Rte$Core$isSelection = F2(
 	function (attr, e) {
 		var _v0 = e.selection;
 		if (_v0.$ === 'Nothing') {
@@ -9223,11 +9378,11 @@ var $author$project$Rte$isSelection = F2(
 				$elm$core$Maybe$Just(false),
 				A2(
 					$elm$core$List$map,
-					A2($author$project$Rte$isAt, attr, e),
+					A2($author$project$Rte$Core$isAt, attr, e),
 					A2($elm$core$List$range, beg, end)));
 		}
 	});
-var $author$project$Rte$setFontStyleTag = F3(
+var $author$project$Rte$Core$setFontStyleTag = F3(
 	function (attr, bool, e) {
 		var restOf = function (xs) {
 			return A2(
@@ -9253,7 +9408,7 @@ var $author$project$Rte$setFontStyleTag = F3(
 		};
 		var _v0 = e.selection;
 		if (_v0.$ === 'Just') {
-			return A2($author$project$Rte$setFontStyle, mod, e);
+			return A2($author$project$Rte$Core$setFontStyle, mod, e);
 		} else {
 			return _Utils_Tuple2(
 				_Utils_update(
@@ -9264,31 +9419,31 @@ var $author$project$Rte$setFontStyleTag = F3(
 				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Rte$toggle = F2(
+var $author$project$Rte$Core$toggle = F2(
 	function (attr, e) {
 		var _v0 = e.selection;
 		if (_v0.$ === 'Just') {
 			return A3(
-				$author$project$Rte$setFontStyleTag,
+				$author$project$Rte$Core$setFontStyleTag,
 				attr,
-				!A2($author$project$Rte$isSelection, attr, e),
+				!A2($author$project$Rte$Core$isSelection, attr, e),
 				e);
 		} else {
 			return A3(
-				$author$project$Rte$setFontStyleTag,
+				$author$project$Rte$Core$setFontStyleTag,
 				attr,
-				!A2($author$project$Rte$is, attr, e),
+				!A2($author$project$Rte$Core$is, attr, e),
 				e);
 		}
 	});
-var $author$project$Rte$toggleBold = function (e) {
-	return A2($author$project$Rte$toggle, $author$project$Rte$boldStyle, e);
+var $author$project$Rte$Core$toggleBold = function (e) {
+	return A2($author$project$Rte$Core$toggle, $author$project$Rte$Core$boldStyle, e);
 };
-var $author$project$Rte$italicStyle = _Utils_Tuple2('font-style', 'italic');
-var $author$project$Rte$toggleItalic = function (e) {
-	return A2($author$project$Rte$toggle, $author$project$Rte$italicStyle, e);
+var $author$project$Rte$Core$italicStyle = _Utils_Tuple2('font-style', 'italic');
+var $author$project$Rte$Core$toggleItalic = function (e) {
+	return A2($author$project$Rte$Core$toggle, $author$project$Rte$Core$italicStyle, e);
 };
-var $author$project$Rte$toggleNodeType = F2(
+var $author$project$Rte$Core$toggleNodeType = F2(
 	function (nodeType, e) {
 		var f = function (x) {
 			return _Utils_eq(
@@ -9301,9 +9456,9 @@ var $author$project$Rte$toggleNodeType = F2(
 					nodeType: $elm$core$Maybe$Just(nodeType)
 				});
 		};
-		return A2($author$project$Rte$setPara, f, e);
+		return A2($author$project$Rte$Core$setPara, f, e);
 	});
-var $author$project$Rte$paraClassAdd = F2(
+var $author$project$Rte$Core$paraClassAdd = F2(
 	function (className, br) {
 		var filtered = function (xs) {
 			return A2(
@@ -9322,7 +9477,7 @@ var $author$project$Rte$paraClassAdd = F2(
 					filtered(br.classes))
 			});
 	});
-var $author$project$Rte$paraClassRemove = F2(
+var $author$project$Rte$Core$paraClassRemove = F2(
 	function (className, br) {
 		var filtered = function (xs) {
 			return A2(
@@ -9339,107 +9494,105 @@ var $author$project$Rte$paraClassRemove = F2(
 				highlightClasses: filtered(br.highlightClasses)
 			});
 	});
-var $author$project$Rte$toggleParaClass = F2(
+var $author$project$Rte$Core$toggleParaClass = F2(
 	function (className, e) {
 		var f = function (x) {
-			return A2($elm$core$List$member, className, x.classes) ? A2($author$project$Rte$paraClassRemove, className, x) : A2($author$project$Rte$paraClassAdd, className, x);
+			return A2($elm$core$List$member, className, x.classes) ? A2($author$project$Rte$Core$paraClassRemove, className, x) : A2($author$project$Rte$Core$paraClassAdd, className, x);
 		};
-		return A2($author$project$Rte$setPara, f, e);
+		return A2($author$project$Rte$Core$setPara, f, e);
 	});
-var $author$project$Rte$strikeThroughStyle = _Utils_Tuple2('text-decoration', 'line-through');
-var $author$project$Rte$underlineStyle = _Utils_Tuple2('text-decoration', 'underline');
-var $author$project$Rte$underline = F2(
+var $author$project$Rte$Core$strikeThroughStyle = _Utils_Tuple2('text-decoration', 'line-through');
+var $author$project$Rte$Core$underlineStyle = _Utils_Tuple2('text-decoration', 'underline');
+var $author$project$Rte$Core$underline = F2(
 	function (bool, editor) {
-		return A3($author$project$Rte$setFontStyleTag, $author$project$Rte$underlineStyle, bool, editor);
+		return A3($author$project$Rte$Core$setFontStyleTag, $author$project$Rte$Core$underlineStyle, bool, editor);
 	});
-var $author$project$Rte$toggleStrikeThrough = function (e) {
+var $author$project$Rte$Core$toggleStrikeThrough = function (e) {
 	var removeUnderline = function (x) {
-		return A2($author$project$Rte$is, $author$project$Rte$underlineStyle, x) ? A2($author$project$Rte$underline, false, x).a : x;
+		return A2($author$project$Rte$Core$is, $author$project$Rte$Core$underlineStyle, x) ? A2($author$project$Rte$Core$underline, false, x).a : x;
 	};
 	return A2(
-		$author$project$Rte$toggle,
-		$author$project$Rte$strikeThroughStyle,
+		$author$project$Rte$Core$toggle,
+		$author$project$Rte$Core$strikeThroughStyle,
 		removeUnderline(e));
 };
-var $author$project$Rte$strikeThrough = F2(
+var $author$project$Rte$Core$strikeThrough = F2(
 	function (bool, editor) {
-		return A3($author$project$Rte$setFontStyleTag, $author$project$Rte$strikeThroughStyle, bool, editor);
+		return A3($author$project$Rte$Core$setFontStyleTag, $author$project$Rte$Core$strikeThroughStyle, bool, editor);
 	});
-var $author$project$Rte$toggleUnderline = function (e) {
+var $author$project$Rte$Core$toggleUnderline = function (e) {
 	var removeStrikeThrough = function (x) {
-		return A2($author$project$Rte$is, $author$project$Rte$strikeThroughStyle, x) ? A2($author$project$Rte$strikeThrough, false, x).a : x;
+		return A2($author$project$Rte$Core$is, $author$project$Rte$Core$strikeThroughStyle, x) ? A2($author$project$Rte$Core$strikeThrough, false, x).a : x;
 	};
 	return A2(
-		$author$project$Rte$toggle,
-		$author$project$Rte$underlineStyle,
+		$author$project$Rte$Core$toggle,
+		$author$project$Rte$Core$underlineStyle,
 		removeStrikeThrough(e));
 };
-var $author$project$Rte$UndoAction = {$: 'UndoAction'};
-var $author$project$Rte$CompositionUpdate = function (a) {
+var $author$project$Rte$Core$UndoAction = {$: 'UndoAction'};
+var $author$project$Rte$Core$CompositionUpdate = function (a) {
 	return {$: 'CompositionUpdate', a: a};
 };
-var $author$project$Rte$Copy = {$: 'Copy'};
-var $author$project$Rte$Cut = {$: 'Cut'};
-var $author$project$Rte$Down = {$: 'Down'};
-var $author$project$Rte$LineBoundary = F2(
+var $author$project$Rte$Core$Down = {$: 'Down'};
+var $author$project$Rte$Core$LineBoundary = F2(
 	function (a, b) {
 		return {$: 'LineBoundary', a: a, b: b};
 	});
-var $author$project$Rte$LineJump = F2(
+var $author$project$Rte$Core$LineJump = F2(
 	function (a, b) {
 		return {$: 'LineJump', a: a, b: b};
 	});
-var $author$project$Rte$Mouse = F3(
+var $author$project$Rte$Core$Mouse = F3(
 	function (a, b, c) {
 		return {$: 'Mouse', a: a, b: b, c: c};
 	});
-var $author$project$Rte$Page = F2(
+var $author$project$Rte$Core$Page = F2(
 	function (a, b) {
 		return {$: 'Page', a: a, b: b};
 	});
-var $author$project$Rte$PlaceCursor2_Viewport = F2(
+var $author$project$Rte$Core$PlaceCursor2_Viewport = F2(
 	function (a, b) {
 		return {$: 'PlaceCursor2_Viewport', a: a, b: b};
 	});
-var $author$project$Rte$ScreenElement = F4(
+var $author$project$Rte$Core$ScreenElement = F4(
 	function (idx, x, y, height) {
 		return {height: height, idx: idx, x: x, y: y};
 	});
-var $author$project$Rte$Scrolled = function (a) {
+var $author$project$Rte$Core$Scrolled = function (a) {
 	return {$: 'Scrolled', a: a};
 };
-var $author$project$Rte$SelectWord = {$: 'SelectWord'};
-var $author$project$Rte$Up = {$: 'Up'};
-var $author$project$Rte$idSet = F2(
+var $author$project$Rte$Core$SelectWord = {$: 'SelectWord'};
+var $author$project$Rte$Core$Up = {$: 'Up'};
+var $author$project$Rte$Core$idSet = F2(
 	function (id, elem) {
 		switch (elem.$) {
 			case 'Break':
 				var br = elem.a;
-				return $author$project$Rte$Break(
+				return $author$project$Rte$Types$Break(
 					_Utils_update(
 						br,
 						{id: id}));
 			case 'Char':
 				var ch = elem.a;
-				return $author$project$Rte$Char(
+				return $author$project$Rte$Types$Char(
 					_Utils_update(
 						ch,
 						{id: id}));
 			default:
 				var html = elem.a;
-				return $author$project$Rte$Embedded(
+				return $author$project$Rte$Types$Embedded(
 					_Utils_update(
 						html,
 						{id: id}));
 		}
 	});
-var $author$project$Rte$addContent = F2(
+var $author$project$Rte$Core$addContent = F2(
 	function (added, e) {
 		var i = function (x) {
 			return _Utils_eq(x, _List_Nil) ? _List_fromArray(
 				[
-					$author$project$Rte$Break(
-					$author$project$Rte$defaultLineBreak(0))
+					$author$project$Rte$Types$Break(
+					$author$project$Rte$Core$defaultLineBreak(0))
 				]) : x;
 		};
 		var f = F2(
@@ -9457,7 +9610,7 @@ var $author$project$Rte$addContent = F2(
 							id + 1,
 							A2(
 								$elm$core$List$cons,
-								A2($author$project$Rte$idSet, id, x),
+								A2($author$project$Rte$Core$idSet, id, x),
 								output)),
 							$temp$input = rest;
 						_v0 = $temp$_v0;
@@ -9495,7 +9648,7 @@ var $author$project$Rte$addContent = F2(
 						cursor: e.cursor + $elm$core$List$length(added),
 						idCounter: e.idCounter + $elm$core$List$length(added)
 					}),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		} else {
 			var _v3 = _v2.a;
 			var beg = _v3.a;
@@ -9509,17 +9662,19 @@ var $author$project$Rte$addContent = F2(
 						idCounter: e.idCounter + $elm$core$List$length(added),
 						selection: $elm$core$Maybe$Nothing
 					}),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		}
 	});
-var $author$project$Rte$copyToClipboard = _Platform_outgoingPort('copyToClipboard', $elm$json$Json$Encode$string);
+var $author$project$Rte$Core$ToBrowserClipboard = function (a) {
+	return {$: 'ToBrowserClipboard', a: a};
+};
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
 };
 var $elm$core$Char$fromCode = _Char_fromCode;
-var $author$project$Rte$zeroWidthChar = $elm$core$Char$fromCode(8203);
-var $author$project$Rte$zeroWidthSpace = $elm$core$String$fromChar($author$project$Rte$zeroWidthChar);
-var $author$project$Rte$toText = function (content) {
+var $author$project$Rte$Core$zeroWidthChar = $elm$core$Char$fromCode(8203);
+var $author$project$Rte$Core$zeroWidthSpace = $elm$core$String$fromChar($author$project$Rte$Core$zeroWidthChar);
+var $author$project$Rte$Core$toText = function (content) {
 	var f = function (x) {
 		switch (x.$) {
 			case 'Break':
@@ -9529,7 +9684,7 @@ var $author$project$Rte$toText = function (content) {
 				return $elm$core$String$fromChar(ch._char);
 			default:
 				var html = x.a;
-				return $author$project$Rte$zeroWidthSpace;
+				return $author$project$Rte$Core$zeroWidthSpace;
 		}
 	};
 	var g = F2(
@@ -9540,7 +9695,7 @@ var $author$project$Rte$toText = function (content) {
 		});
 	return A3($elm$core$List$foldl, g, '', content);
 };
-var $author$project$Rte$copy = function (e) {
+var $author$project$Rte$Core$copy = function (e) {
 	var _v0 = e.selection;
 	if (_v0.$ === 'Nothing') {
 		return _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
@@ -9558,13 +9713,17 @@ var $author$project$Rte$copy = function (e) {
 				{
 					clipboard: $elm$core$Maybe$Just(clipboard)
 				}),
-			$author$project$Rte$copyToClipboard(
-				$author$project$Rte$toText(clipboard)));
+			A2(
+				$elm$core$Task$perform,
+				$elm$core$Basics$identity,
+				$elm$core$Task$succeed(
+					$author$project$Rte$Core$ToBrowserClipboard(
+						$author$project$Rte$Core$toText(clipboard)))));
 	}
 };
-var $author$project$Rte$lineBreakAt = F2(
+var $author$project$Rte$Core$lineBreakAt = F2(
 	function (idx, content) {
-		var _v0 = A2($author$project$Rte$nextBreakFrom, idx, content);
+		var _v0 = A2($author$project$Rte$Core$nextBreakFrom, idx, content);
 		if (_v0.$ === 'Just') {
 			var _v1 = _v0.a;
 			var lineBreak = _v1.b;
@@ -9573,20 +9732,20 @@ var $author$project$Rte$lineBreakAt = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $author$project$Rte$currentParaStyle = F2(
+var $author$project$Rte$Core$currentParaStyle = F2(
 	function (id, editor) {
-		var _v0 = A2($author$project$Rte$lineBreakAt, editor.cursor, editor.content);
+		var _v0 = A2($author$project$Rte$Core$lineBreakAt, editor.cursor, editor.content);
 		if (_v0.$ === 'Just') {
 			var lineBreak = _v0.a;
 			return _Utils_update(
 				lineBreak,
 				{id: id});
 		} else {
-			return $author$project$Rte$defaultLineBreak(id);
+			return $author$project$Rte$Core$defaultLineBreak(id);
 		}
 	});
-var $author$project$Rte$cut = function (e) {
-	var _v0 = $author$project$Rte$copy(e);
+var $author$project$Rte$Core$cut = function (e) {
+	var _v0 = $author$project$Rte$Core$copy(e);
 	var copied = _v0.a;
 	var copyCmd = _v0.b;
 	var _v1 = e.selection;
@@ -9613,17 +9772,17 @@ var $author$project$Rte$cut = function (e) {
 				_List_fromArray(
 					[
 						copyCmd,
-						A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID)
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID)
 					])));
 	}
 };
-var $author$project$Rte$delete = F3(
+var $author$project$Rte$Core$delete = F3(
 	function (beg, end, e) {
 		var g = function (x) {
 			return _Utils_eq(x, _List_Nil) ? _List_fromArray(
 				[
-					$author$project$Rte$Break(
-					$author$project$Rte$defaultLineBreak(0))
+					$author$project$Rte$Types$Break(
+					$author$project$Rte$Core$defaultLineBreak(0))
 				]) : x;
 		};
 		var f = F3(
@@ -9635,9 +9794,9 @@ var $author$project$Rte$delete = F3(
 		return g(
 			A3(f, beg, end, e.content));
 	});
-var $author$project$Rte$detectFontStyle = F2(
+var $author$project$Rte$Core$detectFontStyle = F2(
 	function (idx, e) {
-		var _v0 = A2($author$project$Rte$get, idx - 1, e.content);
+		var _v0 = A2($author$project$Rte$Core$get, idx - 1, e.content);
 		if ((_v0.$ === 'Just') && (_v0.a.$ === 'Char')) {
 			var c = _v0.a.a;
 			return _Utils_update(
@@ -9648,7 +9807,7 @@ var $author$project$Rte$detectFontStyle = F2(
 		}
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Rte$idOf = function (elem) {
+var $author$project$Rte$Core$idOf = function (elem) {
 	switch (elem.$) {
 		case 'Break':
 			var br = elem.a;
@@ -9661,7 +9820,7 @@ var $author$project$Rte$idOf = function (elem) {
 			return html.id;
 	}
 };
-var $author$project$Rte$getIdx = F2(
+var $author$project$Rte$Core$getIdx = F2(
 	function (idStr, content) {
 		var f = F3(
 			function (id, elem, _v2) {
@@ -9671,7 +9830,7 @@ var $author$project$Rte$getIdx = F2(
 					return _Utils_Tuple2(x, y);
 				} else {
 					return _Utils_eq(
-						$author$project$Rte$idOf(elem),
+						$author$project$Rte$Core$idOf(elem),
 						id) ? _Utils_Tuple2(
 						x,
 						$elm$core$Maybe$Just(x)) : _Utils_Tuple2(x + 1, $elm$core$Maybe$Nothing);
@@ -9690,7 +9849,7 @@ var $author$project$Rte$getIdx = F2(
 		}
 	});
 var $elm$browser$Browser$Dom$getViewportOf = _Browser_getViewportOf;
-var $author$project$Rte$getViewport = F2(
+var $author$project$Rte$Core$getViewport = F2(
 	function (msg, editorID) {
 		return A2(
 			$elm$core$Task$attempt,
@@ -9842,7 +10001,7 @@ var $elm_community$intdict$IntDict$insert = F3(
 				$elm$core$Maybe$Just(value)),
 			dict);
 	});
-var $author$project$Rte$insertBreak = F3(
+var $author$project$Rte$Core$insertBreak = F3(
 	function (br, maybeTimeStamp, editor0) {
 		var elemTxt = '\n';
 		var e = function () {
@@ -9865,7 +10024,7 @@ var $author$project$Rte$insertBreak = F3(
 						_Utils_ap(
 							_List_fromArray(
 								[
-									$author$project$Rte$Break(br)
+									$author$project$Rte$Types$Break(br)
 								]),
 							A2($elm$core$List$drop, e.cursor, e.content))),
 					cursor: e.cursor + 1,
@@ -9883,7 +10042,7 @@ var $author$project$Rte$insertBreak = F3(
 						_Utils_ap(
 							_List_fromArray(
 								[
-									$author$project$Rte$Break(br)
+									$author$project$Rte$Types$Break(br)
 								]),
 							A2($elm$core$List$drop, end + 1, e.content))),
 					cursor: beg + 1,
@@ -9892,7 +10051,7 @@ var $author$project$Rte$insertBreak = F3(
 				});
 		}
 	});
-var $author$project$Rte$jumpSize = 100;
+var $author$project$Rte$Core$jumpSize = 100;
 var $elm_community$intdict$IntDict$foldl = F3(
 	function (f, acc, dict) {
 		foldl:
@@ -9937,15 +10096,15 @@ var $elm_community$intdict$IntDict$foldr = F3(
 			}
 		}
 	});
-var $author$project$Rte$LocatedChar = F2(
+var $author$project$Rte$Core$LocatedChar = F2(
 	function (a, b) {
 		return {$: 'LocatedChar', a: a, b: b};
 	});
-var $author$project$Rte$locateCmd = F2(
+var $author$project$Rte$Core$locateCmd = F2(
 	function (idx, id) {
 		return A2(
 			$elm$core$Task$attempt,
-			$author$project$Rte$LocatedChar(idx),
+			$author$project$Rte$Core$LocatedChar(idx),
 			$elm$browser$Browser$Dom$getElement(
 				$elm$core$String$fromInt(id)));
 	});
@@ -9953,7 +10112,7 @@ var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
 	});
-var $author$project$Rte$locateMoreChars = F4(
+var $author$project$Rte$Core$locateMoreChars = F4(
 	function (e, _v0, func, newRegions) {
 		var a = _v0.a;
 		var b = _v0.b;
@@ -9979,15 +10138,15 @@ var $author$project$Rte$locateMoreChars = F4(
 			function (idx, xs) {
 				var _v3 = A2(
 					$elm$core$Maybe$map,
-					$author$project$Rte$idOf,
-					A2($author$project$Rte$get, idx, e.content));
+					$author$project$Rte$Core$idOf,
+					A2($author$project$Rte$Core$get, idx, e.content));
 				if (_v3.$ === 'Nothing') {
 					return xs;
 				} else {
 					var id = _v3.a;
 					return A2(
 						$elm$core$List$cons,
-						A2($author$project$Rte$locateCmd, idx, id),
+						A2($author$project$Rte$Core$locateCmd, idx, id),
 						xs);
 				}
 			});
@@ -10000,7 +10159,7 @@ var $author$project$Rte$locateMoreChars = F4(
 			return _Utils_Tuple2(
 				_Utils_update(
 					e,
-					{locateBacklog: 0, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}),
+					{locateBacklog: 0, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			var xs = idxs;
@@ -10015,11 +10174,11 @@ var $author$project$Rte$locateMoreChars = F4(
 				$elm$core$Platform$Cmd$batch(cmds));
 		}
 	});
-var $author$project$Rte$onSameLine = F2(
+var $author$project$Rte$Core$onSameLine = F2(
 	function (a, b) {
 		return _Utils_eq(a.y, b.y) || (((_Utils_cmp(a.y, b.y) < 1) && (_Utils_cmp(a.y + a.height, b.y + b.height) > -1)) || ((_Utils_cmp(b.y, a.y) < 1) && (_Utils_cmp(b.y + b.height, a.y + a.height) > -1)));
 	});
-var $author$project$Rte$selectionMod = F2(
+var $author$project$Rte$Core$selectionMod = F2(
 	function (oldCursor, _new) {
 		var newCursor = _new.cursor;
 		var selection = function () {
@@ -10045,7 +10204,7 @@ var $author$project$Rte$selectionMod = F2(
 			_new,
 			{selection: $elm$core$Maybe$Nothing});
 	});
-var $author$project$Rte$lineBoundary = F3(
+var $author$project$Rte$Core$lineBoundary = F3(
 	function (direction, _v0, e) {
 		var beg = _v0.a;
 		var end = _v0.b;
@@ -10072,7 +10231,7 @@ var $author$project$Rte$lineBoundary = F3(
 				if (winner.$ === 'Just') {
 					return _Utils_Tuple2($elm$core$Maybe$Nothing, winner);
 				} else {
-					return (!A2($author$project$Rte$onSameLine, a, cursor)) ? _Utils_Tuple2($elm$core$Maybe$Nothing, candidate) : (last(a) ? _Utils_Tuple2(
+					return (!A2($author$project$Rte$Core$onSameLine, a, cursor)) ? _Utils_Tuple2($elm$core$Maybe$Nothing, candidate) : (last(a) ? _Utils_Tuple2(
 						$elm$core$Maybe$Nothing,
 						$elm$core$Maybe$Just(a)) : _Utils_Tuple2(
 						$elm$core$Maybe$Just(a),
@@ -10088,36 +10247,36 @@ var $author$project$Rte$lineBoundary = F3(
 			var a = _v1.b.a;
 			return _Utils_Tuple2(
 				A2(
-					$author$project$Rte$detectFontStyle,
+					$author$project$Rte$Core$detectFontStyle,
 					a.idx,
 					A2(
-						$author$project$Rte$selectionMod,
+						$author$project$Rte$Core$selectionMod,
 						e.cursor,
 						_Utils_update(
 							e,
-							{cursor: a.idx, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}))),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+							{cursor: a.idx, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}))),
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		} else {
 			if (_v1.a.$ === 'Just') {
 				if (direction.$ === 'Down') {
 					return A4(
-						$author$project$Rte$locateMoreChars,
+						$author$project$Rte$Core$locateMoreChars,
 						e,
-						_Utils_Tuple2(e.cursor, end + $author$project$Rte$jumpSize),
-						$author$project$Rte$LineBoundary($author$project$Rte$Down),
+						_Utils_Tuple2(e.cursor, end + $author$project$Rte$Core$jumpSize),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Down),
 						_List_fromArray(
 							[
-								_Utils_Tuple2(end + 1, end + $author$project$Rte$jumpSize)
+								_Utils_Tuple2(end + 1, end + $author$project$Rte$Core$jumpSize)
 							]));
 				} else {
 					return A4(
-						$author$project$Rte$locateMoreChars,
+						$author$project$Rte$Core$locateMoreChars,
 						e,
-						_Utils_Tuple2(beg - $author$project$Rte$jumpSize, e.cursor),
-						$author$project$Rte$LineBoundary($author$project$Rte$Up),
+						_Utils_Tuple2(beg - $author$project$Rte$Core$jumpSize, e.cursor),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Up),
 						_List_fromArray(
 							[
-								_Utils_Tuple2(beg - $author$project$Rte$jumpSize, beg - 1)
+								_Utils_Tuple2(beg - $author$project$Rte$Core$jumpSize, beg - 1)
 							]));
 				}
 			} else {
@@ -10126,12 +10285,12 @@ var $author$project$Rte$lineBoundary = F3(
 				return _Utils_Tuple2(
 					_Utils_update(
 						e,
-						{located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}),
+						{located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}),
 					$elm$core$Platform$Cmd$none);
 			}
 		}
 	});
-var $author$project$Rte$jumpHelp = F4(
+var $author$project$Rte$Core$jumpHelp = F4(
 	function (isRelevant, direction, _v0, e) {
 		var beg = _v0.a;
 		var end = _v0.b;
@@ -10175,7 +10334,7 @@ var $author$project$Rte$jumpHelp = F4(
 								$elm$core$Maybe$Nothing);
 						} else {
 							var old = candidate.a;
-							return ((!A2($author$project$Rte$onSameLine, old, _new)) || A2(better, old, _new)) ? _Utils_Tuple2(
+							return ((!A2($author$project$Rte$Core$onSameLine, old, _new)) || A2(better, old, _new)) ? _Utils_Tuple2(
 								$elm$core$Maybe$Nothing,
 								$elm$core$Maybe$Just(old)) : (last(_new) ? _Utils_Tuple2(
 								$elm$core$Maybe$Nothing,
@@ -10201,12 +10360,12 @@ var $author$project$Rte$jumpHelp = F4(
 			return _Utils_Tuple2(
 				$elm$core$Maybe$Just(
 					_Utils_Tuple2(
-						_Utils_Tuple2(beg - (($author$project$Rte$jumpSize / 2) | 0), beg - 1),
-						_Utils_Tuple2(end + 1, end + (($author$project$Rte$jumpSize / 2) | 0)))),
+						_Utils_Tuple2(beg - (($author$project$Rte$Core$jumpSize / 2) | 0), beg - 1),
+						_Utils_Tuple2(end + 1, end + (($author$project$Rte$Core$jumpSize / 2) | 0)))),
 				$elm$core$Maybe$Nothing);
 		}
 	});
-var $author$project$Rte$jump = F5(
+var $author$project$Rte$Core$jump = F5(
 	function (f, isRelevant, direction, _v0, e) {
 		var beg = _v0.a;
 		var end = _v0.b;
@@ -10215,25 +10374,25 @@ var $author$project$Rte$jump = F5(
 			function (idx, x) {
 				return _Utils_Tuple2(
 					A2(
-						$author$project$Rte$detectFontStyle,
+						$author$project$Rte$Core$detectFontStyle,
 						idx,
 						A2(
-							$author$project$Rte$selectionMod,
+							$author$project$Rte$Core$selectionMod,
 							e.cursor,
 							_Utils_update(
 								x,
-								{cursor: idx, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}))),
-					A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+								{cursor: idx, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}))),
+					A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 			});
 		var fail = function (x) {
 			return _Utils_Tuple2(
 				_Utils_update(
 					x,
-					{located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}),
+					{located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}),
 				$elm$core$Platform$Cmd$none);
 		};
 		var _v1 = A4(
-			$author$project$Rte$jumpHelp,
+			$author$project$Rte$Core$jumpHelp,
 			isRelevant,
 			direction,
 			_Utils_Tuple2(beg, end),
@@ -10256,7 +10415,7 @@ var $author$project$Rte$jump = F5(
 				var d = _v6.b;
 				var _v7 = _v1.b;
 				return (!beg) ? A2(g, 0, e) : (_Utils_eq(end, maxIdx) ? A2(g, maxIdx, e) : (((beg > 0) || (_Utils_cmp(end, maxIdx) < 0)) ? A4(
-					$author$project$Rte$locateMoreChars,
+					$author$project$Rte$Core$locateMoreChars,
 					e,
 					_Utils_Tuple2(a, d),
 					f(direction),
@@ -10268,7 +10427,7 @@ var $author$project$Rte$jump = F5(
 			}
 		}
 	});
-var $author$project$Rte$lineJump = F3(
+var $author$project$Rte$Core$lineJump = F3(
 	function (direction, _v0, editor) {
 		var beg = _v0.a;
 		var end = _v0.b;
@@ -10281,14 +10440,14 @@ var $author$project$Rte$lineJump = F3(
 				}
 			});
 		return A5(
-			$author$project$Rte$jump,
-			$author$project$Rte$LineJump,
+			$author$project$Rte$Core$jump,
+			$author$project$Rte$Core$LineJump,
 			f,
 			direction,
 			_Utils_Tuple2(beg, end),
 			editor);
 	});
-var $author$project$Rte$locateChars = F3(
+var $author$project$Rte$Core$locateChars = F3(
 	function (e, _v0, func) {
 		var a = _v0.a;
 		var b = _v0.b;
@@ -10297,15 +10456,15 @@ var $author$project$Rte$locateChars = F3(
 			function (idx, xs) {
 				var _v2 = A2(
 					$elm$core$Maybe$map,
-					$author$project$Rte$idOf,
-					A2($author$project$Rte$get, idx, e.content));
+					$author$project$Rte$Core$idOf,
+					A2($author$project$Rte$Core$get, idx, e.content));
 				if (_v2.$ === 'Nothing') {
 					return xs;
 				} else {
 					var id = _v2.a;
 					return A2(
 						$elm$core$List$cons,
-						A2($author$project$Rte$locateCmd, idx, id),
+						A2($author$project$Rte$Core$locateCmd, idx, id),
 						xs);
 				}
 			});
@@ -10332,37 +10491,37 @@ var $author$project$Rte$locateChars = F3(
 			$elm$core$Platform$Cmd$batch(
 				A2(
 					$elm$core$List$cons,
-					A2($author$project$Rte$focusOnEditor, e.state, e.editorID),
+					A2($author$project$Rte$Core$focusOnEditor, e.state, e.editorID),
 					cmds)));
 	});
-var $author$project$Rte$PlaceCursor3_CursorParent = F2(
+var $author$project$Rte$Core$PlaceCursor3_CursorParent = F2(
 	function (a, b) {
 		return {$: 'PlaceCursor3_CursorParent', a: a, b: b};
 	});
-var $author$project$Rte$locateCursorParent = F2(
+var $author$project$Rte$Core$locateCursorParent = F2(
 	function (e, scroll) {
 		var id = A2(
 			$elm$core$Maybe$map,
-			$author$project$Rte$idOf,
-			A2($author$project$Rte$get, e.cursor, e.content));
+			$author$project$Rte$Core$idOf,
+			A2($author$project$Rte$Core$get, e.cursor, e.content));
 		if (id.$ === 'Just') {
 			var x = id.a;
 			return _Utils_Tuple2(
 				e,
 				A2(
 					$elm$core$Task$attempt,
-					$author$project$Rte$PlaceCursor3_CursorParent(scroll),
+					$author$project$Rte$Core$PlaceCursor3_CursorParent(scroll),
 					$elm$browser$Browser$Dom$getElement(
 						$elm$core$String$fromInt(x))));
 		} else {
 			return _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Rte$DragFrom = function (a) {
+var $author$project$Rte$Core$DragFrom = function (a) {
 	return {$: 'DragFrom', a: a};
 };
-var $author$project$Rte$DragInit = {$: 'DragInit'};
-var $author$project$Rte$next = F3(
+var $author$project$Rte$Core$DragInit = {$: 'DragInit'};
+var $author$project$Rte$Core$next = F3(
 	function (f, idx, content) {
 		var maxIdx = $elm$core$List$length(content) - 1;
 		var idxs = A2($elm$core$List$range, idx + 1, maxIdx);
@@ -10376,7 +10535,7 @@ var $author$project$Rte$next = F3(
 			});
 		return A3($elm$core$List$foldl, g, $elm$core$Maybe$Nothing, idxs);
 	});
-var $author$project$Rte$diacritical = function (_char) {
+var $author$project$Rte$Core$diacritical = function (_char) {
 	return A2(
 		$elm$core$List$member,
 		_char,
@@ -10450,21 +10609,21 @@ var $author$project$Rte$diacritical = function (_char) {
 				_Utils_chr('ű')
 			]));
 };
-var $author$project$Rte$alphaNumAt = F2(
+var $author$project$Rte$Core$alphaNumAt = F2(
 	function (idx, content) {
-		var _v0 = A2($author$project$Rte$get, idx, content);
+		var _v0 = A2($author$project$Rte$Core$get, idx, content);
 		if ((_v0.$ === 'Just') && (_v0.a.$ === 'Char')) {
 			var ch = _v0.a.a;
-			return $elm$core$Char$isAlphaNum(ch._char) || $author$project$Rte$diacritical(ch._char);
+			return $elm$core$Char$isAlphaNum(ch._char) || $author$project$Rte$Core$diacritical(ch._char);
 		} else {
 			return false;
 		}
 	});
-var $author$project$Rte$nonAlphaNumAt = F2(
+var $author$project$Rte$Core$nonAlphaNumAt = F2(
 	function (idx, content) {
-		return !A2($author$project$Rte$alphaNumAt, idx, content);
+		return !A2($author$project$Rte$Core$alphaNumAt, idx, content);
 	});
-var $author$project$Rte$previous = F3(
+var $author$project$Rte$Core$previous = F3(
 	function (f, idx, content) {
 		var idxs = A2($elm$core$List$range, 0, idx - 1);
 		var g = F2(
@@ -10477,8 +10636,8 @@ var $author$project$Rte$previous = F3(
 			});
 		return A3($elm$core$List$foldr, g, $elm$core$Maybe$Nothing, idxs);
 	});
-var $author$project$Rte$previousWordBoundary = function (e) {
-	return A2($author$project$Rte$alphaNumAt, e.cursor - 1, e.content) ? A2(
+var $author$project$Rte$Core$previousWordBoundary = function (e) {
+	return A2($author$project$Rte$Core$alphaNumAt, e.cursor - 1, e.content) ? A2(
 		$elm$core$Maybe$withDefault,
 		0,
 		A2(
@@ -10486,7 +10645,7 @@ var $author$project$Rte$previousWordBoundary = function (e) {
 			function (x) {
 				return x + 1;
 			},
-			A3($author$project$Rte$previous, $author$project$Rte$nonAlphaNumAt, e.cursor, e.content))) : A2(
+			A3($author$project$Rte$Core$previous, $author$project$Rte$Core$nonAlphaNumAt, e.cursor, e.content))) : A2(
 		$elm$core$Maybe$withDefault,
 		0,
 		A2(
@@ -10494,11 +10653,11 @@ var $author$project$Rte$previousWordBoundary = function (e) {
 			function (x) {
 				return x + 1;
 			},
-			A3($author$project$Rte$previous, $author$project$Rte$alphaNumAt, e.cursor, e.content)));
+			A3($author$project$Rte$Core$previous, $author$project$Rte$Core$alphaNumAt, e.cursor, e.content)));
 };
-var $author$project$Rte$currentWord = function (e) {
-	var beg = $author$project$Rte$previousWordBoundary(e);
-	var _v0 = A3($author$project$Rte$next, $author$project$Rte$nonAlphaNumAt, e.cursor, e.content);
+var $author$project$Rte$Core$currentWord = function (e) {
+	var beg = $author$project$Rte$Core$previousWordBoundary(e);
+	var _v0 = A3($author$project$Rte$Core$next, $author$project$Rte$Core$nonAlphaNumAt, e.cursor, e.content);
 	if (_v0.$ === 'Just') {
 		var x = _v0.a;
 		return _Utils_Tuple2(beg, x - 1);
@@ -10508,8 +10667,8 @@ var $author$project$Rte$currentWord = function (e) {
 			$elm$core$List$length(e.content) - 1);
 	}
 };
-var $author$project$Rte$selectCurrentWord = function (editor) {
-	var _v0 = $author$project$Rte$currentWord(editor);
+var $author$project$Rte$Core$selectCurrentWord = function (editor) {
+	var _v0 = $author$project$Rte$Core$currentWord(editor);
 	var beg = _v0.a;
 	var end = _v0.b;
 	return _Utils_update(
@@ -10523,7 +10682,7 @@ var $author$project$Rte$selectCurrentWord = function (editor) {
 				_Utils_Tuple2(beg, end))
 		});
 };
-var $author$project$Rte$locateMouse = F4(
+var $author$project$Rte$Core$locateMouse = F4(
 	function (s, _v0, _v1, e) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
@@ -10536,7 +10695,7 @@ var $author$project$Rte$locateMouse = F4(
 				if (x.$ === 'Just') {
 					return x;
 				} else {
-					return (_Utils_cmp(b.idx, a.idx) > 0) ? $elm$core$Maybe$Nothing : (((!A2($author$project$Rte$onSameLine, a, b)) || (!b.idx)) ? $elm$core$Maybe$Just(b.idx + 1) : $elm$core$Maybe$Nothing);
+					return (_Utils_cmp(b.idx, a.idx) > 0) ? $elm$core$Maybe$Nothing : (((!A2($author$project$Rte$Core$onSameLine, a, b)) || (!b.idx)) ? $elm$core$Maybe$Just(b.idx + 1) : $elm$core$Maybe$Nothing);
 				}
 			});
 		var getBounds = function (a) {
@@ -10613,19 +10772,19 @@ var $author$project$Rte$locateMouse = F4(
 			return ((beg < 1) && (_Utils_cmp(end, maxIdx) > -1)) ? _Utils_Tuple2(
 				_Utils_update(
 					x,
-					{locateBacklog: 0, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Idle}),
+					{locateBacklog: 0, located: $elm_community$intdict$IntDict$empty, locating: $author$project$Rte$Core$Idle}),
 				$elm$core$Platform$Cmd$none) : A4(
-				$author$project$Rte$locateMoreChars,
+				$author$project$Rte$Core$locateMoreChars,
 				x,
-				_Utils_Tuple2(beg - $author$project$Rte$jumpSize, end + $author$project$Rte$jumpSize),
+				_Utils_Tuple2(beg - $author$project$Rte$Core$jumpSize, end + $author$project$Rte$Core$jumpSize),
 				A2(
-					$author$project$Rte$Mouse,
+					$author$project$Rte$Core$Mouse,
 					s,
 					_Utils_Tuple2(mouseX, mouseY)),
 				_List_fromArray(
 					[
-						_Utils_Tuple2(beg - $author$project$Rte$jumpSize, beg - 1),
-						_Utils_Tuple2(end + 1, end + $author$project$Rte$jumpSize)
+						_Utils_Tuple2(beg - $author$project$Rte$Core$jumpSize, beg - 1),
+						_Utils_Tuple2(end + 1, end + $author$project$Rte$Core$jumpSize)
 					]));
 		};
 		if (targetLine.$ === 'Nothing') {
@@ -10641,7 +10800,7 @@ var $author$project$Rte$locateMouse = F4(
 					return _Utils_Tuple2(a, b);
 				} else {
 					return _Utils_Tuple2(
-						$author$project$Rte$selectCurrentWord(a),
+						$author$project$Rte$Core$selectCurrentWord(a),
 						b);
 				}
 			};
@@ -10670,25 +10829,25 @@ var $author$project$Rte$locateMouse = F4(
 				return maybeSelectWord(
 					_Utils_Tuple2(
 						A2(
-							$author$project$Rte$detectFontStyle,
+							$author$project$Rte$Core$detectFontStyle,
 							closest.idx,
 							_Utils_update(
 								e,
 								{
 									cursor: closest.idx,
-									drag: _Utils_eq(e.drag, $author$project$Rte$DragInit) ? $author$project$Rte$DragFrom(closest.idx) : e.drag,
+									drag: _Utils_eq(e.drag, $author$project$Rte$Core$DragInit) ? $author$project$Rte$Core$DragFrom(closest.idx) : e.drag,
 									located: $elm_community$intdict$IntDict$empty,
-									locating: $author$project$Rte$Idle
+									locating: $author$project$Rte$Core$Idle
 								})),
-						A2($author$project$Rte$placeCursor, $author$project$Rte$NoScroll, e.editorID)));
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$NoScroll, e.editorID)));
 			} else {
 				return _continue(e);
 			}
 		}
 	});
-var $author$project$Rte$SelectNone = {$: 'SelectNone'};
+var $author$project$Rte$Core$SelectNone = {$: 'SelectNone'};
 var $elm$core$Basics$round = _Basics_round;
-var $author$project$Rte$mouseDown = F3(
+var $author$project$Rte$Core$mouseDown = F3(
 	function (_v0, timeStamp, e) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
@@ -10708,31 +10867,31 @@ var $author$project$Rte$mouseDown = F3(
 		var pX = _v2.a;
 		var pY = _v2.b;
 		var guess = $elm$core$Basics$round((maxIdx * ((mouseY - pY) + vY)) / sceneHeight);
-		var bounds = _Utils_Tuple2(guess - $author$project$Rte$jumpSize, guess + $author$project$Rte$jumpSize);
+		var bounds = _Utils_Tuple2(guess - $author$project$Rte$Core$jumpSize, guess + $author$project$Rte$Core$jumpSize);
 		return A3(
-			$author$project$Rte$locateChars,
+			$author$project$Rte$Core$locateChars,
 			A2(
 				f,
 				_Utils_update(
 					e,
 					{selection: $elm$core$Maybe$Nothing}),
-				$author$project$Rte$DragInit),
+				$author$project$Rte$Core$DragInit),
 			bounds,
 			A2(
-				$author$project$Rte$Mouse,
-				$author$project$Rte$SelectNone,
+				$author$project$Rte$Core$Mouse,
+				$author$project$Rte$Core$SelectNone,
 				_Utils_Tuple2(mouseX, mouseY)));
 	});
-var $author$project$Rte$nextWordBoundary = function (e) {
-	return A2($author$project$Rte$alphaNumAt, e.cursor, e.content) ? A2(
+var $author$project$Rte$Core$nextWordBoundary = function (e) {
+	return A2($author$project$Rte$Core$alphaNumAt, e.cursor, e.content) ? A2(
 		$elm$core$Maybe$withDefault,
 		$elm$core$List$length(e.content) - 1,
-		A3($author$project$Rte$next, $author$project$Rte$nonAlphaNumAt, e.cursor, e.content)) : A2(
+		A3($author$project$Rte$Core$next, $author$project$Rte$Core$nonAlphaNumAt, e.cursor, e.content)) : A2(
 		$elm$core$Maybe$withDefault,
 		$elm$core$List$length(e.content) - 1,
-		A3($author$project$Rte$next, $author$project$Rte$alphaNumAt, e.cursor, e.content));
+		A3($author$project$Rte$Core$next, $author$project$Rte$Core$alphaNumAt, e.cursor, e.content));
 };
-var $author$project$Rte$page = F3(
+var $author$project$Rte$Core$page = F3(
 	function (direction, _v0, e) {
 		var beg = _v0.a;
 		var end = _v0.b;
@@ -10745,14 +10904,14 @@ var $author$project$Rte$page = F3(
 				}
 			});
 		return A5(
-			$author$project$Rte$jump,
-			$author$project$Rte$Page,
+			$author$project$Rte$Core$jump,
+			$author$project$Rte$Core$Page,
 			f,
 			direction,
 			_Utils_Tuple2(beg, end),
 			e);
 	});
-var $author$project$Rte$pageEstimate = F4(
+var $author$project$Rte$Core$pageEstimate = F4(
 	function (direction, maxIdx, cursor, viewport) {
 		var v = viewport.viewport;
 		var scene = viewport.scene;
@@ -10764,44 +10923,44 @@ var $author$project$Rte$pageEstimate = F4(
 				return A2($elm$core$Basics$max, 0, cursor - pageSizeGuess);
 			}
 		}();
-		return _Utils_Tuple2(cursorGuess - $author$project$Rte$jumpSize, cursorGuess + $author$project$Rte$jumpSize);
+		return _Utils_Tuple2(cursorGuess - $author$project$Rte$Core$jumpSize, cursorGuess + $author$project$Rte$Core$jumpSize);
 	});
 var $elm$browser$Browser$Dom$setViewportOf = _Browser_setViewportOf;
-var $author$project$Rte$scrollTo = F2(
+var $author$project$Rte$Core$scrollTo = F2(
 	function (editorID, y) {
 		return A2(
 			$elm$core$Task$attempt,
 			function (_v0) {
-				return $author$project$Rte$NoOp;
+				return $author$project$Rte$Core$NoOp;
 			},
 			A3($elm$browser$Browser$Dom$setViewportOf, editorID, 0, y));
 	});
-var $author$project$Rte$scrollIfNeeded = F4(
+var $author$project$Rte$Core$scrollIfNeeded = F4(
 	function (cursor, box, viewport, editorID) {
 		var viewY = viewport.viewport.y;
 		if (_Utils_cmp(cursor.y, box.y) < 0) {
 			var yDelta = (-box.y) + cursor.y;
-			return A2($author$project$Rte$scrollTo, editorID, viewY + yDelta);
+			return A2($author$project$Rte$Core$scrollTo, editorID, viewY + yDelta);
 		} else {
 			if (_Utils_cmp(cursor.y + cursor.height, box.y + box.height) > 0) {
 				var yDelta = ((cursor.y + cursor.height) - box.y) - box.height;
-				return A2($author$project$Rte$scrollTo, editorID, viewY + yDelta);
+				return A2($author$project$Rte$Core$scrollTo, editorID, viewY + yDelta);
 			} else {
 				return A2(
 					$elm$core$Task$perform,
 					$elm$core$Basics$identity,
 					$elm$core$Task$succeed(
-						$author$project$Rte$Scrolled($elm$core$Maybe$Nothing)));
+						$author$project$Rte$Core$Scrolled($elm$core$Maybe$Nothing)));
 			}
 		}
 	});
-var $author$project$Rte$restore = F2(
+var $author$project$Rte$Core$restore = F2(
 	function (x, editor) {
 		return _Utils_update(
 			editor,
 			{content: x.content, cursor: x.cursor, fontStyle: x.fontStyle, selection: x.selection});
 	});
-var $author$project$Rte$undoAction = function (e) {
+var $author$project$Rte$Core$undoAction = function (e) {
 	var _v0 = e.undo;
 	if (!_v0.b) {
 		return _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
@@ -10810,7 +10969,7 @@ var $author$project$Rte$undoAction = function (e) {
 			var x = _v0.a;
 			return _Utils_Tuple2(
 				A2(
-					$author$project$Rte$restore,
+					$author$project$Rte$Core$restore,
 					x,
 					_Utils_update(
 						e,
@@ -10818,23 +10977,23 @@ var $author$project$Rte$undoAction = function (e) {
 							undo: _List_fromArray(
 								[x])
 						})),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		} else {
 			var x = _v0.a;
 			var rest = _v0.b;
 			return _Utils_Tuple2(
 				A2(
-					$author$project$Rte$restore,
+					$author$project$Rte$Core$restore,
 					x,
 					_Utils_update(
 						e,
 						{undo: rest})),
-				A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+				A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 		}
 	}
 };
-var $author$project$Rte$undoRefreshHead = function (e) {
-	var current = $author$project$Rte$snapshot(e);
+var $author$project$Rte$Core$undoRefreshHead = function (e) {
+	var current = $author$project$Rte$Core$snapshot(e);
 	var _v0 = e.undo;
 	if (!_v0.b) {
 		return e;
@@ -10847,7 +11006,7 @@ var $author$project$Rte$undoRefreshHead = function (e) {
 			});
 	}
 };
-var $author$project$Rte$updateUndo = F2(
+var $author$project$Rte$Core$updateUndo = F2(
 	function (msg, e) {
 		var maxIdx = $elm$core$List$length(e.content) - 1;
 		if (msg.$ === 'KeyDown') {
@@ -10855,11 +11014,11 @@ var $author$project$Rte$updateUndo = F2(
 			var str = msg.b;
 			var like = function (x) {
 				return A2(
-					$author$project$Rte$updateUndo,
-					A2($author$project$Rte$KeyDown, timeStamp, x),
+					$author$project$Rte$Core$updateUndo,
+					A2($author$project$Rte$Core$KeyDown, timeStamp, x),
 					e);
 			};
-			var contentMod = ((timeStamp - e.lastKeyDown) < 1000) ? $author$project$Rte$undoRefreshHead(e) : $author$project$Rte$undoAddNew(e);
+			var contentMod = ((timeStamp - e.lastKeyDown) < 1000) ? $author$project$Rte$Core$undoRefreshHead(e) : $author$project$Rte$Core$undoAddNew(e);
 			if ($elm$core$String$length(str) === 1) {
 				if (!e.ctrlDown) {
 					return contentMod;
@@ -10870,11 +11029,11 @@ var $author$project$Rte$updateUndo = F2(
 						case '1':
 							return contentMod;
 						case 'x':
-							return (!_Utils_eq(e.selection, $elm$core$Maybe$Nothing)) ? $author$project$Rte$undoAddNew(e) : e;
+							return (!_Utils_eq(e.selection, $elm$core$Maybe$Nothing)) ? $author$project$Rte$Core$undoAddNew(e) : e;
 						case 'X':
 							return like('x');
 						case 'v':
-							return (!_Utils_eq(e.clipboard, $elm$core$Maybe$Nothing)) ? $author$project$Rte$undoAddNew(e) : e;
+							return (!_Utils_eq(e.clipboard, $elm$core$Maybe$Nothing)) ? $author$project$Rte$Core$undoAddNew(e) : e;
 						case 'V':
 							return like('v');
 						default:
@@ -10907,19 +11066,19 @@ var $author$project$Rte$updateUndo = F2(
 			return e;
 		}
 	});
-var $author$project$Rte$keyDown = F3(
+var $author$project$Rte$Core$keyDown = F3(
 	function (timeStamp, str, e) {
 		var maxIdx = $elm$core$List$length(e.content) - 1;
 		var like = function (x) {
 			return A2(
-				$author$project$Rte$update,
-				A2($author$project$Rte$KeyDown, timeStamp, x),
+				$author$project$Rte$Core$update,
+				A2($author$project$Rte$Core$KeyDown, timeStamp, x),
 				e);
 		};
 		if ($elm$core$String$length(str) === 1) {
 			if (!e.ctrlDown) {
 				return A4(
-					$author$project$Rte$typed,
+					$author$project$Rte$Core$typed,
 					str,
 					e,
 					$elm$core$Maybe$Just(timeStamp),
@@ -10928,14 +11087,14 @@ var $author$project$Rte$keyDown = F3(
 				switch (str) {
 					case '0':
 						return A4(
-							$author$project$Rte$typed,
+							$author$project$Rte$Core$typed,
 							'–',
 							e,
 							$elm$core$Maybe$Just(timeStamp),
 							false);
 					case '1':
 						return A4(
-							$author$project$Rte$typed,
+							$author$project$Rte$Core$typed,
 							'—',
 							e,
 							$elm$core$Maybe$Just(timeStamp),
@@ -10952,11 +11111,11 @@ var $author$project$Rte$keyDown = F3(
 					case 'A':
 						return like('a');
 					case 'c':
-						return A2($author$project$Rte$update, $author$project$Rte$Copy, e);
+						return A2($author$project$Rte$Core$update, $author$project$Rte$Core$Copy, e);
 					case 'C':
 						return like('c');
 					case 'x':
-						return A2($author$project$Rte$update, $author$project$Rte$Cut, e);
+						return A2($author$project$Rte$Core$update, $author$project$Rte$Core$Cut, e);
 					case 'X':
 						return like('x');
 					case 'z':
@@ -10965,7 +11124,7 @@ var $author$project$Rte$keyDown = F3(
 							A2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
-								$elm$core$Task$succeed($author$project$Rte$UndoAction)));
+								$elm$core$Task$succeed($author$project$Rte$Core$UndoAction)));
 					case 'Z':
 						return like('z');
 					default:
@@ -10976,10 +11135,10 @@ var $author$project$Rte$keyDown = F3(
 			switch (str) {
 				case 'ArrowDown':
 					return _Utils_eq(e.cursor, maxIdx) ? _Utils_Tuple2(e, $elm$core$Platform$Cmd$none) : A3(
-						$author$project$Rte$locateChars,
+						$author$project$Rte$Core$locateChars,
 						e,
-						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$jumpSize),
-						$author$project$Rte$LineJump($author$project$Rte$Down));
+						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$Core$jumpSize),
+						$author$project$Rte$Core$LineJump($author$project$Rte$Core$Down));
 				case 'ArrowLeft':
 					if (e.cursor < 1) {
 						return (!e.shiftDown) ? _Utils_Tuple2(
@@ -10989,18 +11148,18 @@ var $author$project$Rte$keyDown = F3(
 							$elm$core$Platform$Cmd$none) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 					} else {
 						if (e.ctrlDown) {
-							var newCursor = $author$project$Rte$previousWordBoundary(e);
+							var newCursor = $author$project$Rte$Core$previousWordBoundary(e);
 							return _Utils_Tuple2(
 								A2(
-									$author$project$Rte$detectFontStyle,
+									$author$project$Rte$Core$detectFontStyle,
 									newCursor,
 									A2(
-										$author$project$Rte$selectionMod,
+										$author$project$Rte$Core$selectionMod,
 										e.cursor,
 										_Utils_update(
 											e,
 											{cursor: newCursor}))),
-								A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+								A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 						} else {
 							var f = function (x) {
 								return A2($elm$core$Basics$max, 0, x);
@@ -11021,15 +11180,15 @@ var $author$project$Rte$keyDown = F3(
 							}();
 							return _Utils_Tuple2(
 								A2(
-									$author$project$Rte$detectFontStyle,
+									$author$project$Rte$Core$detectFontStyle,
 									newCursor,
 									A2(
-										$author$project$Rte$selectionMod,
+										$author$project$Rte$Core$selectionMod,
 										e.cursor,
 										_Utils_update(
 											e,
 											{cursor: newCursor}))),
-								A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+								A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 						}
 					}
 				case 'ArrowRight':
@@ -11046,26 +11205,26 @@ var $author$project$Rte$keyDown = F3(
 								_Utils_Tuple2(0, maxIdx)))) {
 							return _Utils_Tuple2(
 								A2(
-									$author$project$Rte$detectFontStyle,
+									$author$project$Rte$Core$detectFontStyle,
 									maxIdx,
 									_Utils_update(
 										e,
 										{cursor: maxIdx, selection: $elm$core$Maybe$Nothing})),
-								A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+								A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 						} else {
 							if (e.ctrlDown) {
-								var newCursor = $author$project$Rte$nextWordBoundary(e);
+								var newCursor = $author$project$Rte$Core$nextWordBoundary(e);
 								return _Utils_Tuple2(
 									A2(
-										$author$project$Rte$detectFontStyle,
+										$author$project$Rte$Core$detectFontStyle,
 										newCursor,
 										A2(
-											$author$project$Rte$selectionMod,
+											$author$project$Rte$Core$selectionMod,
 											e.cursor,
 											_Utils_update(
 												e,
 												{cursor: newCursor}))),
-									A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+									A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 							} else {
 								var f = function (x) {
 									return A2($elm$core$Basics$min, x, maxIdx);
@@ -11086,30 +11245,30 @@ var $author$project$Rte$keyDown = F3(
 								}();
 								return _Utils_Tuple2(
 									A2(
-										$author$project$Rte$detectFontStyle,
+										$author$project$Rte$Core$detectFontStyle,
 										newCursor,
 										A2(
-											$author$project$Rte$selectionMod,
+											$author$project$Rte$Core$selectionMod,
 											e.cursor,
 											_Utils_update(
 												e,
 												{cursor: newCursor}))),
-									A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+									A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 							}
 						}
 					}
 				case 'ArrowUp':
 					return (!e.cursor) ? _Utils_Tuple2(e, $elm$core$Platform$Cmd$none) : A3(
-						$author$project$Rte$locateChars,
+						$author$project$Rte$Core$locateChars,
 						e,
-						_Utils_Tuple2(e.cursor - $author$project$Rte$jumpSize, e.cursor - 1),
-						$author$project$Rte$LineJump($author$project$Rte$Up));
+						_Utils_Tuple2(e.cursor - $author$project$Rte$Core$jumpSize, e.cursor - 1),
+						$author$project$Rte$Core$LineJump($author$project$Rte$Core$Up));
 				case 'Backspace':
 					var _v24 = e.selection;
 					if (_v24.$ === 'Nothing') {
 						return (e.cursor > 0) ? _Utils_Tuple2(
 							A2(
-								$author$project$Rte$detectFontStyle,
+								$author$project$Rte$Core$detectFontStyle,
 								e.cursor - 1,
 								_Utils_update(
 									e,
@@ -11119,14 +11278,14 @@ var $author$project$Rte$keyDown = F3(
 											A2($elm$core$List$drop, e.cursor, e.content)),
 										cursor: e.cursor - 1
 									})),
-							A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID)) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
+							A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID)) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 					} else {
 						var _v25 = _v24.a;
 						var beg = _v25.a;
 						var end = _v25.b;
 						return _Utils_Tuple2(
 							A2(
-								$author$project$Rte$detectFontStyle,
+								$author$project$Rte$Core$detectFontStyle,
 								beg,
 								_Utils_update(
 									e,
@@ -11137,7 +11296,7 @@ var $author$project$Rte$keyDown = F3(
 										cursor: beg,
 										selection: $elm$core$Maybe$Nothing
 									})),
-							A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+							A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 					}
 				case 'Control':
 					return _Utils_Tuple2(
@@ -11152,93 +11311,93 @@ var $author$project$Rte$keyDown = F3(
 							_Utils_update(
 								e,
 								{
-									content: A3($author$project$Rte$delete, e.cursor, e.cursor + 1, e)
+									content: A3($author$project$Rte$Core$delete, e.cursor, e.cursor + 1, e)
 								}),
-							A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID)) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
+							A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID)) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 					} else {
 						var _v27 = _v26.a;
 						var beg = _v27.a;
 						var end = _v27.b;
 						return _Utils_Tuple2(
 							A2(
-								$author$project$Rte$detectFontStyle,
+								$author$project$Rte$Core$detectFontStyle,
 								beg,
 								_Utils_update(
 									e,
 									{
-										content: A3($author$project$Rte$delete, beg, end + 1, e),
+										content: A3($author$project$Rte$Core$delete, beg, end + 1, e),
 										cursor: beg,
 										selection: $elm$core$Maybe$Nothing
 									})),
-							A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+							A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 					}
 				case 'End':
 					return e.ctrlDown ? _Utils_Tuple2(
 						A2(
-							$author$project$Rte$detectFontStyle,
+							$author$project$Rte$Core$detectFontStyle,
 							maxIdx,
 							A2(
-								$author$project$Rte$selectionMod,
+								$author$project$Rte$Core$selectionMod,
 								e.cursor,
 								_Utils_update(
 									e,
 									{cursor: maxIdx}))),
-						A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID)) : (e.shiftDown ? A3(
-						$author$project$Rte$locateChars,
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID)) : (e.shiftDown ? A3(
+						$author$project$Rte$Core$locateChars,
 						e,
-						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$jumpSize),
-						$author$project$Rte$LineBoundary($author$project$Rte$Down)) : A3(
-						$author$project$Rte$locateChars,
+						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$Core$jumpSize),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Down)) : A3(
+						$author$project$Rte$Core$locateChars,
 						_Utils_update(
 							e,
 							{selection: $elm$core$Maybe$Nothing}),
-						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$jumpSize),
-						$author$project$Rte$LineBoundary($author$project$Rte$Down)));
+						_Utils_Tuple2(e.cursor + 1, e.cursor + $author$project$Rte$Core$jumpSize),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Down)));
 				case 'Enter':
 					return e.shiftDown ? A2(
-						$author$project$Rte$update,
-						A2($author$project$Rte$KeyDown, timeStamp, '\n'),
+						$author$project$Rte$Core$update,
+						A2($author$project$Rte$Core$KeyDown, timeStamp, '\n'),
 						e) : _Utils_Tuple2(
 						A3(
-							$author$project$Rte$insertBreak,
-							A2($author$project$Rte$currentParaStyle, e.idCounter, e),
+							$author$project$Rte$Core$insertBreak,
+							A2($author$project$Rte$Core$currentParaStyle, e.idCounter, e),
 							$elm$core$Maybe$Just(timeStamp),
 							e),
-						A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 				case 'Home':
 					return e.ctrlDown ? _Utils_Tuple2(
 						A2(
-							$author$project$Rte$detectFontStyle,
+							$author$project$Rte$Core$detectFontStyle,
 							0,
 							A2(
-								$author$project$Rte$selectionMod,
+								$author$project$Rte$Core$selectionMod,
 								e.cursor,
 								_Utils_update(
 									e,
 									{cursor: 0}))),
-						A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID)) : (e.shiftDown ? A3(
-						$author$project$Rte$locateChars,
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID)) : (e.shiftDown ? A3(
+						$author$project$Rte$Core$locateChars,
 						e,
-						_Utils_Tuple2(e.cursor - $author$project$Rte$jumpSize, e.cursor - 1),
-						$author$project$Rte$LineBoundary($author$project$Rte$Up)) : A3(
-						$author$project$Rte$locateChars,
+						_Utils_Tuple2(e.cursor - $author$project$Rte$Core$jumpSize, e.cursor - 1),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Up)) : A3(
+						$author$project$Rte$Core$locateChars,
 						_Utils_update(
 							e,
 							{selection: $elm$core$Maybe$Nothing}),
-						_Utils_Tuple2(e.cursor - $author$project$Rte$jumpSize, e.cursor - 1),
-						$author$project$Rte$LineBoundary($author$project$Rte$Up)));
+						_Utils_Tuple2(e.cursor - $author$project$Rte$Core$jumpSize, e.cursor - 1),
+						$author$project$Rte$Core$LineBoundary($author$project$Rte$Core$Up)));
 				case 'PageDown':
 					return _Utils_eq(e.cursor, maxIdx) ? _Utils_Tuple2(e, $elm$core$Platform$Cmd$none) : A3(
-						$author$project$Rte$locateChars,
+						$author$project$Rte$Core$locateChars,
 						e,
-						A4($author$project$Rte$pageEstimate, $author$project$Rte$Down, maxIdx, e.cursor, e.viewport),
-						$author$project$Rte$Page($author$project$Rte$Down));
+						A4($author$project$Rte$Core$pageEstimate, $author$project$Rte$Core$Down, maxIdx, e.cursor, e.viewport),
+						$author$project$Rte$Core$Page($author$project$Rte$Core$Down));
 				case 'PageUp':
 					return (!e.cursor) ? _Utils_Tuple2(e, $elm$core$Platform$Cmd$none) : A3(
-						$author$project$Rte$locateChars,
+						$author$project$Rte$Core$locateChars,
 						e,
-						A4($author$project$Rte$pageEstimate, $author$project$Rte$Up, maxIdx, e.cursor, e.viewport),
-						$author$project$Rte$Page($author$project$Rte$Up));
+						A4($author$project$Rte$Core$pageEstimate, $author$project$Rte$Core$Up, maxIdx, e.cursor, e.viewport),
+						$author$project$Rte$Core$Page($author$project$Rte$Core$Up));
 				case 'Shift':
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -11252,19 +11411,19 @@ var $author$project$Rte$keyDown = F3(
 			}
 		}
 	});
-var $author$project$Rte$update = F2(
+var $author$project$Rte$Core$update = F2(
 	function (msg, e0) {
 		update:
 		while (true) {
-			var e = A2($author$project$Rte$updateUndo, msg, e0);
+			var e = A2($author$project$Rte$Core$updateUndo, msg, e0);
 			var maxIdx = $elm$core$List$length(e.content) - 1;
 			switch (msg.$) {
 				case 'AddText':
 					var txt = msg.a;
-					return A4($author$project$Rte$typed, txt, e, $elm$core$Maybe$Nothing, false);
+					return A4($author$project$Rte$Core$typed, txt, e, $elm$core$Maybe$Nothing, false);
 				case 'Blink':
 					var time = msg.a;
-					var typing = (_Utils_cmp(e.lastKeyDown, time - $author$project$Rte$tickPeriod) < 1) ? false : e.typing;
+					var typing = (_Utils_cmp(e.lastKeyDown, time - $author$project$Rte$Core$tickPeriod) < 1) ? false : e.typing;
 					var cursorVisible = e.cursorThrottled ? true : (!e.cursorVisible);
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -11274,13 +11433,13 @@ var $author$project$Rte$update = F2(
 				case 'CompositionEnd':
 					var txt = msg.a;
 					if (txt === '') {
-						return A2($author$project$Rte$addContent, e.compositionStart, e);
+						return A2($author$project$Rte$Core$addContent, e.compositionStart, e);
 					} else {
 						var newLength = $elm$core$List$length(
 							$elm$core$String$toList(txt));
 						var _v1 = A2(
-							$author$project$Rte$update,
-							$author$project$Rte$CompositionUpdate(txt),
+							$author$project$Rte$Core$update,
+							$author$project$Rte$Core$CompositionUpdate(txt),
 							e);
 						var _new = _v1.a;
 						var newMsg = _v1.b;
@@ -11311,11 +11470,11 @@ var $author$project$Rte$update = F2(
 										(end - beg) + 1,
 										A2($elm$core$List$drop, beg, e.content)),
 									compositionUpdate: '',
-									content: A3($author$project$Rte$delete, beg, end + 1, e),
+									content: A3($author$project$Rte$Core$delete, beg, end + 1, e),
 									cursor: beg,
 									selection: $elm$core$Maybe$Nothing
 								}),
-							A2($author$project$Rte$placeCursor, $author$project$Rte$ScrollIfNeeded, e.editorID));
+							A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$ScrollIfNeeded, e.editorID));
 					}
 				case 'CompositionUpdate':
 					var txt = msg.a;
@@ -11324,12 +11483,12 @@ var $author$project$Rte$update = F2(
 					var newLength = $elm$core$List$length(
 						$elm$core$String$toList(txt));
 					var _v4 = A4(
-						$author$project$Rte$typed,
+						$author$project$Rte$Core$typed,
 						txt,
 						_Utils_update(
 							e,
 							{
-								content: A3($author$project$Rte$delete, e.cursor, oldEnd, e)
+								content: A3($author$project$Rte$Core$delete, e.cursor, oldEnd, e)
 							}),
 						$elm$core$Maybe$Nothing,
 						false);
@@ -11341,13 +11500,13 @@ var $author$project$Rte$update = F2(
 							{compositionUpdate: txt, cursor: e.cursor}),
 						newMsg);
 				case 'Copy':
-					return $author$project$Rte$copy(e);
+					return $author$project$Rte$Core$copy(e);
 				case 'Cut':
-					return $author$project$Rte$cut(e);
+					return $author$project$Rte$Core$cut(e);
 				case 'DetectViewport':
 					return _Utils_Tuple2(
 						e,
-						A2($author$project$Rte$placeCursor, $author$project$Rte$NoScroll, e.editorID));
+						A2($author$project$Rte$Core$placeCursor, $author$project$Rte$Core$NoScroll, e.editorID));
 				case 'KeyDown':
 					var timeStamp = msg.a;
 					var key = msg.b;
@@ -11359,7 +11518,7 @@ var $author$project$Rte$update = F2(
 							{cursorThrottled: true, cursorVisible: false});
 					};
 					return A3(
-						$author$project$Rte$keyDown,
+						$author$project$Rte$Core$keyDown,
 						timeStamp,
 						key,
 						f(e));
@@ -11390,7 +11549,7 @@ var $author$project$Rte$update = F2(
 						var located = A3(
 							$elm_community$intdict$IntDict$insert,
 							idx,
-							A4($author$project$Rte$ScreenElement, idx, elem.x, elem.y, elem.height),
+							A4($author$project$Rte$Core$ScreenElement, idx, elem.x, elem.y, elem.height),
 							e.located);
 						var f = function (x) {
 							return _Utils_update(
@@ -11398,7 +11557,7 @@ var $author$project$Rte$update = F2(
 								{locateBacklog: locateBacklog, located: located});
 						};
 						if (locateBacklog > 0) {
-							return (!_Utils_eq(e.locating, $author$project$Rte$Idle)) ? _Utils_Tuple2(
+							return (!_Utils_eq(e.locating, $author$project$Rte$Core$Idle)) ? _Utils_Tuple2(
 								f(e),
 								$elm$core$Platform$Cmd$none) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 						} else {
@@ -11410,7 +11569,7 @@ var $author$project$Rte$update = F2(
 									var a = _v6.a;
 									var b = _v6.b;
 									return A3(
-										$author$project$Rte$lineBoundary,
+										$author$project$Rte$Core$lineBoundary,
 										a,
 										b,
 										f(e));
@@ -11418,7 +11577,7 @@ var $author$project$Rte$update = F2(
 									var a = _v6.a;
 									var b = _v6.b;
 									return A3(
-										$author$project$Rte$lineJump,
+										$author$project$Rte$Core$lineJump,
 										a,
 										b,
 										f(e));
@@ -11427,7 +11586,7 @@ var $author$project$Rte$update = F2(
 									var b = _v6.b;
 									var c = _v6.c;
 									return A4(
-										$author$project$Rte$locateMouse,
+										$author$project$Rte$Core$locateMouse,
 										a,
 										b,
 										c,
@@ -11436,7 +11595,7 @@ var $author$project$Rte$update = F2(
 									var a = _v6.a;
 									var b = _v6.b;
 									return A3(
-										$author$project$Rte$page,
+										$author$project$Rte$Core$page,
 										a,
 										b,
 										f(e));
@@ -11456,7 +11615,7 @@ var $author$project$Rte$update = F2(
 						switch (_v8.$) {
 							case 'Idle':
 								return _Utils_Tuple2(
-									$author$project$Rte$selectCurrentWord(e),
+									$author$project$Rte$Core$selectCurrentWord(e),
 									$elm$core$Platform$Cmd$none);
 							case 'Mouse':
 								var a = _v8.a;
@@ -11466,19 +11625,19 @@ var $author$project$Rte$update = F2(
 									_Utils_update(
 										e,
 										{
-											locating: A3($author$project$Rte$Mouse, $author$project$Rte$SelectWord, b, c)
+											locating: A3($author$project$Rte$Core$Mouse, $author$project$Rte$Core$SelectWord, b, c)
 										}),
 									$elm$core$Platform$Cmd$none);
 							default:
 								return A3(
-									$author$project$Rte$mouseDown,
+									$author$project$Rte$Core$mouseDown,
 									_Utils_Tuple2(x, y),
 									timeStamp,
 									e);
 						}
 					} else {
 						return A3(
-							$author$project$Rte$mouseDown,
+							$author$project$Rte$Core$mouseDown,
 							_Utils_Tuple2(x, y),
 							timeStamp,
 							e);
@@ -11491,7 +11650,7 @@ var $author$project$Rte$update = F2(
 					} else {
 						var _v9 = _Utils_Tuple2(
 							e.drag,
-							A2($author$project$Rte$getIdx, targetId, e.content));
+							A2($author$project$Rte$Core$getIdx, targetId, e.content));
 						if ((_v9.a.$ === 'DragFrom') && (_v9.b.$ === 'Just')) {
 							var startIdx = _v9.a.a;
 							var currentIdx = _v9.b.a;
@@ -11509,6 +11668,7 @@ var $author$project$Rte$update = F2(
 									e,
 									{
 										cursor: newCursor,
+										cursorVisible: false,
 										selection: $elm$core$Maybe$Just(
 											_Utils_Tuple2(beg, end))
 									}),
@@ -11522,7 +11682,7 @@ var $author$project$Rte$update = F2(
 						_Utils_update(
 							e,
 							{
-								drag: $author$project$Rte$NoDrag,
+								drag: $author$project$Rte$Core$NoDrag,
 								selection: function () {
 									var _v12 = e.selection;
 									if (_v12.$ === 'Nothing') {
@@ -11542,12 +11702,12 @@ var $author$project$Rte$update = F2(
 					var str = msg.a;
 					var _v14 = e.clipboard;
 					if (_v14.$ === 'Nothing') {
-						return A4($author$project$Rte$typed, str, e, $elm$core$Maybe$Nothing, true);
+						return A4($author$project$Rte$Core$typed, str, e, $elm$core$Maybe$Nothing, true);
 					} else {
 						var internalClipboard = _v14.a;
 						return (!_Utils_eq(
-							$author$project$Rte$toText(internalClipboard),
-							str)) ? A4($author$project$Rte$typed, str, e, $elm$core$Maybe$Nothing, true) : A2($author$project$Rte$addContent, internalClipboard, e);
+							$author$project$Rte$Core$toText(internalClipboard),
+							str)) ? A4($author$project$Rte$Core$typed, str, e, $elm$core$Maybe$Nothing, true) : A2($author$project$Rte$Core$addContent, internalClipboard, e);
 					}
 				case 'PlaceCursor1_EditorPos':
 					if (msg.b.$ === 'Ok') {
@@ -11558,8 +11718,8 @@ var $author$project$Rte$update = F2(
 								e,
 								{box: data.element}),
 							A2(
-								$author$project$Rte$getViewport,
-								$author$project$Rte$PlaceCursor2_Viewport(scroll),
+								$author$project$Rte$Core$getViewport,
+								$author$project$Rte$Core$PlaceCursor2_Viewport(scroll),
 								e.editorID));
 					} else {
 						var err = msg.b.a;
@@ -11570,7 +11730,7 @@ var $author$project$Rte$update = F2(
 						var scroll = msg.a;
 						var data = msg.b.a;
 						return A2(
-							$author$project$Rte$locateCursorParent,
+							$author$project$Rte$Core$locateCursorParent,
 							_Utils_update(
 								e,
 								{viewport: data}),
@@ -11593,9 +11753,9 @@ var $author$project$Rte$update = F2(
 						if (scroll.$ === 'ScrollIfNeeded') {
 							return _Utils_Tuple2(
 								f(e),
-								A4($author$project$Rte$scrollIfNeeded, data.element, e.box, e.viewport, e.editorID));
+								A4($author$project$Rte$Core$scrollIfNeeded, data.element, e.box, e.viewport, e.editorID));
 						} else {
-							var $temp$msg = $author$project$Rte$Scrolled($elm$core$Maybe$Nothing),
+							var $temp$msg = $author$project$Rte$Core$Scrolled($elm$core$Maybe$Nothing),
 								$temp$e0 = f(e);
 							msg = $temp$msg;
 							e0 = $temp$e0;
@@ -11652,20 +11812,23 @@ var $author$project$Rte$update = F2(
 					}
 				case 'SwitchTo':
 					var newState = msg.a;
-					return (!_Utils_eq(newState, e.state)) ? A2($author$project$Rte$state, newState, e) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
+					return (!_Utils_eq(newState, e.state)) ? A2($author$project$Rte$Core$state, newState, e) : _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
+				case 'ToBrowserClipboard':
+					var txt = msg.a;
+					return _Utils_Tuple2(e, $elm$core$Platform$Cmd$none);
 				default:
-					return $author$project$Rte$undoAction(e);
+					return $author$project$Rte$Core$undoAction(e);
 			}
 		}
 	});
-var $author$project$Rte$undo = function (e) {
-	return A2($author$project$Rte$update, $author$project$Rte$UndoAction, e);
+var $author$project$Rte$Core$undo = function (e) {
+	return A2($author$project$Rte$Core$update, $author$project$Rte$Core$UndoAction, e);
 };
-var $author$project$Rte$unlink = function (editor) {
+var $author$project$Rte$Core$unlink = function (editor) {
 	var f = function (elem) {
 		if (elem.$ === 'Char') {
 			var ch = elem.a;
-			return $author$project$Rte$Char(
+			return $author$project$Rte$Types$Char(
 				_Utils_update(
 					ch,
 					{link: $elm$core$Maybe$Nothing}));
@@ -11673,44 +11836,78 @@ var $author$project$Rte$unlink = function (editor) {
 			return elem;
 		}
 	};
-	return A2($author$project$Rte$linkMod, f, editor);
+	return A2($author$project$Rte$Core$linkMod, f, editor);
 };
-var $author$project$Main$update = F2(
+var $author$project$Rte$updateFrame = F2(
 	function (msg, model) {
-		if (_Utils_eq(model.rte.state, $author$project$Rte$Display) && (!_Utils_eq(
+		if (_Utils_eq(model.textarea.state, $author$project$Rte$Core$Display) && (!_Utils_eq(
 			msg,
-			$author$project$Main$Switch(true)))) {
+			$author$project$Rte$Active(true)))) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
 			switch (msg.$) {
-				case 'Bold':
-					return A2($author$project$Main$apply, $author$project$Rte$toggleBold, model);
-				case 'Code':
+				case 'Active':
+					var bool = msg.a;
+					var state = bool ? $author$project$Rte$Core$Edit : $author$project$Rte$Core$Display;
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$toggleParaClass('Code'),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$state(state),
+						_Utils_update(
+							model,
+							{inputBox: $elm$core$Maybe$Nothing}));
+				case 'AddText':
+					var str = msg.a;
+					return A2(
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$addText(str),
 						model);
-				case 'Emoji':
+				case 'Bold':
+					return A2($author$project$Rte$apply, $author$project$Rte$Core$toggleBold, model);
+				case 'Class':
+					var x = msg.a;
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$addText('🤪'),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$toggleParaClass(x),
+						model);
+				case 'Copy':
+					return A2(
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$update($author$project$Rte$Core$Copy),
+						model);
+				case 'Core':
+					var rteMsg = msg.a;
+					return A2(
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$update(rteMsg),
+						model);
+				case 'Cut':
+					return A2(
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$update($author$project$Rte$Core$Cut),
 						model);
 				case 'Font':
 					var family = msg.a;
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$fontFamily(family),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$fontFamily(family),
 						model);
 				case 'FontSize':
 					var _float = msg.a;
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$fontSize(_float),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$fontSize(_float),
+						model);
+				case 'FromBrowserClipboard':
+					var txt = msg.a;
+					return A2(
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$update(
+							$author$project$Rte$Core$Paste(txt)),
 						model);
 				case 'Heading':
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$toggleNodeType('h1'),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$toggleNodeType('h1'),
 						model);
 				case 'ImageAdd':
 					var str = msg.a;
@@ -11721,23 +11918,24 @@ var $author$project$Main$update = F2(
 								{inputBox: $elm$core$Maybe$Nothing}),
 							$elm$core$Platform$Cmd$none);
 					} else {
-						var toCmd = $elm$core$Platform$Cmd$map($author$project$Main$Internal);
-						var _v1 = A2($author$project$Rte$addImage, str, model.rte);
-						var rte1 = _v1.a;
-						var rteCmd1 = _v1.b;
-						var _v2 = A2($author$project$Rte$state, $author$project$Rte$Edit, rte1);
-						var rte2 = _v2.a;
-						var rteCmd2 = _v2.b;
+						var f = $elm$core$Platform$Cmd$map(
+							A2($elm$core$Basics$composeL, model.tagger, $author$project$Rte$Core));
+						var _v1 = A2($author$project$Rte$Core$addImage, str, model.textarea);
+						var editor1 = _v1.a;
+						var cmd1 = _v1.b;
+						var _v2 = A2($author$project$Rte$Core$state, $author$project$Rte$Core$Edit, editor1);
+						var editor2 = _v2.a;
+						var cmd2 = _v2.b;
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{inputBox: $elm$core$Maybe$Nothing, rte: rte1}),
+								{inputBox: $elm$core$Maybe$Nothing, textarea: editor2}),
 							$elm$core$Platform$Cmd$batch(
 								A2(
 									$elm$core$List$map,
-									toCmd,
+									f,
 									_List_fromArray(
-										[rteCmd1, rteCmd2]))));
+										[cmd1, cmd2]))));
 					}
 				case 'ImageInput':
 					var str = msg.a;
@@ -11746,22 +11944,16 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								inputBox: $elm$core$Maybe$Just(
-									$author$project$Main$ImageInputBox(str))
+									$author$project$Rte$ImageInputBox(str))
 							}),
 						$elm$core$Platform$Cmd$none);
 				case 'Indent':
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$changeIndent(1),
-						model);
-				case 'Internal':
-					var rteMsg = msg.a;
-					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$update(rteMsg),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$changeIndent(1),
 						model);
 				case 'Italic':
-					return A2($author$project$Main$apply, $author$project$Rte$toggleItalic, model);
+					return A2($author$project$Rte$apply, $author$project$Rte$Core$toggleItalic, model);
 				case 'LinkAdd':
 					var href = msg.a;
 					return (href === '') ? _Utils_Tuple2(
@@ -11769,13 +11961,13 @@ var $author$project$Main$update = F2(
 							model,
 							{inputBox: $elm$core$Maybe$Nothing}),
 						$elm$core$Platform$Cmd$none) : A2(
-						$author$project$Main$apply,
-						$author$project$Rte$state($author$project$Rte$Edit),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$state($author$project$Rte$Core$Edit),
 						_Utils_update(
 							model,
 							{
 								inputBox: $elm$core$Maybe$Nothing,
-								rte: A2($author$project$Rte$link, href, model.rte)
+								textarea: A2($author$project$Rte$Core$link, href, model.textarea)
 							}));
 				case 'LinkInput':
 					var str = msg.a;
@@ -11784,41 +11976,41 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								inputBox: $elm$core$Maybe$Just(
-									$author$project$Main$LinkInputBox(str))
+									$author$project$Rte$LinkInputBox(str))
 							}),
 						$elm$core$Platform$Cmd$none);
 				case 'NoOp':
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				case 'Switch':
-					var bool = msg.a;
-					var state = bool ? $author$project$Rte$Edit : $author$project$Rte$Display;
-					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$state(state),
-						_Utils_update(
-							model,
-							{inputBox: $elm$core$Maybe$Nothing}));
 				case 'StrikeThrough':
-					return A2($author$project$Main$apply, $author$project$Rte$toggleStrikeThrough, model);
+					return A2($author$project$Rte$apply, $author$project$Rte$Core$toggleStrikeThrough, model);
 				case 'TextAlign':
 					var alignment = msg.a;
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$textAlign(alignment),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$textAlign(alignment),
 						model);
+				case 'ToBrowserClipboard':
+					var txt = msg.a;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'ToggleEmojiBox':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{emojiBox: !model.emojiBox}),
+						$elm$core$Platform$Cmd$none);
 				case 'ToggleImageBox':
 					var _v3 = model.inputBox;
 					if ((_v3.$ === 'Just') && (_v3.a.$ === 'ImageInputBox')) {
 						return A2(
-							$author$project$Main$apply,
-							$author$project$Rte$state($author$project$Rte$Edit),
+							$author$project$Rte$apply,
+							$author$project$Rte$Core$state($author$project$Rte$Core$Edit),
 							_Utils_update(
 								model,
 								{inputBox: $elm$core$Maybe$Nothing}));
 					} else {
 						var _v4 = A2(
-							$author$project$Main$apply,
-							$author$project$Rte$state($author$project$Rte$Freeze),
+							$author$project$Rte$apply,
+							$author$project$Rte$Core$state($author$project$Rte$Core$Freeze),
 							model);
 						var newmodel = _v4.a;
 						var cmd = _v4.b;
@@ -11827,12 +12019,12 @@ var $author$project$Main$update = F2(
 								newmodel,
 								{
 									inputBox: $elm$core$Maybe$Just(
-										$author$project$Main$ImageInputBox(''))
+										$author$project$Rte$ImageInputBox(''))
 								}),
 							A2(
 								$elm$core$Task$attempt,
 								function (_v5) {
-									return $author$project$Main$NoOp;
+									return model.tagger($author$project$Rte$NoOp);
 								},
 								$elm$browser$Browser$Dom$focus('InputBox')));
 					}
@@ -11840,8 +12032,8 @@ var $author$project$Main$update = F2(
 					var _v6 = model.inputBox;
 					if ((_v6.$ === 'Just') && (_v6.a.$ === 'LinkInputBox')) {
 						return A2(
-							$author$project$Main$apply,
-							$author$project$Rte$state($author$project$Rte$Edit),
+							$author$project$Rte$apply,
+							$author$project$Rte$Core$state($author$project$Rte$Core$Edit),
 							_Utils_update(
 								model,
 								{inputBox: $elm$core$Maybe$Nothing}));
@@ -11849,10 +12041,10 @@ var $author$project$Main$update = F2(
 						var currentLink = A2(
 							$elm$core$Maybe$withDefault,
 							'',
-							$author$project$Rte$currentLink(model.rte));
+							$author$project$Rte$Core$currentLink(model.textarea));
 						var _v7 = A2(
-							$author$project$Main$apply,
-							$author$project$Rte$state($author$project$Rte$Freeze),
+							$author$project$Rte$apply,
+							$author$project$Rte$Core$state($author$project$Rte$Core$Freeze),
 							model);
 						var newmodel = _v7.a;
 						var cmd = _v7.b;
@@ -11861,42 +12053,181 @@ var $author$project$Main$update = F2(
 								newmodel,
 								{
 									inputBox: $elm$core$Maybe$Just(
-										$author$project$Main$LinkInputBox(currentLink))
+										$author$project$Rte$LinkInputBox(currentLink))
 								}),
 							A2(
 								$elm$core$Task$attempt,
 								function (_v8) {
-									return $author$project$Main$NoOp;
+									return model.tagger($author$project$Rte$NoOp);
 								},
 								$elm$browser$Browser$Dom$focus('InputBox')));
 					}
 				case 'Underline':
-					return A2($author$project$Main$apply, $author$project$Rte$toggleUnderline, model);
+					return A2($author$project$Rte$apply, $author$project$Rte$Core$toggleUnderline, model);
 				case 'Undo':
-					return A2($author$project$Main$apply, $author$project$Rte$undo, model);
+					return A2($author$project$Rte$apply, $author$project$Rte$Core$undo, model);
 				case 'Unindent':
 					return A2(
-						$author$project$Main$apply,
-						$author$project$Rte$changeIndent(-1),
+						$author$project$Rte$apply,
+						$author$project$Rte$Core$changeIndent(-1),
 						model);
 				default:
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								rte: $author$project$Rte$unlink(model.rte)
+								textarea: $author$project$Rte$Core$unlink(model.textarea)
 							}),
 						$elm$core$Platform$Cmd$none);
 			}
 		}
 	});
+var $author$project$Rte$update = $author$project$Rte$updateFrame;
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		if (msg.a.$ === 'ToBrowserClipboard') {
+			var txt = msg.a.a;
+			return _Utils_Tuple2(
+				model,
+				$author$project$Main$toBrowserClipboard(txt));
+		} else {
+			var rteMsg = msg.a;
+			var _v1 = A2($author$project$Rte$update, rteMsg, model.rte);
+			var rte = _v1.a;
+			var cmd = _v1.b;
+			return _Utils_Tuple2(
+				{rte: rte},
+				cmd);
+		}
+	});
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Rte$Core$CompositionEnd = function (a) {
+	return {$: 'CompositionEnd', a: a};
+};
+var $author$project$Rte$Core$CompositionStart = {$: 'CompositionStart'};
+var $author$project$Rte$Core$SwitchTo = function (a) {
+	return {$: 'SwitchTo', a: a};
+};
+var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
+var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
+var $rtfeldman$elm_css$Css$borderColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
+};
+var $rtfeldman$elm_css$Css$prop2 = F3(
+	function (key, argA, argB) {
+		return A2(
+			$rtfeldman$elm_css$Css$property,
+			key,
+			A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					[argA.value, argB.value])));
+	});
+var $rtfeldman$elm_css$Css$borderLeft2 = $rtfeldman$elm_css$Css$prop2('border-left');
+var $rtfeldman$elm_css$Css$prop1 = F2(
+	function (key, arg) {
+		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
+	});
+var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 	function (a, b, c) {
 		return {$: 'Node', a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
-var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
+var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
+var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
+var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
+var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
+	function (units, unitLabel, numericValue) {
+		return {
+			absoluteLength: $rtfeldman$elm_css$Css$Structure$Compatible,
+			calc: $rtfeldman$elm_css$Css$Structure$Compatible,
+			flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible,
+			fontSize: $rtfeldman$elm_css$Css$Structure$Compatible,
+			length: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
+			numericValue: numericValue,
+			textIndent: $rtfeldman$elm_css$Css$Structure$Compatible,
+			unitLabel: unitLabel,
+			units: units,
+			value: _Utils_ap(
+				$elm$core$String$fromFloat(numericValue),
+				unitLabel)
+		};
+	});
+var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
+var $rtfeldman$elm_css$Css$rgb = F3(
+	function (r, g, b) {
+		return {
+			alpha: 1,
+			blue: b,
+			color: $rtfeldman$elm_css$Css$Structure$Compatible,
+			green: g,
+			red: r,
+			value: A2(
+				$rtfeldman$elm_css$Css$cssFunction,
+				'rgb',
+				A2(
+					$elm$core$List$map,
+					$elm$core$String$fromInt,
+					_List_fromArray(
+						[r, g, b])))
+		};
+	});
+var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
+var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
+var $author$project$Rte$Core$cursorHtml = F6(
+	function (cursor, box, visible, typing, selection, idx) {
+		if (typing || (!visible)) {
+			return A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
+		} else {
+			var visibleHeight = A2($elm$core$Basics$min, cursor.height, (box.y + box.height) - cursor.y);
+			var onScreen = (_Utils_cmp(cursor.y, box.y) > -1) && ((_Utils_cmp(cursor.y, box.y + box.height) < 1) && ((_Utils_cmp(cursor.x, box.x) > -1) && (_Utils_cmp(cursor.x, box.x + box.width) < 1)));
+			return (!onScreen) ? A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil) : A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$borderLeft2,
+								$rtfeldman$elm_css$Css$px(3),
+								$rtfeldman$elm_css$Css$solid),
+								$rtfeldman$elm_css$Css$borderColor(
+								A3($rtfeldman$elm_css$Css$rgb, 0, 0, 0)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+								$rtfeldman$elm_css$Css$height(
+								$rtfeldman$elm_css$Css$px(visibleHeight)),
+								$rtfeldman$elm_css$Css$left(
+								$rtfeldman$elm_css$Css$px(cursor.x)),
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$top(
+								$rtfeldman$elm_css$Css$px(cursor.y))
+							]))
+					]),
+				_List_Nil);
+		}
+	});
 var $rtfeldman$elm_css$VirtualDom$Styled$property = F2(
 	function (key, value) {
 		return A3(
@@ -11912,282 +12243,12 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 			key,
 			$elm$json$Json$Encode$string(string));
 	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$class = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('className');
-var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
-var $rtfeldman$elm_css$Html$Styled$Attributes$href = function (url) {
-	return A2($rtfeldman$elm_css$Html$Styled$Attributes$stringProperty, 'href', url);
-};
-var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
 var $rtfeldman$elm_css$Html$Styled$Attributes$id = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('id');
 var $rtfeldman$elm_css$Html$Styled$input = $rtfeldman$elm_css$Html$Styled$node('input');
-var $author$project$Main$ImageAdd = function (a) {
-	return {$: 'ImageAdd', a: a};
-};
-var $author$project$Main$ImageInput = function (a) {
-	return {$: 'ImageInput', a: a};
-};
-var $author$project$Main$LinkAdd = function (a) {
-	return {$: 'LinkAdd', a: a};
-};
-var $author$project$Main$LinkInput = function (a) {
-	return {$: 'LinkInput', a: a};
-};
-var $author$project$Main$inputBoxProps = function (x) {
-	if (x.$ === 'ImageInputBox') {
-		var str = x.a;
-		return {content: str, inputMsg: $author$project$Main$ImageInput, okMsg: $author$project$Main$ImageAdd, placeholder: 'Image url'};
-	} else {
-		var str = x.a;
-		return {content: str, inputMsg: $author$project$Main$LinkInput, okMsg: $author$project$Main$LinkAdd, placeholder: 'Link url'};
-	}
-};
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
-	function (eventName, handler) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
-			_List_Nil,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
-};
-var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
-};
-var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $rtfeldman$elm_css$VirtualDom$Styled$style = F2(
-	function (key, val) {
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$style, key, val),
-			_List_Nil,
-			'');
-	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$style = $rtfeldman$elm_css$VirtualDom$Styled$style;
 var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
 	return {$: 'Unstyled', a: a};
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
-	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
-		$elm$virtual_dom$VirtualDom$text(str));
-};
-var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
-var $rtfeldman$elm_css$Html$Styled$Attributes$type_ = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('type');
-var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
-var $author$project$Main$inputBox = function (state) {
-	var _v0 = A2($elm$core$Maybe$map, $author$project$Main$inputBoxProps, state);
-	if (_v0.$ === 'Just') {
-		var props = _v0.a;
-		var value = (props.content === '') ? $rtfeldman$elm_css$Html$Styled$Attributes$placeholder(props.placeholder) : $rtfeldman$elm_css$Html$Styled$Attributes$value(props.content);
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$class('InputBox')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$input,
-					_List_fromArray(
-						[
-							value,
-							$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
-							$rtfeldman$elm_css$Html$Styled$Events$onInput(props.inputMsg),
-							$rtfeldman$elm_css$Html$Styled$Attributes$id('InputBox')
-						]),
-					_List_Nil),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$button,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Events$onClick(
-							props.okMsg(props.content))
-						]),
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text('Ok')
-						]))
-				]));
-	} else {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$div,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$class('InputBox'),
-					A2($rtfeldman$elm_css$Html$Styled$Attributes$style, 'visibility', 'hidden')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$rtfeldman$elm_css$Html$Styled$input,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$type_('text')
-						]),
-					_List_Nil),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$button,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$text('Ok')
-						]))
-				]));
-	}
-};
-var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
-	function (a, b, c) {
-		return {$: 'KeyedNode', a: a, b: b, c: c};
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS = F4(
-	function (a, b, c, d) {
-		return {$: 'KeyedNodeNS', a: a, b: b, c: c, d: d};
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$NodeNS = F4(
-	function (a, b, c, d) {
-		return {$: 'NodeNS', a: a, b: b, c: c, d: d};
-	});
-var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
-var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
-	function (transform, _v0) {
-		var prop = _v0.a;
-		var styles = _v0.b;
-		var classname = _v0.c;
-		return A3(
-			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
-			A2($elm$virtual_dom$VirtualDom$mapAttribute, transform, prop),
-			styles,
-			classname);
-	});
-var $rtfeldman$elm_css$VirtualDom$Styled$map = F2(
-	function (transform, vdomNode) {
-		switch (vdomNode.$) {
-			case 'Node':
-				var elemType = vdomNode.a;
-				var properties = vdomNode.b;
-				var children = vdomNode.c;
-				return A3(
-					$rtfeldman$elm_css$VirtualDom$Styled$Node,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
-						properties),
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$map(transform),
-						children));
-			case 'NodeNS':
-				var ns = vdomNode.a;
-				var elemType = vdomNode.b;
-				var properties = vdomNode.c;
-				var children = vdomNode.d;
-				return A4(
-					$rtfeldman$elm_css$VirtualDom$Styled$NodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
-						properties),
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$map(transform),
-						children));
-			case 'KeyedNode':
-				var elemType = vdomNode.a;
-				var properties = vdomNode.b;
-				var children = vdomNode.c;
-				return A3(
-					$rtfeldman$elm_css$VirtualDom$Styled$KeyedNode,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
-						properties),
-					A2(
-						$elm$core$List$map,
-						function (_v1) {
-							var key = _v1.a;
-							var child = _v1.b;
-							return _Utils_Tuple2(
-								key,
-								A2($rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
-						},
-						children));
-			case 'KeyedNodeNS':
-				var ns = vdomNode.a;
-				var elemType = vdomNode.b;
-				var properties = vdomNode.c;
-				var children = vdomNode.d;
-				return A4(
-					$rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS,
-					ns,
-					elemType,
-					A2(
-						$elm$core$List$map,
-						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
-						properties),
-					A2(
-						$elm$core$List$map,
-						function (_v2) {
-							var key = _v2.a;
-							var child = _v2.b;
-							return _Utils_Tuple2(
-								key,
-								A2($rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
-						},
-						children));
-			default:
-				var vdom = vdomNode.a;
-				return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
-					A2($elm$virtual_dom$VirtualDom$map, transform, vdom));
-		}
-	});
-var $rtfeldman$elm_css$Html$Styled$map = $rtfeldman$elm_css$VirtualDom$Styled$map;
+var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
 		var newStyles = _v0.b;
@@ -12668,382 +12729,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyleKeyedNS, ns, elemType, properties, children);
 	}
 };
-var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $author$project$Main$Bold = {$: 'Bold'};
-var $author$project$Rte$Center = {$: 'Center'};
-var $author$project$Main$Code = {$: 'Code'};
-var $author$project$Main$Emoji = {$: 'Emoji'};
-var $author$project$Main$Heading = {$: 'Heading'};
-var $author$project$Main$Indent = {$: 'Indent'};
-var $author$project$Main$Italic = {$: 'Italic'};
-var $author$project$Rte$Left = {$: 'Left'};
-var $author$project$Rte$Right = {$: 'Right'};
-var $author$project$Main$StrikeThrough = {$: 'StrikeThrough'};
-var $author$project$Main$TextAlign = function (a) {
-	return {$: 'TextAlign', a: a};
-};
-var $author$project$Main$ToggleImageBox = {$: 'ToggleImageBox'};
-var $author$project$Main$ToggleLinkBox = {$: 'ToggleLinkBox'};
-var $author$project$Main$Underline = {$: 'Underline'};
-var $author$project$Main$Undo = {$: 'Undo'};
-var $author$project$Main$Unindent = {$: 'Unindent'};
-var $author$project$Main$Unlink = {$: 'Unlink'};
-var $rtfeldman$elm_css$Html$Styled$img = $rtfeldman$elm_css$Html$Styled$node('img');
-var $rtfeldman$elm_css$Html$Styled$Attributes$src = function (url) {
-	return A2($rtfeldman$elm_css$Html$Styled$Attributes$stringProperty, 'src', url);
-};
-var $author$project$Main$icon = F2(
-	function (img, msg) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$img,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$src('/rte/icon/' + (img + '.svg')),
-					$rtfeldman$elm_css$Html$Styled$Attributes$class('Icon'),
-					$rtfeldman$elm_css$Html$Styled$Events$onClick(msg)
-				]),
-			_List_Nil);
-	});
-var $author$project$Main$Font = function (a) {
-	return {$: 'Font', a: a};
-};
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			$rtfeldman$elm_css$VirtualDom$Styled$property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
-var $rtfeldman$elm_css$Html$Styled$Attributes$disabled = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('disabled');
-var $rtfeldman$elm_css$Html$Styled$option = $rtfeldman$elm_css$Html$Styled$node('option');
-var $rtfeldman$elm_css$Html$Styled$select = $rtfeldman$elm_css$Html$Styled$node('select');
-var $author$project$Main$selectDecode = function (check) {
-	var f = function (x) {
-		var _v0 = check(x);
-		if (_v0.$ === 'Just') {
-			var msg = _v0.a;
-			return $elm$json$Json$Decode$succeed(msg);
-		} else {
-			return $elm$json$Json$Decode$fail('bad value');
-		}
-	};
-	return A2(
-		$elm$json$Json$Decode$at,
-		_List_fromArray(
-			['target', 'value']),
-		A2($elm$json$Json$Decode$andThen, f, $elm$json$Json$Decode$string));
-};
-var $rtfeldman$elm_css$Html$Styled$Attributes$selected = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('selected');
-var $author$project$Main$selectFont = function (maybeFontName) {
-	var selected = function (x) {
-		if (maybeFontName.$ === 'Nothing') {
-			return false;
-		} else {
-			var y = maybeFontName.a;
-			return _Utils_eq(x, y);
-		}
-	};
-	var placeholder = A2(
-		$rtfeldman$elm_css$Html$Styled$option,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$disabled(true),
-				$rtfeldman$elm_css$Html$Styled$Attributes$selected(
-				_Utils_eq(maybeFontName, $elm$core$Maybe$Nothing))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text('font')
-			]));
-	var o = function (_v3) {
-		var x = _v3.a;
-		var y = _v3.b;
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$option,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$value(x),
-					$rtfeldman$elm_css$Html$Styled$Attributes$selected(
-					selected(x))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(x)
-				]));
-	};
-	var fonts = _List_fromArray(
-		[
-			_Utils_Tuple2('Oswald', 'sans-serif'),
-			_Utils_Tuple2('Playfair Display', 'serif'),
-			_Utils_Tuple2('Ubuntu Mono', 'monospace')
-		]);
-	var toMsg = function (x) {
-		var _v0 = A2(
-			$elm$core$List$filter,
-			function (_v1) {
-				var a = _v1.a;
-				var b = _v1.b;
-				return _Utils_eq(a, x);
-			},
-			fonts);
-		if (_v0.b) {
-			var _v2 = _v0.a;
-			var y = _v2.b;
-			return $elm$core$Maybe$Just(
-				$author$project$Main$Font(
-					_List_fromArray(
-						[x, y])));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	};
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$select,
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$Events$on,
-				'change',
-				$author$project$Main$selectDecode(toMsg))
-			]),
-		A2(
-			$elm$core$List$cons,
-			placeholder,
-			A2($elm$core$List$map, o, fonts)));
-};
-var $author$project$Main$FontSize = function (a) {
-	return {$: 'FontSize', a: a};
-};
-var $elm$core$String$toFloat = _String_toFloat;
-var $author$project$Main$selectFontSize = function (maybeSize) {
-	var toMsg = function (x) {
-		return A2(
-			$elm$core$Maybe$map,
-			$author$project$Main$FontSize,
-			$elm$core$String$toFloat(x));
-	};
-	var selected = function (x) {
-		if (maybeSize.$ === 'Nothing') {
-			return false;
-		} else {
-			var y = maybeSize.a;
-			return _Utils_eq(x, y);
-		}
-	};
-	var range = F2(
-		function (x, y) {
-			return A2(
-				$elm$core$List$map,
-				function (a) {
-					return a + x;
-				},
-				A2(
-					$elm$core$List$map,
-					function (a) {
-						return 2 * a;
-					},
-					A2($elm$core$List$range, 0, ((y - x) / 2) | 0)));
-		});
-	var placeholder = A2(
-		$rtfeldman$elm_css$Html$Styled$option,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$disabled(true),
-				$rtfeldman$elm_css$Html$Styled$Attributes$selected(
-				_Utils_eq(maybeSize, $elm$core$Maybe$Nothing))
-			]),
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$text('size')
-			]));
-	var o = function (x) {
-		return A2(
-			$rtfeldman$elm_css$Html$Styled$option,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$value(
-					$elm$core$String$fromInt(x)),
-					$rtfeldman$elm_css$Html$Styled$Attributes$selected(
-					selected(x))
-				]),
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$text(
-					$elm$core$String$fromInt(x))
-				]));
-	};
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$select,
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$Events$on,
-				'change',
-				$author$project$Main$selectDecode(toMsg))
-			]),
-		A2(
-			$elm$core$List$cons,
-			placeholder,
-			A2(
-				$elm$core$List$map,
-				o,
-				A2(range, 6, 30))));
-};
-var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
-var $author$project$Main$switch = function (checked) {
-	var _class = checked ? 'slider checked' : 'slider';
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$label,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$class('switch')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$rtfeldman$elm_css$Html$Styled$span,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$class(_class),
-						$rtfeldman$elm_css$Html$Styled$Events$onClick(
-						$author$project$Main$Switch(!checked))
-					]),
-				_List_Nil)
-			]));
-};
-var $author$project$Main$toolbar = function (model) {
-	return A2(
-		$rtfeldman$elm_css$Html$Styled$div,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$class('Toolbar')
-			]),
-		_List_fromArray(
-			[
-				$author$project$Main$switch(
-				!_Utils_eq(model.rte.state, $author$project$Rte$Display)),
-				A2($author$project$Main$icon, 'Bold', $author$project$Main$Bold),
-				A2($author$project$Main$icon, 'Italic', $author$project$Main$Italic),
-				A2($author$project$Main$icon, 'Underline', $author$project$Main$Underline),
-				A2($author$project$Main$icon, 'Strikethrough', $author$project$Main$StrikeThrough),
-				A2($author$project$Main$icon, 'Undo', $author$project$Main$Undo),
-				A2(
-				$author$project$Main$icon,
-				'Left',
-				$author$project$Main$TextAlign($author$project$Rte$Left)),
-				A2(
-				$author$project$Main$icon,
-				'Center',
-				$author$project$Main$TextAlign($author$project$Rte$Center)),
-				A2(
-				$author$project$Main$icon,
-				'Right',
-				$author$project$Main$TextAlign($author$project$Rte$Right)),
-				A2($author$project$Main$icon, 'Unindent', $author$project$Main$Unindent),
-				A2($author$project$Main$icon, 'Indent', $author$project$Main$Indent),
-				A2($author$project$Main$icon, 'Heading', $author$project$Main$Heading),
-				A2($author$project$Main$icon, 'Coding', $author$project$Main$Code),
-				A2($author$project$Main$icon, 'Emoji', $author$project$Main$Emoji),
-				A2($author$project$Main$icon, 'Link', $author$project$Main$ToggleLinkBox),
-				A2($author$project$Main$icon, 'Unlink', $author$project$Main$Unlink),
-				A2($author$project$Main$icon, 'Picture', $author$project$Main$ToggleImageBox),
-				$author$project$Main$selectFontSize(model.rte.fontStyle.fontSize),
-				$author$project$Main$selectFont(
-				$elm$core$List$head(model.rte.fontStyle.fontFamily))
-			]));
-};
-var $author$project$Rte$CompositionEnd = function (a) {
-	return {$: 'CompositionEnd', a: a};
-};
-var $author$project$Rte$CompositionStart = {$: 'CompositionStart'};
-var $author$project$Rte$SwitchTo = function (a) {
-	return {$: 'SwitchTo', a: a};
-};
-var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
-var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
-var $rtfeldman$elm_css$Css$prop2 = F3(
-	function (key, argA, argB) {
-		return A2(
-			$rtfeldman$elm_css$Css$property,
-			key,
-			A2(
-				$elm$core$String$join,
-				' ',
-				_List_fromArray(
-					[argA.value, argB.value])));
-	});
-var $rtfeldman$elm_css$Css$borderLeft2 = $rtfeldman$elm_css$Css$prop2('border-left');
-var $rtfeldman$elm_css$Css$prop1 = F2(
-	function (key, arg) {
-		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
-	});
-var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
-var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
-var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
-var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
-var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
-	function (units, unitLabel, numericValue) {
-		return {
-			absoluteLength: $rtfeldman$elm_css$Css$Structure$Compatible,
-			calc: $rtfeldman$elm_css$Css$Structure$Compatible,
-			flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible,
-			fontSize: $rtfeldman$elm_css$Css$Structure$Compatible,
-			length: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-			numericValue: numericValue,
-			textIndent: $rtfeldman$elm_css$Css$Structure$Compatible,
-			unitLabel: unitLabel,
-			units: units,
-			value: _Utils_ap(
-				$elm$core$String$fromFloat(numericValue),
-				unitLabel)
-		};
-	});
-var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
-var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
-var $author$project$Rte$cursorHtml = F6(
-	function (cursor, box, visible, typing, selection, idx) {
-		if (typing || (!visible)) {
-			return A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
-		} else {
-			var visibleHeight = A2($elm$core$Basics$min, cursor.height, (box.y + box.height) - cursor.y);
-			var onScreen = (_Utils_cmp(cursor.y, box.y) > -1) && ((_Utils_cmp(cursor.y, box.y + box.height) < 1) && ((_Utils_cmp(cursor.x, box.x) > -1) && (_Utils_cmp(cursor.x, box.x + box.width) < 1)));
-			return (!onScreen) ? A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil) : A2(
-				$rtfeldman$elm_css$Html$Styled$div,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
-						_List_fromArray(
-							[
-								A2(
-								$rtfeldman$elm_css$Css$borderLeft2,
-								$rtfeldman$elm_css$Css$px(3),
-								$rtfeldman$elm_css$Css$solid),
-								A2($rtfeldman$elm_css$Css$property, 'border-color', 'black'),
-								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
-								$rtfeldman$elm_css$Css$height(
-								$rtfeldman$elm_css$Css$px(visibleHeight)),
-								$rtfeldman$elm_css$Css$left(
-								$rtfeldman$elm_css$Css$px(cursor.x)),
-								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-								$rtfeldman$elm_css$Css$top(
-								$rtfeldman$elm_css$Css$px(cursor.y))
-							]))
-					]),
-				_List_Nil);
-		}
-	});
-var $elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
 var $rtfeldman$elm_css$VirtualDom$Styled$lazyHelp = F2(
 	function (fn, arg) {
 		return $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled(
@@ -13055,15 +12740,145 @@ var $rtfeldman$elm_css$VirtualDom$Styled$lazy = F2(
 			A3($elm$virtual_dom$VirtualDom$lazy2, $rtfeldman$elm_css$VirtualDom$Styled$lazyHelp, fn, arg));
 	});
 var $rtfeldman$elm_css$Html$Styled$Lazy$lazy = $rtfeldman$elm_css$VirtualDom$Styled$lazy;
-var $author$project$Rte$MouseDown = F2(
+var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
+	function (a, b, c) {
+		return {$: 'KeyedNode', a: a, b: b, c: c};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS = F4(
+	function (a, b, c, d) {
+		return {$: 'KeyedNodeNS', a: a, b: b, c: c, d: d};
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$NodeNS = F4(
+	function (a, b, c, d) {
+		return {$: 'NodeNS', a: a, b: b, c: c, d: d};
+	});
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
+var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
+	function (transform, _v0) {
+		var prop = _v0.a;
+		var styles = _v0.b;
+		var classname = _v0.c;
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$mapAttribute, transform, prop),
+			styles,
+			classname);
+	});
+var $rtfeldman$elm_css$VirtualDom$Styled$map = F2(
+	function (transform, vdomNode) {
+		switch (vdomNode.$) {
+			case 'Node':
+				var elemType = vdomNode.a;
+				var properties = vdomNode.b;
+				var children = vdomNode.c;
+				return A3(
+					$rtfeldman$elm_css$VirtualDom$Styled$Node,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$map(transform),
+						children));
+			case 'NodeNS':
+				var ns = vdomNode.a;
+				var elemType = vdomNode.b;
+				var properties = vdomNode.c;
+				var children = vdomNode.d;
+				return A4(
+					$rtfeldman$elm_css$VirtualDom$Styled$NodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$map(transform),
+						children));
+			case 'KeyedNode':
+				var elemType = vdomNode.a;
+				var properties = vdomNode.b;
+				var children = vdomNode.c;
+				return A3(
+					$rtfeldman$elm_css$VirtualDom$Styled$KeyedNode,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						$elm$core$List$map,
+						function (_v1) {
+							var key = _v1.a;
+							var child = _v1.b;
+							return _Utils_Tuple2(
+								key,
+								A2($rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
+						},
+						children));
+			case 'KeyedNodeNS':
+				var ns = vdomNode.a;
+				var elemType = vdomNode.b;
+				var properties = vdomNode.c;
+				var children = vdomNode.d;
+				return A4(
+					$rtfeldman$elm_css$VirtualDom$Styled$KeyedNodeNS,
+					ns,
+					elemType,
+					A2(
+						$elm$core$List$map,
+						$rtfeldman$elm_css$VirtualDom$Styled$mapAttribute(transform),
+						properties),
+					A2(
+						$elm$core$List$map,
+						function (_v2) {
+							var key = _v2.a;
+							var child = _v2.b;
+							return _Utils_Tuple2(
+								key,
+								A2($rtfeldman$elm_css$VirtualDom$Styled$map, transform, child));
+						},
+						children));
+			default:
+				var vdom = vdomNode.a;
+				return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+					A2($elm$virtual_dom$VirtualDom$map, transform, vdom));
+		}
+	});
+var $rtfeldman$elm_css$Html$Styled$map = $rtfeldman$elm_css$VirtualDom$Styled$map;
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
+	function (eventName, handler) {
+		return A3(
+			$rtfeldman$elm_css$VirtualDom$Styled$Attribute,
+			A2($elm$virtual_dom$VirtualDom$on, eventName, handler),
+			_List_Nil,
+			'');
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $author$project$Rte$Core$MouseDown = F2(
 	function (a, b) {
 		return {$: 'MouseDown', a: a, b: b};
 	});
-var $author$project$Rte$Paragraph = F3(
+var $author$project$Rte$Core$Paragraph = F3(
 	function (idx, children, lineBreak) {
 		return {children: children, idx: idx, lineBreak: lineBreak};
 	});
-var $author$project$Rte$breakIntoParas = function (content) {
+var $author$project$Rte$Core$breakIntoParas = function (content) {
 	var maxIdx = $elm$core$List$length(content) - 1;
 	var f = F2(
 		function (elem, _v2) {
@@ -13075,7 +12890,7 @@ var $author$project$Rte$breakIntoParas = function (content) {
 					idx - 1,
 					A2(
 						$elm$core$List$cons,
-						A3($author$project$Rte$Paragraph, idx, _List_Nil, br),
+						A3($author$project$Rte$Core$Paragraph, idx, _List_Nil, br),
 						ys));
 			} else {
 				if (!ys.b) {
@@ -13106,11 +12921,11 @@ var $author$project$Rte$breakIntoParas = function (content) {
 		content).b;
 };
 var $elm$json$Json$Decode$map3 = _Json_map3;
-var $author$project$Rte$decodeMouse = function (toMsg) {
+var $author$project$Rte$Core$decodeMouse = function (msg) {
 	var tagger = F3(
 		function (x, y, z) {
 			return A2(
-				toMsg,
+				msg,
 				_Utils_Tuple2(x, y),
 				z);
 		});
@@ -13121,23 +12936,23 @@ var $author$project$Rte$decodeMouse = function (toMsg) {
 		A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float),
 		A2($elm$json$Json$Decode$field, 'timeStamp', $elm$json$Json$Decode$float));
 };
-var $author$project$Rte$dehighlight = function (elem) {
+var $author$project$Rte$Core$dehighlight = function (elem) {
 	switch (elem.$) {
 		case 'Break':
 			var br = elem.a;
-			return $author$project$Rte$Break(
+			return $author$project$Rte$Types$Break(
 				_Utils_update(
 					br,
 					{highlightClasses: _List_Nil, highlightIndent: 0, highlightStyling: _List_Nil}));
 		case 'Char':
 			var ch = elem.a;
-			return $author$project$Rte$Char(
+			return $author$project$Rte$Types$Char(
 				_Utils_update(
 					ch,
 					{highlightClasses: _List_Nil, highlightStyling: _List_Nil}));
 		default:
 			var html = elem.a;
-			return $author$project$Rte$Embedded(
+			return $author$project$Rte$Types$Embedded(
 				_Utils_update(
 					html,
 					{highlightClasses: _List_Nil, highlightStyling: _List_Nil}));
@@ -13145,10 +12960,10 @@ var $author$project$Rte$dehighlight = function (elem) {
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$keyedNode = $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode;
 var $rtfeldman$elm_css$Html$Styled$Keyed$node = $rtfeldman$elm_css$VirtualDom$Styled$keyedNode;
-var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y');
 var $rtfeldman$elm_css$Css$preWrap = {value: 'pre-wrap', whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$scroll = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, blockAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, inlineAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, scroll: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'scroll'};
-var $author$project$Rte$attributes = function (elem) {
+var $rtfeldman$elm_css$Html$Styled$a = $rtfeldman$elm_css$Html$Styled$node('a');
+var $rtfeldman$elm_css$Html$Styled$Attributes$class = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('className');
+var $author$project$Rte$Core$attributes = function (elem) {
 	var g = function (_v1) {
 		var x = _v1.a;
 		var y = _v1.b;
@@ -13188,7 +13003,7 @@ var $author$project$Rte$attributes = function (elem) {
 			return h(html);
 	}
 };
-var $author$project$Rte$cursorHtml2 = function (cursor) {
+var $author$project$Rte$Core$cursorHtml2 = function (cursor) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$div,
 		_List_fromArray(
@@ -13200,7 +13015,8 @@ var $author$project$Rte$cursorHtml2 = function (cursor) {
 						$rtfeldman$elm_css$Css$borderLeft2,
 						$rtfeldman$elm_css$Css$px(3),
 						$rtfeldman$elm_css$Css$solid),
-						A2($rtfeldman$elm_css$Css$property, 'border-color', 'black'),
+						$rtfeldman$elm_css$Css$borderColor(
+						A3($rtfeldman$elm_css$Css$rgb, 0, 0, 0)),
 						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 						$rtfeldman$elm_css$Css$height(
 						$rtfeldman$elm_css$Css$px(cursor.height)),
@@ -13230,8 +13046,17 @@ var $rtfeldman$elm_css$Css$fontFamilies = A2(
 	$elm$core$Basics$composeL,
 	$rtfeldman$elm_css$Css$prop1('font-family'),
 	$rtfeldman$elm_css$Css$stringsToValue);
+var $rtfeldman$elm_css$Html$Styled$Attributes$href = function (url) {
+	return A2($rtfeldman$elm_css$Html$Styled$Attributes$stringProperty, 'href', url);
+};
 var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
-var $author$project$Rte$showChar = F8(
+var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
+var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
+	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
+		$elm$virtual_dom$VirtualDom$text(str));
+};
+var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
+var $author$project$Rte$Core$showChar = F8(
 	function (selection, selectionStyle, cursor, cursorScreen, typing, idx, fontSizeUnit, ch) {
 		var unit = A2($elm$core$Maybe$withDefault, 'px', fontSizeUnit);
 		var size = function () {
@@ -13299,7 +13124,7 @@ var $author$project$Rte$showChar = F8(
 				linked(
 				$rtfeldman$elm_css$Html$Styled$text(
 					$elm$core$String$fromChar(ch._char))),
-				$author$project$Rte$cursorHtml2(cursorScreen)
+				$author$project$Rte$Core$cursorHtml2(cursorScreen)
 			]) : _List_fromArray(
 			[
 				linked(
@@ -13314,8 +13139,8 @@ var $author$project$Rte$showChar = F8(
 					$elm$core$List$cons,
 					$rtfeldman$elm_css$Html$Styled$Attributes$id(id),
 					_Utils_ap(
-						$author$project$Rte$attributes(
-							$author$project$Rte$Char(ch)),
+						$author$project$Rte$Core$attributes(
+							$author$project$Rte$Types$Char(ch)),
 						_Utils_ap(
 							fontFamilyAttr,
 							_Utils_ap(
@@ -13339,7 +13164,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$attribute = F2(
 			'');
 	});
 var $rtfeldman$elm_css$Html$Styled$Attributes$attribute = $rtfeldman$elm_css$VirtualDom$Styled$attribute;
-var $author$project$Rte$showEmbedded = function (html) {
+var $author$project$Rte$Core$showEmbedded = function (html) {
 	var textChild = function () {
 		var _v4 = html.text;
 		if (_v4.$ === 'Nothing') {
@@ -13359,11 +13184,11 @@ var $author$project$Rte$showEmbedded = function (html) {
 	};
 	var f = function (x) {
 		var y = x.a;
-		return $author$project$Rte$showEmbedded(y);
+		return $author$project$Rte$Core$showEmbedded(y);
 	};
 	var attrs = _Utils_ap(
-		$author$project$Rte$attributes(
-			$author$project$Rte$Embedded(html)),
+		$author$project$Rte$Core$attributes(
+			$author$project$Rte$Types$Embedded(html)),
 		A2($elm$core$List$map, g, html.attributes));
 	var _v0 = html.nodeType;
 	if (_v0.$ === 'Nothing') {
@@ -13384,7 +13209,7 @@ var $author$project$Rte$showEmbedded = function (html) {
 				A2($elm$core$List$map, f, html.children)));
 	}
 };
-var $author$project$Rte$wrap = F2(
+var $author$project$Rte$Core$wrap = F2(
 	function (_v0, l) {
 		var amount = _v0.a;
 		var unit = _v0.b;
@@ -13419,8 +13244,8 @@ var $author$project$Rte$wrap = F2(
 					'div',
 					_Utils_ap(
 						indentAttr,
-						$author$project$Rte$attributes(
-							$author$project$Rte$Break(l)))));
+						$author$project$Rte$Core$attributes(
+							$author$project$Rte$Types$Break(l)))));
 		} else {
 			var nodeType = _v1.a;
 			return A2(
@@ -13431,25 +13256,32 @@ var $author$project$Rte$wrap = F2(
 					nodeType,
 					_Utils_ap(
 						indentAttr,
-						$author$project$Rte$attributes(
-							$author$project$Rte$Break(l)))));
+						$author$project$Rte$Core$attributes(
+							$author$project$Rte$Types$Break(l)))));
 		}
 	});
-var $author$project$Rte$zeroWidthCharacter = function (id) {
-	return {_char: $author$project$Rte$zeroWidthChar, fontStyle: $author$project$Rte$emptyFontStyle, highlightClasses: _List_Nil, highlightStyling: _List_Nil, id: id, link: $elm$core$Maybe$Nothing};
+var $author$project$Rte$Core$zeroWidthCharacter = function (id) {
+	return {_char: $author$project$Rte$Core$zeroWidthChar, fontStyle: $author$project$Rte$Core$emptyFontStyle, highlightClasses: _List_Nil, highlightStyling: _List_Nil, id: id, link: $elm$core$Maybe$Nothing};
 };
-var $author$project$Rte$showPara = F8(
-	function (cursor, cursorScreen, maybeIndentUnit, selection, selectionStyle, typing, fontSizeUnit, p) {
+var $author$project$Rte$Core$showPara = F9(
+	function (tagger, cursor, cursorScreen, maybeIndentUnit, selection, selectionStyle, typing, fontSizeUnit, p) {
+		var tag = function (_v2) {
+			var x = _v2.a;
+			var y = _v2.b;
+			return _Utils_Tuple2(
+				x,
+				A2($rtfeldman$elm_css$Html$Styled$map, tagger, y));
+		};
 		var print = F2(
 			function (idx, ch) {
-				return A8($author$project$Rte$showChar, selection, selectionStyle, cursor, cursorScreen, typing, idx, fontSizeUnit, ch);
+				return A8($author$project$Rte$Core$showChar, selection, selectionStyle, cursor, cursorScreen, typing, idx, fontSizeUnit, ch);
 			});
 		var zeroSpace = F2(
 			function (idx, id) {
 				return A2(
 					print,
 					idx,
-					$author$project$Rte$zeroWidthCharacter(id));
+					$author$project$Rte$Core$zeroWidthCharacter(id));
 			});
 		var indentUnit = A2(
 			$elm$core$Maybe$withDefault,
@@ -13458,7 +13290,7 @@ var $author$project$Rte$showPara = F8(
 		var f = function (html) {
 			return _Utils_Tuple2(
 				$elm$core$String$fromInt(html.id) + 'embed',
-				$author$project$Rte$showEmbedded(html));
+				$author$project$Rte$Core$showEmbedded(html));
 		};
 		var g = F2(
 			function (_v1, ys) {
@@ -13485,19 +13317,23 @@ var $author$project$Rte$showPara = F8(
 								ys));
 				}
 			});
-		return A2($author$project$Rte$wrap, indentUnit, p.lineBreak)(
+		return tag(
 			A3(
-				$elm$core$List$foldr,
-				g,
-				_List_fromArray(
-					[
-						A2(zeroSpace, p.idx, p.lineBreak.id)
-					]),
-				p.children));
+				$author$project$Rte$Core$wrap,
+				indentUnit,
+				p.lineBreak,
+				A3(
+					$elm$core$List$foldr,
+					g,
+					_List_fromArray(
+						[
+							A2(zeroSpace, p.idx, p.lineBreak.id)
+						]),
+					p.children)));
 	});
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
-var $author$project$Rte$showContent = F2(
-	function (userDefinedStyles, e) {
+var $author$project$Rte$Core$showContent = F3(
+	function (tagger, userDefinedStyles, e) {
 		var highlight = function () {
 			var _v0 = e.highlighter;
 			if (_v0.$ === 'Just') {
@@ -13505,15 +13341,15 @@ var $author$project$Rte$showContent = F2(
 				return A2(
 					$elm$core$Basics$composeL,
 					f,
-					$elm$core$List$map($author$project$Rte$dehighlight));
+					$elm$core$List$map($author$project$Rte$Core$dehighlight));
 			} else {
 				return $elm$core$Basics$identity;
 			}
 		}();
 		var paragraphs = A2(
 			$elm$core$List$map,
-			A7($author$project$Rte$showPara, e.cursor, e.cursorScreen, e.indentUnit, e.selection, e.selectionStyle, e.typing, e.fontSizeUnit),
-			$author$project$Rte$breakIntoParas(
+			A8($author$project$Rte$Core$showPara, tagger, e.cursor, e.cursorScreen, e.indentUnit, e.selection, e.selectionStyle, e.typing, e.fontSizeUnit),
+			$author$project$Rte$Core$breakIntoParas(
 				highlight(e.content)));
 		var attrs = _Utils_ap(
 			userDefinedStyles,
@@ -13523,7 +13359,6 @@ var $author$project$Rte$showContent = F2(
 					_List_fromArray(
 						[
 							A2($rtfeldman$elm_css$Css$property, 'cursor', 'text'),
-							$rtfeldman$elm_css$Css$overflowY($rtfeldman$elm_css$Css$scroll),
 							A2($rtfeldman$elm_css$Css$property, 'user-select', 'none'),
 							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$preWrap),
 							A2($rtfeldman$elm_css$Css$property, 'word-break', 'break-word')
@@ -13532,13 +13367,21 @@ var $author$project$Rte$showContent = F2(
 					A2(
 					$rtfeldman$elm_css$Html$Styled$Events$on,
 					'mousedown',
-					$author$project$Rte$decodeMouse($author$project$Rte$MouseDown)),
+					$author$project$Rte$Core$decodeMouse(
+						F2(
+							function (x, y) {
+								return tagger(
+									A2($author$project$Rte$Core$MouseDown, x, y));
+							}))),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$Events$on,
 					'scroll',
 					A2(
 						$elm$json$Json$Decode$map,
-						A2($elm$core$Basics$composeL, $author$project$Rte$Scrolled, $elm$core$Maybe$Just),
+						A2(
+							$elm$core$Basics$composeL,
+							A2($elm$core$Basics$composeL, tagger, $author$project$Rte$Core$Scrolled),
+							$elm$core$Maybe$Just),
 						A2(
 							$elm$json$Json$Decode$at,
 							_List_fromArray(
@@ -13547,63 +13390,68 @@ var $author$project$Rte$showContent = F2(
 				]));
 		return A3($rtfeldman$elm_css$Html$Styled$Keyed$node, 'div', attrs, paragraphs);
 	});
+var $rtfeldman$elm_css$Html$Styled$Attributes$type_ = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('type');
 var $rtfeldman$elm_css$Css$VwUnits = {$: 'VwUnits'};
 var $rtfeldman$elm_css$Css$vw = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$VwUnits, 'vw');
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
-var $author$project$Rte$view = F2(
-	function (userDefinedStyles, e) {
+var $author$project$Rte$Core$view = F3(
+	function (tagger, userDefinedStyles, e) {
 		var g = function (_v2) {
-			return A6($author$project$Rte$cursorHtml, e.cursorScreen, e.box, e.cursorVisible, e.typing, e.selection, e.cursor);
+			return A6($author$project$Rte$Core$cursorHtml, e.cursorScreen, e.box, e.cursorVisible, e.typing, e.selection, e.cursor);
 		};
 		var f = function (_v1) {
-			return A2($author$project$Rte$showContent, userDefinedStyles, e);
+			return A3($author$project$Rte$Core$showContent, tagger, userDefinedStyles, e);
 		};
 		var dummy = A2(
-			$rtfeldman$elm_css$Html$Styled$input,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
-					$rtfeldman$elm_css$Html$Styled$Attributes$id(
-					$author$project$Rte$dummyID(e.editorID)),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$Events$on,
-					'focus',
-					$elm$json$Json$Decode$succeed(
-						$author$project$Rte$SwitchTo($author$project$Rte$Edit))),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$Events$on,
-					'compositionend',
-					A2(
-						$elm$json$Json$Decode$map,
-						$author$project$Rte$CompositionEnd,
-						A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$string))),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$Events$on,
-					'compositionstart',
-					$elm$json$Json$Decode$succeed($author$project$Rte$CompositionStart)),
-					A2(
-					$rtfeldman$elm_css$Html$Styled$Events$on,
-					'compositionupdate',
-					A2(
-						$elm$json$Json$Decode$map,
-						$author$project$Rte$CompositionUpdate,
-						A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$string))),
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-							$rtfeldman$elm_css$Css$left(
-							$rtfeldman$elm_css$Css$vw(-100)),
-							$rtfeldman$elm_css$Css$width(
-							$rtfeldman$elm_css$Css$vw(10))
-						]))
-				]),
-			_List_Nil);
+			$rtfeldman$elm_css$Html$Styled$map,
+			tagger,
+			A2(
+				$rtfeldman$elm_css$Html$Styled$input,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
+						$rtfeldman$elm_css$Html$Styled$Attributes$id(
+						$author$project$Rte$Core$dummyID(e.editorID)),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$Events$on,
+						'focus',
+						$elm$json$Json$Decode$succeed(
+							$author$project$Rte$Core$SwitchTo($author$project$Rte$Core$Edit))),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$Events$on,
+						'compositionend',
+						A2(
+							$elm$json$Json$Decode$map,
+							$author$project$Rte$Core$CompositionEnd,
+							A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$string))),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$Events$on,
+						'compositionstart',
+						$elm$json$Json$Decode$succeed($author$project$Rte$Core$CompositionStart)),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$Events$on,
+						'compositionupdate',
+						A2(
+							$elm$json$Json$Decode$map,
+							$author$project$Rte$Core$CompositionUpdate,
+							A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$string))),
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+								$rtfeldman$elm_css$Css$left(
+								$rtfeldman$elm_css$Css$vw(-100)),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$vw(10))
+							]))
+					]),
+				_List_Nil));
 		var _v0 = e.state;
 		switch (_v0.$) {
 			case 'Display':
-				return A2(
-					$author$project$Rte$showContent,
+				return A3(
+					$author$project$Rte$Core$showContent,
+					tagger,
 					userDefinedStyles,
 					_Utils_update(
 						e,
@@ -13632,55 +13480,1344 @@ var $author$project$Rte$view = F2(
 						]));
 		}
 	});
-var $author$project$Main$view = function (model) {
-	var rteCss = _Utils_eq(model.rte.state, $author$project$Rte$Display) ? _List_fromArray(
-		[
-			$rtfeldman$elm_css$Html$Styled$Attributes$class('Blogpost')
-		]) : _List_fromArray(
-		[
-			$rtfeldman$elm_css$Html$Styled$Attributes$class('RTE')
-		]);
+var $author$project$Rte$textareaStyled = function (rte) {
+	var styling = _Utils_eq(rte.textarea.state, $author$project$Rte$Core$Display) ? rte.styling.inactive : rte.styling.active;
+	return A3(
+		$author$project$Rte$Core$view,
+		A2($elm$core$Basics$composeL, rte.tagger, $author$project$Rte$Core),
+		styling,
+		rte.textarea);
+};
+var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
+var $rtfeldman$elm_css$VirtualDom$Styled$unstyledAttribute = function (prop) {
+	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, prop, _List_Nil, '');
+};
+var $rtfeldman$elm_css$Html$Styled$Attributes$fromUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$unstyledAttribute;
+var $author$project$Rte$tostyled = $elm$core$List$map($rtfeldman$elm_css$Html$Styled$Attributes$fromUnstyled);
+var $author$project$Rte$tostyled3 = function (a) {
 	return {
-		body: _List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$toUnstyled(
-				A2(
-					$rtfeldman$elm_css$Html$Styled$div,
+		active: $author$project$Rte$tostyled(a.active),
+		inactive: $author$project$Rte$tostyled(a.inactive)
+	};
+};
+var $author$project$Rte$tostyled2 = function (rte) {
+	return {
+		emojiBox: rte.emojiBox,
+		inputBox: rte.inputBox,
+		styling: $author$project$Rte$tostyled3(rte.styling),
+		tagger: rte.tagger,
+		textarea: rte.textarea
+	};
+};
+var $author$project$Rte$textarea = function (rte) {
+	return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+		$author$project$Rte$textareaStyled(
+			$author$project$Rte$tostyled2(rte)));
+};
+var $author$project$Rte$Types$Center = {$: 'Center'};
+var $author$project$Rte$Class = function (a) {
+	return {$: 'Class', a: a};
+};
+var $author$project$Rte$Heading = {$: 'Heading'};
+var $author$project$Rte$Indent = {$: 'Indent'};
+var $author$project$Rte$Italic = {$: 'Italic'};
+var $author$project$Rte$Types$Left = {$: 'Left'};
+var $author$project$Rte$Types$Right = {$: 'Right'};
+var $author$project$Rte$StrikeThrough = {$: 'StrikeThrough'};
+var $author$project$Rte$TextAlign = function (a) {
+	return {$: 'TextAlign', a: a};
+};
+var $author$project$Rte$ToggleEmojiBox = {$: 'ToggleEmojiBox'};
+var $author$project$Rte$ToggleImageBox = {$: 'ToggleImageBox'};
+var $author$project$Rte$ToggleLinkBox = {$: 'ToggleLinkBox'};
+var $author$project$Rte$Underline = {$: 'Underline'};
+var $author$project$Rte$Undo = {$: 'Undo'};
+var $author$project$Rte$Unindent = {$: 'Unindent'};
+var $author$project$Rte$Unlink = {$: 'Unlink'};
+var $author$project$Rte$emojiBox = F2(
+	function (rte, params) {
+		return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+			A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil));
+	});
+var $author$project$Rte$Font = function (a) {
+	return {$: 'Font', a: a};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $rtfeldman$elm_css$Html$Styled$Attributes$disabled = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('disabled');
+var $rtfeldman$elm_css$Html$Styled$option = $rtfeldman$elm_css$Html$Styled$node('option');
+var $rtfeldman$elm_css$Html$Styled$select = $rtfeldman$elm_css$Html$Styled$node('select');
+var $author$project$Rte$selectDecode = function (check) {
+	var f = function (x) {
+		var _v0 = check(x);
+		if (_v0.$ === 'Just') {
+			var msg = _v0.a;
+			return $elm$json$Json$Decode$succeed(msg);
+		} else {
+			return $elm$json$Json$Decode$fail('bad value');
+		}
+	};
+	return A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['target', 'value']),
+		A2($elm$json$Json$Decode$andThen, f, $elm$json$Json$Decode$string));
+};
+var $rtfeldman$elm_css$Html$Styled$Attributes$selected = $rtfeldman$elm_css$Html$Styled$Attributes$boolProperty('selected');
+var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
+var $author$project$Rte$fontSelectorStyled = F2(
+	function (rte, params) {
+		var msg = function (x) {
+			var _v2 = A2(
+				$elm$core$List$filter,
+				function (a) {
+					return _Utils_eq(
+						$elm$core$List$head(a),
+						$elm$core$Maybe$Just(x));
+				},
+				params.fonts);
+			if (_v2.b) {
+				var xs = _v2.a;
+				return $elm$core$Maybe$Just(
+					rte.tagger(
+						$author$project$Rte$Font(xs)));
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		};
+		var maybeFontName = $elm$core$List$head(rte.textarea.fontStyle.fontFamily);
+		var placeholder = A2(
+			$rtfeldman$elm_css$Html$Styled$option,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$disabled(true),
+					$rtfeldman$elm_css$Html$Styled$Attributes$selected(
+					_Utils_eq(maybeFontName, $elm$core$Maybe$Nothing))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text('font')
+				]));
+		var selected = function (x) {
+			if (maybeFontName.$ === 'Nothing') {
+				return false;
+			} else {
+				var y = maybeFontName.a;
+				return _Utils_eq(x, y);
+			}
+		};
+		var o = function (xs) {
+			if (!xs.b) {
+				return A2($rtfeldman$elm_css$Html$Styled$div, _List_Nil, _List_Nil);
+			} else {
+				var x = xs.a;
+				return A2(
+					$rtfeldman$elm_css$Html$Styled$option,
 					_List_fromArray(
 						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$class('Wrap')
+							$rtfeldman$elm_css$Html$Styled$Attributes$value(x),
+							$rtfeldman$elm_css$Html$Styled$Attributes$selected(
+							selected(x))
 						]),
 					_List_fromArray(
 						[
-							$author$project$Main$toolbar(model),
-							$author$project$Main$inputBox(model.inputBox),
+							$rtfeldman$elm_css$Html$Styled$text(x)
+						]));
+			}
+		};
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$select,
+			A2(
+				$elm$core$List$cons,
+				A2(
+					$rtfeldman$elm_css$Html$Styled$Events$on,
+					'change',
+					$author$project$Rte$selectDecode(msg)),
+				params.styling),
+			A2(
+				$elm$core$List$cons,
+				placeholder,
+				A2($elm$core$List$map, o, params.fonts)));
+	});
+var $author$project$Rte$fontSelector = F2(
+	function (rte, params) {
+		var styledParams = {
+			fonts: params.fonts,
+			styling: $author$project$Rte$tostyled(params.styling)
+		};
+		return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+			A2(
+				$author$project$Rte$fontSelectorStyled,
+				$author$project$Rte$tostyled2(rte),
+				styledParams));
+	});
+var $author$project$Rte$FontSize = function (a) {
+	return {$: 'FontSize', a: a};
+};
+var $elm$core$String$toFloat = _String_toFloat;
+var $author$project$Rte$fontSizeSelectorStyled = F2(
+	function (rte, params) {
+		var msg = function (x) {
+			return A2(
+				$elm$core$Maybe$map,
+				A2($elm$core$Basics$composeL, rte.tagger, $author$project$Rte$FontSize),
+				$elm$core$String$toFloat(x));
+		};
+		var maybeSize = rte.textarea.fontStyle.fontSize;
+		var placeholder = A2(
+			$rtfeldman$elm_css$Html$Styled$option,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$disabled(true),
+					$rtfeldman$elm_css$Html$Styled$Attributes$selected(
+					_Utils_eq(maybeSize, $elm$core$Maybe$Nothing))
+				]),
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$text('size')
+				]));
+		var selected = function (x) {
+			if (maybeSize.$ === 'Nothing') {
+				return false;
+			} else {
+				var y = maybeSize.a;
+				return _Utils_eq(x, y);
+			}
+		};
+		var o = function (x) {
+			return A2(
+				$rtfeldman$elm_css$Html$Styled$option,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$value(
+						$elm$core$String$fromFloat(x)),
+						$rtfeldman$elm_css$Html$Styled$Attributes$selected(
+						selected(x))
+					]),
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$text(
+						$elm$core$String$fromFloat(x))
+					]));
+		};
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$select,
+			A2(
+				$elm$core$List$cons,
+				A2(
+					$rtfeldman$elm_css$Html$Styled$Events$on,
+					'change',
+					$author$project$Rte$selectDecode(msg)),
+				params.styling),
+			A2(
+				$elm$core$List$cons,
+				placeholder,
+				A2($elm$core$List$map, o, params.sizes)));
+	});
+var $author$project$Rte$fontSizeSelector = F2(
+	function (rte, params) {
+		var styledParams = {
+			sizes: params.sizes,
+			styling: $author$project$Rte$tostyled(params.styling)
+		};
+		return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+			A2(
+				$author$project$Rte$fontSizeSelectorStyled,
+				$author$project$Rte$tostyled2(rte),
+				styledParams));
+	});
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
+var $author$project$Rte$ImageAdd = function (a) {
+	return {$: 'ImageAdd', a: a};
+};
+var $author$project$Rte$ImageInput = function (a) {
+	return {$: 'ImageInput', a: a};
+};
+var $author$project$Rte$LinkAdd = function (a) {
+	return {$: 'LinkAdd', a: a};
+};
+var $author$project$Rte$LinkInput = function (a) {
+	return {$: 'LinkInput', a: a};
+};
+var $author$project$Rte$inputBoxBehaviour = function (x) {
+	if (x.$ === 'ImageInputBox') {
+		var str = x.a;
+		return {content: str, inputMsg: $author$project$Rte$ImageInput, okMsg: $author$project$Rte$ImageAdd, placeholder: 'Image url'};
+	} else {
+		var str = x.a;
+		return {content: str, inputMsg: $author$project$Rte$LinkInput, okMsg: $author$project$Rte$LinkAdd, placeholder: 'Link url'};
+	}
+};
+var $rtfeldman$elm_css$Html$Styled$Events$onClick = function (msg) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$rtfeldman$elm_css$VirtualDom$Styled$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $rtfeldman$elm_css$Html$Styled$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
+	return A2(
+		$rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
+};
+var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
+var $author$project$Rte$inputBoxStyled = F2(
+	function (rte, params) {
+		var _v0 = A2($elm$core$Maybe$map, $author$project$Rte$inputBoxBehaviour, rte.inputBox);
+		if (_v0.$ === 'Just') {
+			var behaviour = _v0.a;
+			var value = (behaviour.content === '') ? $rtfeldman$elm_css$Html$Styled$Attributes$placeholder(behaviour.placeholder) : $rtfeldman$elm_css$Html$Styled$Attributes$value(behaviour.content);
+			return A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				params.styling.active,
+				A2(
+					$elm$core$List$map,
+					$rtfeldman$elm_css$Html$Styled$map(rte.tagger),
+					_List_fromArray(
+						[
 							A2(
-							$rtfeldman$elm_css$Html$Styled$map,
-							$author$project$Main$Internal,
-							A2($author$project$Rte$view, rteCss, model.rte)),
-							A2(
-							$rtfeldman$elm_css$Html$Styled$a,
+							$rtfeldman$elm_css$Html$Styled$input,
 							_List_fromArray(
 								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$href('https://github.com/dkodaj/rte'),
-									$rtfeldman$elm_css$Html$Styled$Attributes$class('Source')
+									value,
+									$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
+									$rtfeldman$elm_css$Html$Styled$Events$onInput(behaviour.inputMsg),
+									$rtfeldman$elm_css$Html$Styled$Attributes$id('InputBox')
+								]),
+							_List_Nil),
+							A2(
+							$rtfeldman$elm_css$Html$Styled$button,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Events$onClick(
+									behaviour.okMsg(behaviour.content))
 								]),
 							_List_fromArray(
 								[
-									$rtfeldman$elm_css$Html$Styled$text('Source')
-								])),
-							A2(
-							$rtfeldman$elm_css$Html$Styled$a,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$href('/rte/icon-credits.html'),
-									$rtfeldman$elm_css$Html$Styled$Attributes$class('Source')
-								]),
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$text('Icon Credits')
+									$rtfeldman$elm_css$Html$Styled$text('Ok')
 								]))
-						])))
+						])));
+		} else {
+			return A2(
+				$rtfeldman$elm_css$Html$Styled$div,
+				params.styling.inactive,
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$input,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$type_('text')
+							]),
+						_List_Nil),
+						A2(
+						$rtfeldman$elm_css$Html$Styled$button,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$text('Ok')
+							]))
+					]));
+		}
+	});
+var $author$project$Rte$inputBox = F2(
+	function (rte, params) {
+		return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+			A2(
+				$author$project$Rte$inputBoxStyled,
+				$author$project$Rte$tostyled2(rte),
+				{
+					styling: $author$project$Rte$tostyled3(params.styling)
+				}));
+	});
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $rtfeldman$elm_css$Css$Transitions$BackgroundColor = {$: 'BackgroundColor'};
+var $rtfeldman$elm_css$Css$Transitions$Transition = function (a) {
+	return {$: 'Transition', a: a};
+};
+var $rtfeldman$elm_css$Css$Transitions$durationTransition = F2(
+	function (animation, duration) {
+		return $rtfeldman$elm_css$Css$Transitions$Transition(
+			{animation: animation, delay: $elm$core$Maybe$Nothing, duration: duration, timing: $elm$core$Maybe$Nothing});
+	});
+var $rtfeldman$elm_css$Css$Transitions$backgroundColor = $rtfeldman$elm_css$Css$Transitions$durationTransition($rtfeldman$elm_css$Css$Transitions$BackgroundColor);
+var $rtfeldman$elm_css$Css$Structure$PseudoElement = function (a) {
+	return {$: 'PseudoElement', a: a};
+};
+var $rtfeldman$elm_css$Css$Preprocess$WithPseudoElement = F2(
+	function (a, b) {
+		return {$: 'WithPseudoElement', a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$pseudoElement = function (element) {
+	return $rtfeldman$elm_css$Css$Preprocess$WithPseudoElement(
+		$rtfeldman$elm_css$Css$Structure$PseudoElement(element));
+};
+var $rtfeldman$elm_css$Css$before = $rtfeldman$elm_css$Css$pseudoElement('before');
+var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$bottom = $rtfeldman$elm_css$Css$prop1('bottom');
+var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $rtfeldman$elm_css$Css$withPrecedingHash = function (str) {
+	return A2($elm$core$String$startsWith, '#', str) ? str : A2(
+		$elm$core$String$cons,
+		_Utils_chr('#'),
+		str);
+};
+var $rtfeldman$elm_css$Css$erroneousHex = function (str) {
+	return {
+		alpha: 1,
+		blue: 0,
+		color: $rtfeldman$elm_css$Css$Structure$Compatible,
+		green: 0,
+		red: 0,
+		value: $rtfeldman$elm_css$Css$withPrecedingHash(str)
+	};
+};
+var $elm$core$Basics$pow = _Basics_pow;
+var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
+	function (position, chars, accumulated) {
+		fromStringHelp:
+		while (true) {
+			if (!chars.b) {
+				return $elm$core$Result$Ok(accumulated);
+			} else {
+				var _char = chars.a;
+				var rest = chars.b;
+				switch (_char.valueOf()) {
+					case '0':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated;
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '1':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + A2($elm$core$Basics$pow, 16, position);
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '2':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (2 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '3':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (3 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '4':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (4 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '5':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (5 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '6':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (6 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '7':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (7 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '8':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (8 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case '9':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (9 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'a':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (10 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'b':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (11 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'c':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (12 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'd':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (13 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'e':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (14 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					case 'f':
+						var $temp$position = position - 1,
+							$temp$chars = rest,
+							$temp$accumulated = accumulated + (15 * A2($elm$core$Basics$pow, 16, position));
+						position = $temp$position;
+						chars = $temp$chars;
+						accumulated = $temp$accumulated;
+						continue fromStringHelp;
+					default:
+						var nonHex = _char;
+						return $elm$core$Result$Err(
+							$elm$core$String$fromChar(nonHex) + ' is not a valid hexadecimal character.');
+				}
+			}
+		}
+	});
+var $elm$core$Result$map = F2(
+	function (func, ra) {
+		if (ra.$ === 'Ok') {
+			var a = ra.a;
+			return $elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return $elm$core$Result$Err(e);
+		}
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
+	});
+var $rtfeldman$elm_hex$Hex$fromString = function (str) {
+	if ($elm$core$String$isEmpty(str)) {
+		return $elm$core$Result$Err('Empty strings are not valid hexadecimal strings.');
+	} else {
+		var result = function () {
+			if (A2($elm$core$String$startsWith, '-', str)) {
+				var list = A2(
+					$elm$core$Maybe$withDefault,
+					_List_Nil,
+					$elm$core$List$tail(
+						$elm$core$String$toList(str)));
+				return A2(
+					$elm$core$Result$map,
+					$elm$core$Basics$negate,
+					A3(
+						$rtfeldman$elm_hex$Hex$fromStringHelp,
+						$elm$core$List$length(list) - 1,
+						list,
+						0));
+			} else {
+				return A3(
+					$rtfeldman$elm_hex$Hex$fromStringHelp,
+					$elm$core$String$length(str) - 1,
+					$elm$core$String$toList(str),
+					0);
+			}
+		}();
+		var formatError = function (err) {
+			return A2(
+				$elm$core$String$join,
+				' ',
+				_List_fromArray(
+					['\"' + (str + '\"'), 'is not a valid hexadecimal string because', err]));
+		};
+		return A2($elm$core$Result$mapError, formatError, result);
+	}
+};
+var $elm$core$String$toLower = _String_toLower;
+var $rtfeldman$elm_css$Css$validHex = F5(
+	function (str, _v0, _v1, _v2, _v3) {
+		var r1 = _v0.a;
+		var r2 = _v0.b;
+		var g1 = _v1.a;
+		var g2 = _v1.b;
+		var b1 = _v2.a;
+		var b2 = _v2.b;
+		var a1 = _v3.a;
+		var a2 = _v3.b;
+		var toResult = A2(
+			$elm$core$Basics$composeR,
+			$elm$core$String$fromList,
+			A2($elm$core$Basics$composeR, $elm$core$String$toLower, $rtfeldman$elm_hex$Hex$fromString));
+		var results = _Utils_Tuple2(
+			_Utils_Tuple2(
+				toResult(
+					_List_fromArray(
+						[r1, r2])),
+				toResult(
+					_List_fromArray(
+						[g1, g2]))),
+			_Utils_Tuple2(
+				toResult(
+					_List_fromArray(
+						[b1, b2])),
+				toResult(
+					_List_fromArray(
+						[a1, a2]))));
+		if ((((results.a.a.$ === 'Ok') && (results.a.b.$ === 'Ok')) && (results.b.a.$ === 'Ok')) && (results.b.b.$ === 'Ok')) {
+			var _v5 = results.a;
+			var red = _v5.a.a;
+			var green = _v5.b.a;
+			var _v6 = results.b;
+			var blue = _v6.a.a;
+			var alpha = _v6.b.a;
+			return {
+				alpha: alpha / 255,
+				blue: blue,
+				color: $rtfeldman$elm_css$Css$Structure$Compatible,
+				green: green,
+				red: red,
+				value: $rtfeldman$elm_css$Css$withPrecedingHash(str)
+			};
+		} else {
+			return $rtfeldman$elm_css$Css$erroneousHex(str);
+		}
+	});
+var $rtfeldman$elm_css$Css$hex = function (str) {
+	var withoutHash = A2($elm$core$String$startsWith, '#', str) ? A2($elm$core$String$dropLeft, 1, str) : str;
+	var _v0 = $elm$core$String$toList(withoutHash);
+	_v0$4:
+	while (true) {
+		if ((_v0.b && _v0.b.b) && _v0.b.b.b) {
+			if (!_v0.b.b.b.b) {
+				var r = _v0.a;
+				var _v1 = _v0.b;
+				var g = _v1.a;
+				var _v2 = _v1.b;
+				var b = _v2.a;
+				return A5(
+					$rtfeldman$elm_css$Css$validHex,
+					str,
+					_Utils_Tuple2(r, r),
+					_Utils_Tuple2(g, g),
+					_Utils_Tuple2(b, b),
+					_Utils_Tuple2(
+						_Utils_chr('f'),
+						_Utils_chr('f')));
+			} else {
+				if (!_v0.b.b.b.b.b) {
+					var r = _v0.a;
+					var _v3 = _v0.b;
+					var g = _v3.a;
+					var _v4 = _v3.b;
+					var b = _v4.a;
+					var _v5 = _v4.b;
+					var a = _v5.a;
+					return A5(
+						$rtfeldman$elm_css$Css$validHex,
+						str,
+						_Utils_Tuple2(r, r),
+						_Utils_Tuple2(g, g),
+						_Utils_Tuple2(b, b),
+						_Utils_Tuple2(a, a));
+				} else {
+					if (_v0.b.b.b.b.b.b) {
+						if (!_v0.b.b.b.b.b.b.b) {
+							var r1 = _v0.a;
+							var _v6 = _v0.b;
+							var r2 = _v6.a;
+							var _v7 = _v6.b;
+							var g1 = _v7.a;
+							var _v8 = _v7.b;
+							var g2 = _v8.a;
+							var _v9 = _v8.b;
+							var b1 = _v9.a;
+							var _v10 = _v9.b;
+							var b2 = _v10.a;
+							return A5(
+								$rtfeldman$elm_css$Css$validHex,
+								str,
+								_Utils_Tuple2(r1, r2),
+								_Utils_Tuple2(g1, g2),
+								_Utils_Tuple2(b1, b2),
+								_Utils_Tuple2(
+									_Utils_chr('f'),
+									_Utils_chr('f')));
+						} else {
+							if (_v0.b.b.b.b.b.b.b.b && (!_v0.b.b.b.b.b.b.b.b.b)) {
+								var r1 = _v0.a;
+								var _v11 = _v0.b;
+								var r2 = _v11.a;
+								var _v12 = _v11.b;
+								var g1 = _v12.a;
+								var _v13 = _v12.b;
+								var g2 = _v13.a;
+								var _v14 = _v13.b;
+								var b1 = _v14.a;
+								var _v15 = _v14.b;
+								var b2 = _v15.a;
+								var _v16 = _v15.b;
+								var a1 = _v16.a;
+								var _v17 = _v16.b;
+								var a2 = _v17.a;
+								return A5(
+									$rtfeldman$elm_css$Css$validHex,
+									str,
+									_Utils_Tuple2(r1, r2),
+									_Utils_Tuple2(g1, g2),
+									_Utils_Tuple2(b1, b2),
+									_Utils_Tuple2(a1, a2));
+							} else {
+								break _v0$4;
+							}
+						}
+					} else {
+						break _v0$4;
+					}
+				}
+			}
+		} else {
+			break _v0$4;
+		}
+	}
+	return $rtfeldman$elm_css$Css$erroneousHex(str);
+};
+var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
+var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('label');
+var $rtfeldman$elm_css$Css$PcUnits = {$: 'PcUnits'};
+var $rtfeldman$elm_css$Css$pc = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PcUnits, 'pc');
+var $rtfeldman$elm_css$Css$pointer = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'pointer'};
+var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $rtfeldman$elm_css$Css$Transitions$Transform = {$: 'Transform'};
+var $rtfeldman$elm_css$Css$Transitions$transform = $rtfeldman$elm_css$Css$Transitions$durationTransition($rtfeldman$elm_css$Css$Transitions$Transform);
+var $rtfeldman$elm_css$Css$valuesOrNone = function (list) {
+	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
+		value: A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				function ($) {
+					return $.value;
+				},
+				list))
+	};
+};
+var $rtfeldman$elm_css$Css$transforms = A2(
+	$elm$core$Basics$composeL,
+	$rtfeldman$elm_css$Css$prop1('transform'),
+	$rtfeldman$elm_css$Css$valuesOrNone);
+var $rtfeldman$elm_css$Css$Transitions$propToString = function (prop) {
+	switch (prop.$) {
+		case 'Background':
+			return 'background';
+		case 'BackgroundColor':
+			return 'background-color';
+		case 'BackgroundPosition':
+			return 'background-position';
+		case 'BackgroundSize':
+			return 'background-size';
+		case 'Border':
+			return 'border';
+		case 'BorderBottom':
+			return 'border-bottom';
+		case 'BorderBottomColor':
+			return 'border-bottom-color';
+		case 'BorderBottomLeftRadius':
+			return 'border-bottom-left-radius';
+		case 'BorderBottomRightRadius':
+			return 'border-bottom-right-radius';
+		case 'BorderBottomWidth':
+			return 'border-bottom-width';
+		case 'BorderColor':
+			return 'border-color';
+		case 'BorderLeft':
+			return 'border-left';
+		case 'BorderLeftColor':
+			return 'border-left-color';
+		case 'BorderLeftWidth':
+			return 'border-left-width';
+		case 'BorderRadius':
+			return 'border-radius';
+		case 'BorderRight':
+			return 'border-right';
+		case 'BorderRightColor':
+			return 'border-right-color';
+		case 'BorderRightWidth':
+			return 'border-right-width';
+		case 'BorderTop':
+			return 'border-top';
+		case 'BorderTopColor':
+			return 'border-top-color';
+		case 'BorderTopLeftRadius':
+			return 'border-top-left-radius';
+		case 'BorderTopRightRadius':
+			return 'border-top-right-radius';
+		case 'BorderTopWidth':
+			return 'border-top-width';
+		case 'BorderWidth':
+			return 'border-width';
+		case 'Bottom':
+			return 'bottom';
+		case 'BoxShadow':
+			return 'box-shadow';
+		case 'CaretColor':
+			return 'caret-color';
+		case 'Clip':
+			return 'clip';
+		case 'ClipPath':
+			return 'clip-path';
+		case 'Color':
+			return 'color';
+		case 'ColumnCount':
+			return 'column-count';
+		case 'ColumnGap':
+			return 'column-gap';
+		case 'ColumnRule':
+			return 'column-rule';
+		case 'ColumnRuleColor':
+			return 'column-rule-color';
+		case 'ColumnRuleWidth':
+			return 'column-rule-width';
+		case 'ColumnWidth':
+			return 'column-width';
+		case 'Columns':
+			return 'columns';
+		case 'Filter':
+			return 'filter';
+		case 'Flex':
+			return 'flex';
+		case 'FlexBasis':
+			return 'flex-basis';
+		case 'FlexGrow':
+			return 'flex-grow';
+		case 'FlexShrink':
+			return 'flex-shrink';
+		case 'Font':
+			return 'font';
+		case 'FontSize':
+			return 'font-size';
+		case 'FontSizeAdjust':
+			return 'font-size-adjust';
+		case 'FontStretch':
+			return 'font-stretch';
+		case 'FontVariationSettings':
+			return 'font-variation-settings';
+		case 'FontWeight':
+			return 'font-weight';
+		case 'GridColumnGap':
+			return 'grid-column-gap';
+		case 'GridGap':
+			return 'grid-gap';
+		case 'GridRowGap':
+			return 'grid-row-gap';
+		case 'Height':
+			return 'height';
+		case 'Left':
+			return 'left';
+		case 'LetterSpacing':
+			return 'letter-spacing';
+		case 'LineHeight':
+			return 'line-height';
+		case 'Margin':
+			return 'margin';
+		case 'MarginBottom':
+			return 'margin-bottom';
+		case 'MarginLeft':
+			return 'margin-left';
+		case 'MarginRight':
+			return 'margin-right';
+		case 'MarginTop':
+			return 'margin-top';
+		case 'Mask':
+			return 'mask';
+		case 'MaskPosition':
+			return 'mask-position';
+		case 'MaskSize':
+			return 'mask-size';
+		case 'MaxHeight':
+			return 'max-height';
+		case 'MaxWidth':
+			return 'max-width';
+		case 'MinHeight':
+			return 'min-height';
+		case 'MinWidth':
+			return 'min-width';
+		case 'ObjectPosition':
+			return 'object-position';
+		case 'Offset':
+			return 'offset';
+		case 'OffsetAnchor':
+			return 'offset-anchor';
+		case 'OffsetDistance':
+			return 'offset-distance';
+		case 'OffsetPath':
+			return 'offset-path';
+		case 'OffsetRotate':
+			return 'offset-rotate';
+		case 'Opacity':
+			return 'opacity';
+		case 'Order':
+			return 'order';
+		case 'Outline':
+			return 'outline';
+		case 'OutlineColor':
+			return 'outline-color';
+		case 'OutlineOffset':
+			return 'outline-offset';
+		case 'OutlineWidth':
+			return 'outline-width';
+		case 'Padding':
+			return 'padding';
+		case 'PaddingBottom':
+			return 'padding-bottom';
+		case 'PaddingLeft':
+			return 'padding-left';
+		case 'PaddingRight':
+			return 'padding-right';
+		case 'PaddingTop':
+			return 'padding-top';
+		case 'Right':
+			return 'right';
+		case 'TabSize':
+			return 'tab-size';
+		case 'TextIndent':
+			return 'text-indent';
+		case 'TextShadow':
+			return 'text-shadow';
+		case 'Top':
+			return 'top';
+		case 'Transform':
+			return 'transform';
+		case 'TransformOrigin':
+			return 'transform-origin';
+		case 'VerticalAlign':
+			return 'vertical-align';
+		case 'Visibility':
+			return 'visibility';
+		case 'Width':
+			return 'width';
+		case 'WordSpacing':
+			return 'word-spacing';
+		default:
+			return 'z-index';
+	}
+};
+var $rtfeldman$elm_css$Css$Transitions$timeToString = function (time) {
+	return $elm$core$String$fromFloat(time) + 'ms';
+};
+var $rtfeldman$elm_css$Css$Transitions$timingFunctionToString = function (tf) {
+	switch (tf.$) {
+		case 'Ease':
+			return 'ease';
+		case 'Linear':
+			return 'linear';
+		case 'EaseIn':
+			return 'ease-in';
+		case 'EaseOut':
+			return 'ease-out';
+		case 'EaseInOut':
+			return 'ease-in-out';
+		case 'StepStart':
+			return 'step-start';
+		case 'StepEnd':
+			return 'step-end';
+		default:
+			var _float = tf.a;
+			var float2 = tf.b;
+			var float3 = tf.c;
+			var float4 = tf.d;
+			return 'cubic-bezier(' + ($elm$core$String$fromFloat(_float) + (' , ' + ($elm$core$String$fromFloat(float2) + (' , ' + ($elm$core$String$fromFloat(float3) + (' , ' + ($elm$core$String$fromFloat(float4) + ')')))))));
+	}
+};
+var $rtfeldman$elm_css$Css$Transitions$transition = function (options) {
+	var v = A3(
+		$elm$core$String$slice,
+		0,
+		-1,
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, s) {
+					var animation = _v0.a.animation;
+					var duration = _v0.a.duration;
+					var delay = _v0.a.delay;
+					var timing = _v0.a.timing;
+					return s + (A2(
+						$elm$core$String$join,
+						' ',
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$Transitions$propToString(animation),
+								$rtfeldman$elm_css$Css$Transitions$timeToString(duration),
+								A2(
+								$elm$core$Maybe$withDefault,
+								'',
+								A2($elm$core$Maybe$map, $rtfeldman$elm_css$Css$Transitions$timeToString, delay)),
+								A2(
+								$elm$core$Maybe$withDefault,
+								'',
+								A2($elm$core$Maybe$map, $rtfeldman$elm_css$Css$Transitions$timingFunctionToString, timing))
+							])) + ',');
+				}),
+			'',
+			options));
+	return A2($rtfeldman$elm_css$Css$property, 'transition', v);
+};
+var $rtfeldman$elm_css$Css$translateX = function (_v0) {
+	var value = _v0.value;
+	return {
+		transform: $rtfeldman$elm_css$Css$Structure$Compatible,
+		value: A2(
+			$rtfeldman$elm_css$Css$cssFunction,
+			'translateX',
+			_List_fromArray(
+				[value]))
+	};
+};
+var $author$project$Rte$onOffSwitchStyled = F2(
+	function (rte, params) {
+		var _switch = _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
+				$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+				$rtfeldman$elm_css$Css$height(
+				$rtfeldman$elm_css$Css$px(0.57 * params.width)),
+				$rtfeldman$elm_css$Css$width(
+				$rtfeldman$elm_css$Css$px(params.width))
+			]);
+		var checked = !_Utils_eq(rte.textarea.state, $author$project$Rte$Core$Display);
+		var pos = checked ? $rtfeldman$elm_css$Css$transforms(
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Css$translateX(
+					$rtfeldman$elm_css$Css$px(0.43 * params.width))
+				])) : $rtfeldman$elm_css$Css$transforms(_List_Nil);
+		var sliderColor = checked ? params.inactiveColor : params.activeColor;
+		var slider = _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+				$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+				$rtfeldman$elm_css$Css$top(
+				$rtfeldman$elm_css$Css$px(0)),
+				$rtfeldman$elm_css$Css$left(
+				$rtfeldman$elm_css$Css$px(0)),
+				$rtfeldman$elm_css$Css$right(
+				$rtfeldman$elm_css$Css$px(0)),
+				$rtfeldman$elm_css$Css$bottom(
+				$rtfeldman$elm_css$Css$px(0)),
+				A2($rtfeldman$elm_css$Css$property, 'background-color', sliderColor),
+				$rtfeldman$elm_css$Css$Transitions$transition(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$Transitions$backgroundColor(400)
+					])),
+				$rtfeldman$elm_css$Css$borderRadius(
+				$rtfeldman$elm_css$Css$px(0.57 * params.width)),
+				$rtfeldman$elm_css$Css$before(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+						A2($rtfeldman$elm_css$Css$property, 'content', '\'\''),
+						$rtfeldman$elm_css$Css$height(
+						$rtfeldman$elm_css$Css$px(0.43 * params.width)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$px(0.43 * params.width)),
+						$rtfeldman$elm_css$Css$left(
+						$rtfeldman$elm_css$Css$px(0.067 * params.width)),
+						$rtfeldman$elm_css$Css$bottom(
+						$rtfeldman$elm_css$Css$px(0.067 * params.width)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('FFFFFF')),
+						$rtfeldman$elm_css$Css$Transitions$transition(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$Transitions$transform(400)
+							])),
+						pos,
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$pc(50))
+					]))
+			]);
+		return A2(
+			$rtfeldman$elm_css$Html$Styled$map,
+			rte.tagger,
+			A2(
+				$rtfeldman$elm_css$Html$Styled$label,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(_switch)
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Html$Styled$span,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(slider),
+								$rtfeldman$elm_css$Html$Styled$Events$onClick(
+								$author$project$Rte$Active(!checked))
+							]),
+						_List_Nil)
+					])));
+	});
+var $author$project$Rte$onOffSwitch = F2(
+	function (rte, params) {
+		return $rtfeldman$elm_css$Html$Styled$toUnstyled(
+			A2(
+				$author$project$Rte$onOffSwitchStyled,
+				$author$project$Rte$tostyled2(rte),
+				params));
+	});
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Main$toolbar = function (model) {
+	var icon = F2(
+		function (name, msg) {
+			return A2(
+				$elm$html$Html$img,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$src('/rte/icon/' + (name + '.svg')),
+						$elm$html$Html$Attributes$class('icon'),
+						$elm$html$Html$Events$onClick(
+						$author$project$Main$Internal(msg))
+					]),
+				_List_Nil);
+		});
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('toolbar')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$author$project$Rte$onOffSwitch,
+				model.rte,
+				{activeColor: '#ccc', inactiveColor: '#2196F3', width: 60}),
+				A2(icon, 'Italic', $author$project$Rte$Italic),
+				A2(icon, 'Underline', $author$project$Rte$Underline),
+				A2(icon, 'Strikethrough', $author$project$Rte$StrikeThrough),
+				A2(icon, 'Undo', $author$project$Rte$Undo),
+				A2(
+				icon,
+				'Left',
+				$author$project$Rte$TextAlign($author$project$Rte$Types$Left)),
+				A2(
+				icon,
+				'Center',
+				$author$project$Rte$TextAlign($author$project$Rte$Types$Center)),
+				A2(
+				icon,
+				'Right',
+				$author$project$Rte$TextAlign($author$project$Rte$Types$Right)),
+				A2(icon, 'Unindent', $author$project$Rte$Unindent),
+				A2(icon, 'Indent', $author$project$Rte$Indent),
+				A2(icon, 'Heading', $author$project$Rte$Heading),
+				A2(
+				icon,
+				'Coding',
+				$author$project$Rte$Class('Code')),
+				A2(icon, 'Emoji', $author$project$Rte$ToggleEmojiBox),
+				A2(icon, 'Link', $author$project$Rte$ToggleLinkBox),
+				A2(icon, 'Unlink', $author$project$Rte$Unlink),
+				A2(icon, 'Picture', $author$project$Rte$ToggleImageBox),
+				A2(
+				$author$project$Rte$fontSelector,
+				model.rte,
+				{
+					fonts: _List_fromArray(
+						[
+							_List_fromArray(
+							['Oswald', 'sans-serif']),
+							_List_fromArray(
+							['Playfair Display', 'serif']),
+							_List_fromArray(
+							['Ubuntu Mono', 'monospace'])
+						]),
+					styling: _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('select')
+						])
+				}),
+				A2(
+				$author$project$Rte$fontSizeSelector,
+				model.rte,
+				{
+					sizes: A2(
+						$elm$core$List$map,
+						$elm$core$Basics$toFloat,
+						A2(
+							$elm$core$List$map,
+							function (a) {
+								return 2 * a;
+							},
+							A2($elm$core$List$range, 3, 15))),
+					styling: _List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('select')
+						])
+				}),
+				A2(
+				$author$project$Rte$emojiBox,
+				model.rte,
+				{
+					emojis: _List_Nil,
+					styling: {
+						active: _List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('emoji-box')
+							]),
+						inactive: _List_Nil
+					}
+				}),
+				A2(
+				$author$project$Rte$inputBox,
+				model.rte,
+				{
+					styling: {
+						active: _List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('input-box')
+							]),
+						inactive: _List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('input-box'),
+								A2($elm$html$Html$Attributes$style, 'visibility', 'hidden')
+							])
+					}
+				})
+			]));
+};
+var $author$project$Main$view = function (model) {
+	return {
+		body: _List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('body-wrap')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Main$toolbar(model),
+						$author$project$Rte$textarea(model.rte),
+						A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$href('https://github.com/dkodaj/rte'),
+								$elm$html$Html$Attributes$class('source')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Source')
+							])),
+						A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$href('/rte/icon-credits.html'),
+								$elm$html$Html$Attributes$class('source')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Icon Credits')
+							]))
+					]))
 			]),
 		title: 'RTE demo'
 	};

@@ -8,21 +8,21 @@
 </head>
 <body>
     
-    <script src="/rte/Rte.js"></script>
+    <script src="/rte/Main.js"></script>
 
     <script>
-        var app = Elm.Rte.init();
+        var app = Elm.Main.init();
 
-        app.ports.copyToClipboard.subscribe(txt => {
+        app.ports.toBrowserClipboard.subscribe(txt => {
             navigator.clipboard.writeText(txt).then(function() {
-            // Copied from app to clipboard
+                // Copied from app to clipboard
             }, function(err) {
                 console.log(err)
             });
         });
 
         window.addEventListener('paste', (event) => {            
-            app.ports.clipboardText.send(event.clipboardData.getData('text'))                        
+            app.ports.fromBrowserClipboard.send(event.clipboardData.getData('text'))                        
         })
     </script>
     

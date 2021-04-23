@@ -1,6 +1,6 @@
-module Highlight exposing (code)
+module App.Highlight exposing (code)
 
-import Rte.Core exposing (Character, Content, Element(..))
+import MiniRte.Types exposing (Character, Content, Element(..))
 
 
 type alias Accumulator =

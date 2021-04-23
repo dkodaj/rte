@@ -1,39 +1,34 @@
-port module Rte.Core exposing (
+module MiniRte.Core exposing (
       addContent
     , addText
     , addImage
     , Box
-    , Character
-    , Content
     , changeIndent
     , contentChanged
     , currentLink
     , currentSelection
-    , decodeContent
+    , decode
     , defaultFont
     , defaultFontSize
     , Editor
-    , EmbeddedHtml
-    , Element(..)
-    , emptyFontStyle
     , encode
     , fontFamily
     , fontSize
     , init
     , initWith
+    , initWithContent
     , initWithText
-    , LineBreak
     , link
     , loadContent
     , loadText
     , replaceText
     , Msg(..)
     , setSelection
+    , showContentInactive
     , state
     , subscriptions  
     , State(..)
     , textAlign
-    , TextAlign(..)
     , textContent
     , toggleBold
     , toggleItalic
@@ -41,8 +36,8 @@ port module Rte.Core exposing (
     , toggleParaClass
     , toggleStrikeThrough
     , toggleUnderline
+    , toText
     , undo
-    , unicode
     , unlink
     , update
     , view
@@ -60,6 +55,7 @@ import IntDict exposing (IntDict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Json.Decode.Pipeline as Pipeline
+import MiniRte.Types exposing (..)
 import Task
 import Time
 
@@ -78,7 +74,7 @@ type alias Editor =
     , drag : Drag
     , editorID : String
     , fontSizeUnit : Maybe String
-    , fontStyle : FontStyle        
+    , fontStyle : MiniRte.Types.FontStyle        
     , highlighter : Maybe (Content -> Content)
     , idCounter : Int
     , indentUnit : Maybe (Float,String)
@@ -89,7 +85,7 @@ type alias Editor =
     , locating : Locating
     , nextCursorScreen : Maybe Box
     , selection : Maybe (Int,Int)
-    , selectionStyle : Attributes
+    , selectionStyle : List (Attribute Msg)
     , sentry : Int
     , shiftDown : Bool
     , state : State
@@ -121,15 +117,11 @@ type Msg =
     | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
     | Scrolled (Maybe Float)
     | SwitchTo State
+    | ToBrowserClipboard String
     | UndoAction
 
 
 -- == subsidiary types == --
-
-
-type alias Attributes =
-    List (Attribute Msg)
-
 
 type alias Box =
     { x : Float
@@ -139,25 +131,8 @@ type alias Box =
     }
 
 
-type alias Character =
-    { char : Char
-    , fontStyle : FontStyle
-    , highlightClasses : List String
-    , highlightStyling : StyleTags
-    , id : Int
-    , link : Maybe String
-    }
-
-
-type Child =
-    Child EmbeddedHtml
-
-
-type alias ClassLocator = IntDict (List String)
-
-
-type alias Content =
-    List Element
+type alias ClassLocator =
+    IntDict (List String)
 
 
 type Drag =
@@ -166,49 +141,10 @@ type Drag =
     | NoDrag
 
 
-type Element =
-      Break LineBreak
-    | Char Character
-    | Embedded EmbeddedHtml
+type alias KeyedNode msg = (String, Html msg)
 
 
-type alias EmbeddedHtml =    
-    { attributes : List (String, String)
-    , classes : List String
-    , children : List Child
-    , highlightClasses : List String
-    , highlightStyling : StyleTags
-    , id : Int
-    , nodeType : Maybe String
-    , styling : StyleTags
-    , text : Maybe String
-    }
-
-
-type alias FontStyle =
-    { classes : List String
-    , fontFamily : List String
-    , fontSize : Maybe Float
-    , styling : StyleTags
-    }
-
-
-type alias KeyedNode = (String, Node)
-
-
-type alias KeyedNodes = List KeyedNode
-
-
-type alias LineBreak =
-    { classes : List String
-    , highlightClasses : List String
-    , highlightIndent : Int
-    , highlightStyling : StyleTags
-    , id : Int
-    , indent : Int
-    , nodeType : Maybe String
-    , styling : StyleTags
-    }
+type alias KeyedNodes msg = List (KeyedNode msg)
 
 
 type LinkTag =
@@ -228,14 +164,6 @@ type alias MouseLocator =
     { previous : Maybe ScreenElement
     , winner : Maybe ScreenElement
     }
-
-
-type alias Node =
-    Html Msg
-
-
-type alias Nodes =
-    List (Html Msg)
 
 
 type alias Paragraph =
@@ -271,21 +199,10 @@ type State =
     | Freeze
 
 
-type alias StyleTags =
-    List (String, String)
-
-
-type TextAlign =
-      Center
-    | Justify
-    | Left
-    | Right
-
-
 type alias Undo =
     { content : Content
     , cursor : Int
-    , fontStyle : FontStyle
+    , fontStyle : MiniRte.Types.FontStyle
     , selection : Maybe (Int,Int)
     }
 
@@ -295,7 +212,7 @@ type Vertical =
 
 
 type alias Wrapper =
-    KeyedNodes -> KeyedNode
+    KeyedNodes Msg -> KeyedNode Msg
 
 
 -- == Main functions == --
@@ -348,7 +265,7 @@ init1 editorID =
     }
 
 
-init3 : String -> Maybe (Content -> Content) -> Attributes -> Editor
+init3 : String -> Maybe (Content -> Content) -> List (Attribute Msg) -> Editor
 init3 editorID highlighter selectionStyle =
     let
         i = init1 editorID
@@ -391,7 +308,6 @@ subscriptions e =
             [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
             , Browser.Events.onKeyUp (decodeKey KeyUp)
             , Browser.Events.onMouseUp (Decode.succeed MouseUp) 
-            , clipboardText Paste
             , cursorBlink
             , detectViewport
             ]
@@ -622,6 +538,7 @@ update msg e0 =
                         in
                         ( { e | 
                               cursor = newCursor
+                            , cursorVisible = False  
                             , selection = Just (beg,end)
                           }
                         , Cmd.none 
@@ -748,6 +665,10 @@ update msg e0 =
                 ( e, Cmd.none )
 
 
+        ToBrowserClipboard txt ->
+            ( e, Cmd.none )
+
+
         UndoAction ->
             undoAction e
 
@@ -834,17 +755,18 @@ updateUndo msg e =
             e
 
 
-view : Attributes -> Editor -> Html Msg
-view userDefinedStyles e =        
+view : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
+view tagger userDefinedStyles e =        
     let
         f _ =
-            showContent userDefinedStyles e
+            showContent tagger userDefinedStyles e
 
         g _ =
             cursorHtml e.cursorScreen e.box e.cursorVisible e.typing e.selection e.cursor
 
         dummy =
-            Html.input
+            Html.map tagger
+            <| Html.input
                 [ Attr.type_ "text"
                 , Attr.id (dummyID e.editorID)
                 , Events.on "focus" (Decode.succeed (SwitchTo Edit))
@@ -860,7 +782,7 @@ view userDefinedStyles e =
     in
     case e.state of
         Display ->
-            showContent userDefinedStyles { e | selection = Nothing }
+            showContent tagger userDefinedStyles { e | selection = Nothing }
 
         Edit ->
             Html.div
@@ -983,7 +905,7 @@ alphaNumAt idx content =
             False
 
 
-attributes : Element -> Attributes
+attributes : Element -> List (Attribute Msg)
 attributes elem =
     let
         f : String -> Attribute Msg
@@ -1172,7 +1094,7 @@ copy e =
                     List.take (end - beg + 1) <| List.drop beg e.content
             in
             ( { e | clipboard = Just clipboard }
-            , copyToClipboard (toText clipboard)
+            , Task.perform identity <| Task.succeed <| ToBrowserClipboard (toText clipboard)
             )
 
 
@@ -1263,7 +1185,7 @@ currentWord e =
             (beg, List.length e.content - 1)
 
 
-cursorHtml : Box -> Box -> Bool -> Bool -> Maybe (Int,Int) -> Int -> Html Msg
+cursorHtml : Box -> Box -> Bool -> Bool -> Maybe (Int,Int) -> Int -> Html msg
 cursorHtml cursor box visible typing selection idx =
     if typing || not visible then
         Html.div [] []    
@@ -1284,7 +1206,7 @@ cursorHtml cursor box visible typing selection idx =
             Html.div
                 [ css
                     [ borderLeft2 (px 3) solid
-                    , property "border-color" "black"
+                    , borderColor (rgb 0 0 0)
                     , boxSizing borderBox
                     , height (px visibleHeight)
                     , left (px cursor.x)
@@ -1295,12 +1217,12 @@ cursorHtml cursor box visible typing selection idx =
                 [ ]
 
 
-cursorHtml2 : Box -> Html Msg
+cursorHtml2 : Box -> Html msg
 cursorHtml2 cursor  =
     Html.div
         [ css
             [ borderLeft2 (px 3) solid
-            , property "border-color" "black"
+            , borderColor (rgb 0 0 0)
             , boxSizing borderBox
             , height (px cursor.height)
             , left (px 0)
@@ -1354,11 +1276,11 @@ decodeKeyAndTime f =
         ( Decode.field "key" Decode.string )
 
 
-decodeMouse : ((Float,Float) -> Float -> Msg) -> Decoder Msg
-decodeMouse toMsg =
+decodeMouse : ((Float,Float) -> Float -> msg) -> Decoder msg
+decodeMouse msg =
     let
         tagger x y z =
-            toMsg (x,y) z
+            msg (x,y) z
     in
     Decode.map3 tagger
         (Decode.field "clientX" Decode.float)
@@ -1408,11 +1330,11 @@ defaultLineBreak id =
     }
 
 
-defaultSelectionStyle : Attributes
+defaultSelectionStyle : List (Attribute Msg)
 defaultSelectionStyle =
     [ css
         [ backgroundColor (hsl 217 0.71 0.53)    
-        , property "color" "white"
+        , color (hsl 0 0 1)
         ]
     ]
 
@@ -1492,7 +1414,7 @@ embed html e =
     )
 
 
-emptyFontStyle : FontStyle
+emptyFontStyle : MiniRte.Types.FontStyle
 emptyFontStyle =
     { classes = []
     , fontFamily = []
@@ -1517,7 +1439,7 @@ focusOnEditor editorState editorID =
 fontFamily : List String -> Editor -> ( Editor, Cmd Msg )
 fontFamily xs e =
     let
-        mod : FontStyle -> FontStyle
+        mod : MiniRte.Types.FontStyle -> MiniRte.Types.FontStyle
         mod x =
             { x | fontFamily = xs }
     in
@@ -1527,7 +1449,7 @@ fontFamily xs e =
 fontSize : Float -> Editor -> ( Editor, Cmd Msg )
 fontSize float e =
     let
-        mod : FontStyle -> FontStyle
+        mod : MiniRte.Types.FontStyle -> MiniRte.Types.FontStyle
         mod x =
             { x | fontSize = Just float }
     in
@@ -2209,50 +2131,20 @@ loadText txt editor =
         shell =
             init3 editor.editorID editor.highlighter editor.selectionStyle
     in
-    undoAddNew (loadTextHelp txt editor shell)
-
-
-loadTextHelp : String -> Editor -> Editor -> Editor
-loadTextHelp txt editor shell =
-    let
-        f : Char -> Element
-        f x =
-            case x of
-                '\n' ->
-                    Break (defaultLineBreak 0)
-
-                _ ->
-                    Char
-                        { char = x
-                        , fontStyle = emptyFontStyle
-                        , highlightClasses = []
-                        , highlightStyling = []
-                        , id = 0
-                        , link = Nothing
-                        }
-
-        g : List Char -> Content -> Content
-        g xs ys =
-            case xs of
-                [] -> ys
-                x :: rest ->
-                    g rest (f x :: ys)
+    undoAddNew (loadTextHelp txt shell)
         
-        content =
-            g (List.reverse (String.toList txt)) []
-            {- case String.right 1 txt of
-                "\n" ->
-                    g (List.reverse (String.toList txt)) []
 
-                _ ->
-                    g (List.reverse (String.toList txt)) [] ++ [Break (defaultLineBreak 0)]
-            -}
+loadTextHelp : String -> Editor -> Editor
+loadTextHelp txt shell =
+    let
+        addCounter x =
+            { x | idCounter = List.length x.content }
     in    
-    { shell |        
-        content = addIds content
-      , idCounter = List.length content
-      , state = Edit
-    }
+    addCounter
+        { shell |        
+            content = addIds (textToContent txt)
+          , state = Edit
+        }
 
 
 locateCmd : Int -> Int -> Cmd Msg
@@ -2747,7 +2639,7 @@ replaceLink href editor =
 
 replaceText : String -> Editor -> Editor
 replaceText txt editor =
-    loadTextHelp txt editor editor
+    loadTextHelp txt editor
 
 
 restore : Undo -> Editor -> Editor
@@ -2853,7 +2745,7 @@ set2 idx elem editor =
     }
 
 
-setFontStyle : (FontStyle -> FontStyle) -> Editor -> ( Editor, Cmd Msg )
+setFontStyle : (MiniRte.Types.FontStyle -> MiniRte.Types.FontStyle) -> Editor -> ( Editor, Cmd Msg )
 setFontStyle mod e =
     let
         f : Element -> Element
@@ -2951,7 +2843,7 @@ setSelection (a,b) e =
     )
 
 
-showChar : Maybe (Int,Int) -> Attributes -> Int -> Box -> Bool -> Int -> Maybe String -> Character -> KeyedNode
+showChar : Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Box -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
 showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch =
     let
         id =
@@ -2965,7 +2857,7 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
                     [ fontFamilies ch.fontStyle.fontFamily ]
                 ]
 
-        linked : Node -> Node
+        linked : Html Msg -> Html Msg
         linked x =
             case ch.link of
                 Nothing -> x                
@@ -2997,7 +2889,7 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
                 Just x ->
                     [ Attr.style "font-size" (String.fromFloat x ++ unit) ]
 
-        select : Attributes
+        select : List (Attribute Msg)
         select =
             case selection of
                 Just (beg,end) ->
@@ -3021,21 +2913,20 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
     )
 
 
-showContent : Attributes -> Editor -> Html Msg
-showContent userDefinedStyles e =
+showContent : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
+showContent tagger userDefinedStyles e =
     let
         attrs =
             ( userDefinedStyles ++ 
             [ css
                 [ property "cursor" "text"
-                , overflowY scroll
                 , property "user-select" "none"
                 , whiteSpace preWrap
                 , property "word-break" "break-word"
                 ]
             , Attr.id e.editorID 
-            , Events.on "mousedown" (decodeMouse MouseDown)
-            , Events.on "scroll" (Decode.map ( Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
+            , Events.on "mousedown" (decodeMouse (\x y -> tagger <| MouseDown x y))
+            , Events.on "scroll" (Decode.map ( tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
             ])
 
         highlight =
@@ -3045,7 +2936,7 @@ showContent userDefinedStyles e =
 
         paragraphs =
             List.map
-                (showPara e.cursor e.cursorScreen e.indentUnit e.selection e.selectionStyle e.typing e.fontSizeUnit)
+                (showPara tagger e.cursor e.cursorScreen e.indentUnit e.selection e.selectionStyle e.typing e.fontSizeUnit)
                 (breakIntoParas (highlight e.content))
     in
     Keyed.node "div"
@@ -3053,14 +2944,13 @@ showContent userDefinedStyles e =
         paragraphs
 
 
-showContentInactive : Attributes -> Editor -> Html Msg
-showContentInactive userDefinedStyles e =
+showContentInactive : List (Attribute msg) -> Maybe String -> Maybe (Content -> Content) -> Maybe (Float, String) -> (Msg -> msg) -> String -> Html msg
+showContentInactive userDefinedStyles fontSizeUnit highlighter indentUnit tagger txt =
     let
         attrs =
             ( userDefinedStyles ++ 
             [ css
                 [ property "cursor" "text"
-                , overflowY scroll
                 , property "user-select" "none"
                 , whiteSpace preWrap
                 , property "word-break" "break-word"
@@ -3068,21 +2958,29 @@ showContentInactive userDefinedStyles e =
             ])
 
         highlight =
-            case e.highlighter of
+            case highlighter of
                 Just f -> f << List.map dehighlight
                 Nothing -> identity
 
-        paragraphs =
-            List.map
-                (showPara -1 null e.indentUnit Nothing [] False e.fontSizeUnit)
-                (breakIntoParas (highlight e.content))
+        paragraphs x =
+                List.map
+                    (Tuple.second << showPara tagger -1 null indentUnit Nothing [] False fontSizeUnit)
+                    (breakIntoParas (highlight x))
+
+        render x =
+            Html.div
+                attrs
+                (paragraphs x)
     in
-    Keyed.node "div"
-        attrs
-        paragraphs
+    case decode txt of
+        Just content ->
+            render content
+
+        Nothing ->
+            render (textToContent txt)        
 
 
-showEmbedded : EmbeddedHtml -> Node
+showEmbedded : EmbeddedHtml -> Html Msg
 showEmbedded html =
     let
         textChild =
@@ -3111,18 +3009,18 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : Int -> Box -> Maybe (Float, String) -> Maybe (Int,Int) -> Attributes -> Bool -> Maybe String -> Paragraph -> KeyedNode
-showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
+showPara : (Msg -> msg) -> Int -> Box -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
+showPara tagger cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
-        print : Int -> Character -> KeyedNode
+        print : Int -> Character -> KeyedNode Msg
         print idx ch =
             showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
             
-        f : EmbeddedHtml -> KeyedNode
+        f : EmbeddedHtml -> KeyedNode Msg
         f html =
             (String.fromInt html.id ++ "embed", showEmbedded html)
 
-        g : (Int, Element) -> KeyedNodes -> KeyedNodes
+        g : (Int, Element) -> KeyedNodes Msg -> KeyedNodes Msg
         g (idx, elem) ys =
             case elem of
                 Break br ->
@@ -3142,8 +3040,13 @@ showPara cursor cursorScreen maybeIndentUnit selection selectionStyle typing fon
 
         indentUnit =
             Maybe.withDefault (50,"px") maybeIndentUnit
+
+        tag (x,y) =
+            (x, Html.map tagger y)
     in
-    (wrap indentUnit p.lineBreak) (List.foldr g [zeroSpace p.idx p.lineBreak.id] p.children)
+    tag
+        <| wrap indentUnit p.lineBreak
+            <| List.foldr g [zeroSpace p.idx p.lineBreak.id] p.children
 
 
 snapshot : Editor -> Undo
@@ -3199,7 +3102,6 @@ textAlign alignment e =
         style =
             case alignment of
                 Center -> "center"
-                Justify -> "justify"
                 Left -> "left"
                 Right -> "right"
 
@@ -3217,6 +3119,35 @@ textAlign alignment e =
 textContent : Editor -> String
 textContent e =
     toText e.content
+
+
+textToContent : String -> Content
+textToContent txt =
+    let
+        f : Char -> Element
+        f x =
+            case x of
+                '\n' ->
+                    Break (defaultLineBreak 0)
+
+                _ ->
+                    Char
+                        { char = x
+                        , fontStyle = emptyFontStyle
+                        , highlightClasses = []
+                        , highlightStyling = []
+                        , id = 0
+                        , link = Nothing
+                        }
+
+        g : List Char -> Content -> Content
+        g xs ys =
+            case xs of
+                [] -> ys
+                x :: rest ->
+                    g rest (f x :: ys)
+    in
+    g (List.reverse (String.toList txt)) []
 
 
 tickPeriod : Float
@@ -3452,19 +3383,6 @@ undoMaxDepth : Int
 undoMaxDepth = 10
 
 
-unicode : Int -> Content
-unicode code =
-    [ Char
-        { char = Char.fromCode code
-        , fontStyle = emptyFontStyle
-        , highlightClasses = []
-        , highlightStyling = []
-        , id = -1
-        , link = Nothing
-        }
-    ]
-
-
 unlink : Editor -> Editor
 unlink editor =
     let
@@ -3644,7 +3562,7 @@ decodeEmbeddedHtml =
     g |> Decode.andThen i
 
 
-decodeFontStyle : Decode.Decoder FontStyle
+decodeFontStyle : Decode.Decoder MiniRte.Types.FontStyle
 decodeFontStyle =
     Decode.map4
         FontStyle
@@ -3737,7 +3655,7 @@ encodeEmbeddedHtml a =
         ]
 
 
-encodeFontStyle : FontStyle -> Decode.Value
+encodeFontStyle : MiniRte.Types.FontStyle -> Decode.Value
 encodeFontStyle a =
     Encode.object
         [ ("classes", Encode.list Encode.string a.classes)
@@ -3777,13 +3695,3 @@ encodeTuple_String_String_ (a1, a2) =
         , ("A2", Encode.string a2)
         ]
 
-
---=== PORTS
-
---from JavaScript to Elm
-
-port clipboardText : (String -> msg) -> Sub msg
-
---from Elm to JavaScript
-
-port copyToClipboard : String -> Cmd msg

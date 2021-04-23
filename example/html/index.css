@@ -1,0 +1,135 @@
+:root {
+    --rteWidth:min(80vw,1000px);
+}
+
+body { 
+    user-select:none;
+}
+
+.blogpost {
+    padding:30px;
+    width:var(--rteWidth);    
+    word-break:break-word;
+    font-family:'Playfair Display',serif;
+    font-size:20px;
+}
+
+.body-wrap {
+    margin-top:30px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;  
+}
+
+.Code {
+    font-family:'Ubuntu Mono',monospace;
+    background:rgba(0,0,0,0.1);
+    margin: 0 30px;
+    padding: 2px 15px;    
+    font-size:20px;
+}
+
+.emoji-box {
+    position: absolute;
+    top:90%;
+    left:calc(var(--rteWidth)/3);
+    z-index:10;
+    background:white;
+    width:calc(var(--rteWidth)/3);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    border: 2px solid black;
+    border-radius:10px;
+    padding:15px;
+    font-size:30px; 
+    z-index:10;
+}
+
+.emoji-box * {
+    margin:5px;
+}
+
+.icon {
+    width:20px;
+    margin:14px;
+    cursor:pointer;
+    transform:scale(1);
+    transition:transform;
+}
+
+.icon:hover {
+    transform:scale(1.2);
+}
+
+.input-box {
+    width:calc(0.6*var(--rteWidth));
+    height: 40px;
+    display:grid;
+    align-items:center;
+    justify-content:center;
+    grid-template-columns: 8fr 2fr;
+    margin:7px 0; 
+}
+
+.input-box button {
+    all:unset;
+    height: 100%;
+    margin-left:5px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:50px;
+    background:hsl(141, 53%, 53%);
+    color:white;
+    cursor:pointer;
+    text-transform:uppercase;    
+    font-family:'Oswald',sans-serif;    
+}
+
+.input-box input {
+    height:100%;
+    font-size:17px;    
+}
+
+.rte-wrap {
+    border: 2px solid gray;
+    padding:30px;
+    border-radius:15px;
+    height:60vh;
+    width:var(--rteWidth);    
+    word-break:break-word;
+    font-family:'Playfair Display',serif;
+    font-size:20px;
+    overflow-y:scroll;
+}
+
+.select {
+  text-transform:uppercase;    
+  margin: 0 5px;
+  padding: 3px 5px;
+  font-family:'Ubuntu Mono',monospace;
+  cursor:pointer;
+  font-size:15px;
+
+}
+
+.toolbar {
+    position:relative;
+    width:var(--rteWidth);   
+    display:flex;
+    align-items:center;
+    align-content:space-between;
+    justify-content:center;
+    flex-wrap:wrap;   
+    margin-bottom:5px; 
+}
+
+.source {
+    margin-top:15px;
+    font-family:'Ubuntu Mono', monospace;
+    text-transform:uppercase;
+}

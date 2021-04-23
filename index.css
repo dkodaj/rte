@@ -31,7 +31,25 @@ body {
 }
 
 .emoji-box {
+    position: absolute;
+    top:90%;
+    left:calc(var(--rteWidth)/3);
+    z-index:10;
+    background:white;
+    width:calc(var(--rteWidth)/3);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    border: 2px solid black;
+    border-radius:10px;
+    padding:15px;
+    font-size:30px; 
+    z-index:10;
+}
 
+.emoji-box * {
+    margin:5px;
 }
 
 .icon {

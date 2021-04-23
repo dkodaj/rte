@@ -1,4 +1,4 @@
-# Rich text editor in Elm
+# Mini-Rte
 
 Pure Elm rich text editor for relatively short texts (≤ 1500 words / 10K characters).
 It supports non-Western keyboard input via [CompositionEvent](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent).

@@ -3,7 +3,7 @@
     "name": "dkodaj/rte",
     "summary": "Rich text editor for relatively short texts",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "MiniRte",
         "MiniRte.Types"

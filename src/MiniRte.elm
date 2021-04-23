@@ -288,7 +288,7 @@ init =
     initFrame
 
 
-{-| Same as `init` but you pss in lists of [Html.Styled.Attributes](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled-Attributes) in [`Parameters`](#Parameters).
+{-| Same as `init` but you pass in lists of [Html.Styled.Attributes](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled-Attributes) in [`Parameters`](#Parameters).
 -}
 initStyled : Parameters (Html.Styled.Attribute msg) msg -> ( RteStyled msg, Cmd msg )
 initStyled =

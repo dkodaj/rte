@@ -16,6 +16,7 @@ module MiniRte exposing (
     , initStyled
     , inputBox
     , inputBoxStyled
+    , InputBox(..)
     , InputBoxParams
     , isActive
     , Msg(..)
@@ -43,7 +44,7 @@ module MiniRte exposing (
 
 # Toolbar
 @docs emojiBox, emojiBoxStyled, EmojiBoxParams, fontSelector, fontSelectorStyled, FontSelectorParams,
-fontSizeSelector, fontSizeSelectorStyled, FontSizeSelectorParams, inputBox, inputBoxStyled, InputBoxParams,
+fontSizeSelector, fontSizeSelectorStyled, FontSizeSelectorParams, inputBox, inputBoxStyled, InputBoxParams, InputBox,
 onOffSwitch, onOffSwitchStyled, SwitchParams, Msg
 
 # Info
@@ -112,21 +113,23 @@ type alias RteFrame a msg =
     | AddText String    -- insert text
     | Bold              -- make text bold
     | Class String      -- put a class on current paragraph 
-    | Core MiniRte.Core.Msg -- normally, you won't need this
+    | Core MiniRte.Core.Msg
+                        -- normally, you won't need this
     | Cut
     | Copy
-    | Font (List String)-- set current font families
+    | Font (List String)
+                        -- set current font families
                         -- e.g. ["Oswald", "sans-serif"]
     | FontSize Float    -- set current font size
     | FromBrowserClipboard String
                         -- see package description
     | Heading           -- toggles between h1 and plain div
     | ImageAdd String   -- embed image (the String is a link)
-    | ImageInput String -- normally, you won't need this
+    | ImageInput String -- modify content of image input box
     | Indent            -- increase indent of current para
     | Italic            -- make text italic
     | LinkAdd String    -- add link to current selection
-    | LinkInput String  -- normally, you won't need this
+    | LinkInput String  -- modify content of link input box
     | NoOp              -- normally, you won't need this
     | StrikeThrough     -- cross out text
     | TextAlign MiniRte.Types.TextAlign
@@ -216,6 +219,8 @@ type alias FontSizeSelectorParams a =
     }
 
 
+{-|
+-}
 type InputBox =
       ImageInputBox String
     | LinkInputBox String
@@ -589,7 +594,8 @@ displayStyled tagger p =
     MiniRte.Core.showContentInactive p.styling p.fontSizeUnit p.highlighter p.indentUnit (tagger << Core) p.content
 
 
-{-|
+{-| Make it appear/disappear with `update ToggleEmojiBox`.
+Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText`.
 -}
 emojiBox : Rte msg -> EmojiBoxParams (Html.Attribute msg) -> Html msg
 emojiBox rte params =
@@ -735,7 +741,9 @@ fontSizeSelectorStyled rte params =
         ( placeholder :: List.map o params.sizes )
 
 
-{-|
+{-| Input box for adding hyperlinks and image links.
+Make it appear/disappear with `update ToggleImageBox` or `update ToggleLinkBox`.
+It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`.
 -}
 inputBox : Rte msg-> InputBoxParams (Html.Attribute msg) -> Html msg
 inputBox rte params =

@@ -114,8 +114,8 @@ toolbar model =
     div
         [ class "toolbar" ]
         [ Rte.onOffSwitch model.rte
-            { activeColor = "#ccc"
-            , inactiveColor = "#2196F3" 
+            { activeColor = "#2196F3" 
+            , inactiveColor = "#ccc"
             , width = 60
             }
 

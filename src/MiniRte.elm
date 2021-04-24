@@ -848,7 +848,7 @@ onOffSwitchStyled rte params =
             rte.textarea.state /= MiniRte.Core.Display
 
         sliderColor =
-            if checked then params.inactiveColor else params.activeColor
+            if checked then params.activeColor else params.inactiveColor
 
         pos =
             if checked then

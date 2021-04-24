@@ -638,7 +638,7 @@ encodedContent rte =
     MiniRte.Core.encode rte.textarea
    
 
-{-| A `Html.select` element that triggers `update FontSize` events.
+{-| A `Html.select` element that triggers `update Font` events.
 -}
 fontSelector : Rte msg-> FontSelectorParams (Html.Attribute msg) -> Html msg
 fontSelector rte params =
@@ -692,7 +692,7 @@ fontSelectorStyled rte params =
         ( placeholder :: List.map o params.fonts )
 
 
-{-| A `Html.select` element that triggers `update Font` events.
+{-| A `Html.select` element that triggers `update FontSize` events.
 -}
 fontSizeSelector : Rte msg-> FontSizeSelectorParams (Html.Attribute msg) -> Html msg
 fontSizeSelector rte params =

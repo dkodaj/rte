@@ -595,7 +595,7 @@ displayStyled tagger p =
 
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
-Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText`.
+Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events.
 -}
 emojiBox : Rte msg -> EmojiBoxParams (Html.Attribute msg) -> Html msg
 emojiBox rte params =
@@ -638,7 +638,7 @@ encodedContent rte =
     MiniRte.Core.encode rte.textarea
    
 
-{-|
+{-| A `Html.select` element that triggers `update FontSize` events.
 -}
 fontSelector : Rte msg-> FontSelectorParams (Html.Attribute msg) -> Html msg
 fontSelector rte params =
@@ -692,7 +692,7 @@ fontSelectorStyled rte params =
         ( placeholder :: List.map o params.fonts )
 
 
-{-|
+{-| A `Html.select` element that triggers `update Font` events.
 -}
 fontSizeSelector : Rte msg-> FontSizeSelectorParams (Html.Attribute msg) -> Html msg
 fontSizeSelector rte params =
@@ -825,7 +825,7 @@ isActive rte =
     rte.textarea.state /= MiniRte.Core.Display
 
 
-{-|
+{-| A switch that turns editing on/off. The `params.width` field controls its width in px.
 -}
 onOffSwitch : Rte msg-> SwitchParams -> Html msg
 onOffSwitch rte params =

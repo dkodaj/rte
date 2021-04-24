@@ -119,6 +119,8 @@ toolbar model =
             , width = 60
             }
 
+        , icon "Bold" Rte.Bold
+
         , icon "Italic" Rte.Italic
 
         , icon "Underline" Rte.Underline

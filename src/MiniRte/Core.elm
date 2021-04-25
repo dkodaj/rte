@@ -696,11 +696,11 @@ updateUndo msg e =
                     contentMod
                 else
                     case str of
-                        "0" ->
+                        {-"0" ->
                             contentMod
 
                         "1" ->
-                            contentMod
+                            contentMod-}
 
                         "x" ->
                             if e.selection /= Nothing then
@@ -1014,11 +1014,11 @@ contentChanged msg e =
                     True
                 else
                     case str of
-                        "0" ->
+                        {-"0" ->
                             True
 
                         "1" ->
-                            True
+                            True-}
 
                         "x" ->
                             True
@@ -1728,11 +1728,11 @@ keyDown timeStamp str e =
             typed str e (Just timeStamp) False
         else
             case str of
-                "0" ->
+                {-"0" ->
                     typed "–" e (Just timeStamp) False  -- N dash                            
 
                 "1" ->
-                    typed "—" e (Just timeStamp) False -- M dash
+                    typed "—" e (Just timeStamp) False -- M dash-}
 
                 "a" ->                      
                     ( { e |

@@ -3143,12 +3143,15 @@ textToContent txt =
         g : List Char -> Content -> Content
         g xs ys =
             case xs of
-                [] -> ys
+                [] -> ys ++ end
                 x :: rest ->
                     g rest (f x :: ys)
+
+        end =
+            [Break (defaultLineBreak 0)]
     in
     if txt == "" then
-        [Break (defaultLineBreak 0)]
+        end
     else
         g (List.reverse (String.toList txt)) []
 

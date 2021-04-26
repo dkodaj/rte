@@ -3143,17 +3143,23 @@ textToContent txt =
         g : List Char -> Content -> Content
         g xs ys =
             case xs of
-                [] -> ys ++ end
+                [] -> ys
                 x :: rest ->
                     g rest (f x :: ys)
 
         end =
             [Break (defaultLineBreak 0)]
+
+        converted =
+            g (List.reverse (String.toList txt)) []
     in
     if txt == "" then
         end
     else
-        g (List.reverse (String.toList txt)) []
+        if List.head (List.reverse (String.toList txt)) == Just '\n' then
+            converted
+        else
+            converted ++ end
 
 
 tickPeriod : Float

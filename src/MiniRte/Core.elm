@@ -3147,7 +3147,10 @@ textToContent txt =
                 x :: rest ->
                     g rest (f x :: ys)
     in
-    g (List.reverse (String.toList txt)) []
+    if txt == "" then
+        [Break (defaultLineBreak 0)]
+    else
+        g (List.reverse (String.toList txt)) []
 
 
 tickPeriod : Float

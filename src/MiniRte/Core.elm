@@ -512,10 +512,14 @@ update msg e0 =
             if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
                 case e.locating of
                     Idle ->
-                        (selectCurrentWord e, Cmd.none )
+                        ( selectCurrentWord e
+                        , focusOnEditor e.state e.editorID
+                        )
 
                     Mouse a b c ->
-                        ( { e | locating = Mouse SelectWord b c }, Cmd.none )
+                        ( { e | locating = Mouse SelectWord b c }
+                        , focusOnEditor e.state e.editorID
+                        )
 
                     _ ->
                         mouseDown (x,y) timeStamp e

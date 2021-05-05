@@ -959,7 +959,7 @@ breakIntoParas content =
                     case ys of
                         [] ->
                             ( idx - 1, [] )
-                            -- will cause trouble if content doesn't end with a Break element
+                            -- trouble if content doesn't end with a Break element
 
                         x :: rest ->
                             ( idx - 1, { x | children = (idx, elem) :: x.children } :: rest )
@@ -1196,13 +1196,22 @@ cursorHtml cursor box visible typing selection idx =
     else
         let
             visibleHeight =
-                min cursor.height (box.y + box.height - cursor.y)
+                if cursor.y >= box.y then
+                    min cursor.height (box.y + box.height - cursor.y)
+                else
+                    cursor.y + cursor.height - box.y                    
 
             onScreen =
-                cursor.y >= box.y
+                cursor.y + cursor.height >= box.y
                 && cursor.y <= box.y + box.height
                 && cursor.x >= box.x
                 && cursor.x <= box.x + box.width
+
+            topPos =
+                if cursor.y >= box.y then
+                    cursor.y
+                else
+                    box.y
         in
         if not onScreen then
             Html.div [] []
@@ -1215,7 +1224,7 @@ cursorHtml cursor box visible typing selection idx =
                     , height (px visibleHeight)
                     , left (px cursor.x)
                     , position absolute
-                    , top (px cursor.y)
+                    , top (px topPos)
                     ]
                 ]
                 [ ]
@@ -1637,8 +1646,7 @@ jump f isRelevant direction (beg,end) e =
             fail e
 
         (_, Just idx) ->
-            g idx e
-            
+            g idx e            
 
         (Just ((a,b),(c,d)), Nothing) ->
             if beg == 0 then
@@ -2210,8 +2218,7 @@ locateMoreChars e (a,b) func newRegions =
             (max 0 x, min maxIdx y)
 
         (beg,end) =
-            normalize (a,b)
-            
+            normalize (a,b)            
        
         cmd : Int -> List (Cmd Msg) -> List (Cmd Msg)
         cmd idx xs =
@@ -2299,16 +2306,22 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
 
         g : ScreenElement -> Int -> ScreenElement -> Maybe Int -> Maybe Int
         g a _ b x =
-            case x of
-                Just _ -> x
-                Nothing ->
-                    if b.idx > a.idx then
-                        Nothing
-                    else
-                        if not (onSameLine a b) || b.idx == 0 then
-                            Just (b.idx +1)
-                        else
+            if a.idx == 0 then
+                Just 0
+            else
+                case x of
+                    Just _ -> x
+                    Nothing ->
+                        if b.idx > a.idx then
                             Nothing
+                        else
+                            if not (onSameLine a b) then
+                                Just (b.idx +1)
+                            else
+                                if b.idx == 0 then
+                                    Just 0
+                                else
+                                    Nothing
 
         getBounds : ScreenElement -> Maybe (Int, Int)
         getBounds a =
@@ -2329,7 +2342,7 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                     getBounds pos
 
         continue x =
-            if beg < 1 && end >= maxIdx then                
+            if beg < 0 && end >= maxIdx then                
                 ( { x |
                       locateBacklog = 0
                     , located = IntDict.empty
@@ -2345,7 +2358,6 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                     [ (beg - jumpSize, beg - 1) 
                     , (end + 1, end + jumpSize)
                     ]
-
     in
     case targetLine of
         Nothing ->            
@@ -2379,7 +2391,7 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                             ( selectCurrentWord a, b )
             in
             case IntDict.foldl h Nothing e.located of
-                Just closest ->        
+                Just closest ->
                     maybeSelectWord
                         ( detectFontStyle closest.idx
                               { e |

@@ -2342,7 +2342,7 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                     getBounds pos
 
         continue x =
-            if beg < 0 && end >= maxIdx then                
+            if beg <= 0 && end >= maxIdx then                
                 ( { x |
                       locateBacklog = 0
                     , located = IntDict.empty

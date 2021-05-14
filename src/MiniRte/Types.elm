@@ -13,7 +13,7 @@ module MiniRte.Types exposing (
     )
 
 {-|
-@docs Msg, InputBox
+@docs Msg, InputBox, TextAlignType
 
 # Writing highlighters
 When writing a highlighter, pass in a `Content -> Content` function on init.
@@ -22,7 +22,7 @@ Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
 Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
 Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
 
-@docs Content, Element, Character, EmbeddedHtml, LineBreak, Child, FontStyle, StyleTags, TextAlignType
+@docs Content, Element, Character, EmbeddedHtml, LineBreak, Child, FontStyle, StyleTags
 -}
 
 
@@ -36,7 +36,7 @@ For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/
     | AddText String    -- insert text
     | Bold              -- make text bold
     | Class String      -- put a class on current paragraph 
-    | Core MiniRte.Core.Msg
+    | Core MiniRte.CoreTypes.Msg
                         -- normally, you won't need this
     | Cut
     | Copy
@@ -55,7 +55,7 @@ For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/
     | LinkInput String  -- modify content of link input box
     | NoOp              -- normally, you won't need this
     | StrikeThrough     -- cross out text
-    | TextAlign MiniRte.Types.TextAlign
+    | TextAlign TextAlignType
                         -- change alignment of current para
     | ToBrowserClipboard String
                         -- see package description

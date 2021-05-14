@@ -87,6 +87,8 @@ type alias Msg =
 `fontSizeUnit` defaults to `"px"`.
     
 `indentUnit` defaults to `(50,"px")`.
+
+The attributes in `styling` will be attached to the div that contains the text.
 -}
 type alias DisplayParams msg =
     { content : String
@@ -141,13 +143,13 @@ type alias InputBoxParams msg =
 
 `fontSizeUnit` defaults to `"px"`.
 
-`highlighter` runs before each view update and it re-styles the text. See the [example](https://github.com/dkodaj/rte/tree/master/example).
+`highlighter` runs before each view update and it re-styles the text. See the [Content](#Content) type and the [example](https://github.com/dkodaj/rte/tree/master/example).
 
 `indentUnit` defaults to `(50,"px")`.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 
-`styling.active` styles the textarea in active mode (when editing). Use `update (Active True/False)` to switch between modes.
+`styling.active` styles the textarea div in active mode (when editing). Use `update (Active True/False)` to switch between modes.
 
 `tagger` turns the package's own [Msg](#Msg) type into your app's msg.
 -}

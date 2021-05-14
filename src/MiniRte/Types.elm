@@ -30,7 +30,8 @@ import MiniRte.CoreTypes
 
 
 {-|    
-For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.        
+For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
+    
       Active Bool       -- turn editing on/off
     | AddText String    -- insert text
     | Bold              -- make text bold

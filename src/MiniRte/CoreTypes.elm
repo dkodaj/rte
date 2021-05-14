@@ -1,0 +1,47 @@
+module MiniRte.CoreTypes exposing (Msg(..), ScrollMode(..), State(..))
+
+import Browser.Dom as Dom exposing (Error, Viewport)
+import Html.Styled as Html exposing (Attribute, Html, text)
+import Html.Styled.Attributes as Attr exposing (css)
+import IntDict exposing (IntDict)
+import Json.Decode as Decode exposing (Decoder, Value)
+
+
+
+type Msg =
+      AddText String
+    | Blink Float
+    | CompositionEnd String
+    | CompositionStart
+    | CompositionUpdate String
+    | DetectViewport
+    | Copy
+    | Cut
+    | KeyDown Float String
+    | KeyUp String
+    | LocatedChar Int (Result Error Dom.Element)
+    | MouseDown (Float,Float) Float
+    | MouseMove String Float
+    | MouseUp
+    | NoOp
+    | Paste String
+    | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
+    | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
+    | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
+    | Scrolled (Maybe Float)
+    | SwitchTo State
+    | ToBrowserClipboard String
+    | UndoAction
+
+
+-- == subsidiary types == --
+
+
+type ScrollMode =
+    ScrollIfNeeded | NoScroll
+
+
+type State =
+      Display
+    | Edit
+    | Freeze

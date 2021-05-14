@@ -24,7 +24,7 @@ type alias Model =
 
 
 type Msg =
-    Internal Rte.Msg
+    Internal RteTypes.Msg
 
 
 init : () -> ( Model, Cmd Msg )
@@ -56,14 +56,14 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Rte.subscriptions model.rte
-        , fromBrowserClipboard ( Internal << Rte.FromBrowserClipboard )
+        , fromBrowserClipboard ( Internal << RteTypes.FromBrowserClipboard )
         ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Internal (Rte.ToBrowserClipboard txt) ->
+        Internal (RteTypes.ToBrowserClipboard txt) ->
             ( model, toBrowserClipboard txt )
 
         Internal rteMsg ->
@@ -119,37 +119,37 @@ toolbar model =
             , width = 60
             }
 
-        , icon "Bold" Rte.Bold
+        , icon "Bold" RteTypes.Bold
 
-        , icon "Italic" Rte.Italic
+        , icon "Italic" RteTypes.Italic
 
-        , icon "Underline" Rte.Underline
+        , icon "Underline" RteTypes.Underline
 
-        , icon "Strikethrough" Rte.StrikeThrough
+        , icon "Strikethrough" RteTypes.StrikeThrough
 
-        , icon "Undo" Rte.Undo
+        , icon "Undo" RteTypes.Undo
         
-        , icon "Left" (Rte.TextAlign RteTypes.Left)
+        , icon "Left" (RteTypes.TextAlign RteTypes.Left)
 
-        , icon "Center" (Rte.TextAlign RteTypes.Center)
+        , icon "Center" (RteTypes.TextAlign RteTypes.Center)
         
-        , icon "Right" (Rte.TextAlign RteTypes.Right)
+        , icon "Right" (RteTypes.TextAlign RteTypes.Right)
 
-        , icon "Unindent"  Rte.Unindent
+        , icon "Unindent"  RteTypes.Unindent
 
-        , icon "Indent"  Rte.Indent
+        , icon "Indent"  RteTypes.Indent
 
-        , icon "Heading"  Rte.Heading
+        , icon "Heading"  RteTypes.Heading
 
-        , icon "Coding" (Rte.Class "Code")
+        , icon "Coding" (RteTypes.Class "Code")
 
-        , icon "Emoji" Rte.ToggleEmojiBox
+        , icon "Emoji" RteTypes.ToggleEmojiBox
 
-        , icon "Link"  Rte.ToggleLinkBox
+        , icon "Link"  RteTypes.ToggleLinkBox
 
-        , icon "Unlink" Rte.Unlink
+        , icon "Unlink" RteTypes.Unlink
 
-        , icon "Picture" Rte.ToggleImageBox
+        , icon "Picture" RteTypes.ToggleImageBox
 
         , Rte.fontSelector model.rte
                 { styling = [ class "select" ]

@@ -2,7 +2,6 @@ module MiniRte.Core exposing (
       addContent
     , addText
     , addImage
-    , Box
     , changeIndent
     , contentChanged
     , currentLink
@@ -22,12 +21,10 @@ module MiniRte.Core exposing (
     , loadContent
     , loadText
     , replaceText
-    , Msg(..)
     , setSelection
     , showContentInactive
     , state
     , subscriptions  
-    , State(..)
     , textAlign
     , textContent
     , toggleBold
@@ -55,7 +52,9 @@ import IntDict exposing (IntDict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Json.Decode.Pipeline as Pipeline
-import MiniRte.Types exposing (..)
+import MiniRte.CoreTypes exposing (..)
+import MiniRte.Types exposing  (Content, Element(..), Character, EmbeddedHtml, LineBreak,
+      Child(..), FontStyle, StyleTags, TextAlignType(..))
 import Task
 import Time
 
@@ -93,35 +92,6 @@ type alias Editor =
     , undo : List Undo
     , viewport : Viewport
     }
-
-
-type Msg =
-      AddText String
-    | Blink Float
-    | CompositionEnd String
-    | CompositionStart
-    | CompositionUpdate String
-    | DetectViewport
-    | Copy
-    | Cut
-    | KeyDown Float String
-    | KeyUp String
-    | LocatedChar Int (Result Error Dom.Element)
-    | MouseDown (Float,Float) Float
-    | MouseMove String Float
-    | MouseUp
-    | NoOp
-    | Paste String
-    | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
-    | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
-    | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
-    | Scrolled (Maybe Float)
-    | SwitchTo State
-    | ToBrowserClipboard String
-    | UndoAction
-
-
--- == subsidiary types == --
 
 type alias Box =
     { x : Float
@@ -185,26 +155,9 @@ type alias ScreenElement =
     }
 
 
-type ScrollMode =
-    ScrollIfNeeded | NoScroll
-
-
 type Select =
     SelectNone | SelectWord
 
-
-type State =
-      Display
-    | Edit
-    | Freeze
-
-
-type alias Undo =
-    { content : Content
-    , cursor : Int
-    , fontStyle : MiniRte.Types.FontStyle
-    , selection : Maybe (Int,Int)
-    }
 
 
 type Vertical =
@@ -214,6 +167,13 @@ type Vertical =
 type alias Wrapper =
     KeyedNodes Msg -> KeyedNode Msg
 
+
+type alias Undo =
+    { content : Content
+    , cursor : Int
+    , fontStyle : MiniRte.Types.FontStyle
+    , selection : Maybe (Int,Int)
+    }
 
 -- == Main functions == --
 
@@ -2218,7 +2178,7 @@ locateMoreChars e (a,b) func newRegions =
             (max 0 x, min maxIdx y)
 
         (beg,end) =
-            normalize (a,b)            
+            normalize (a,b)        
        
         cmd : Int -> List (Cmd Msg) -> List (Cmd Msg)
         cmd idx xs =
@@ -2274,23 +2234,20 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
 
         f : Int -> ScreenElement -> MouseLocator -> MouseLocator
         f _ new m =
-            if new.idx == maxIdx && diff new <= 0 then
-                { m | winner = Just new }
-            else
-                case m.winner of
-                    Just _ -> m
+            case m.winner of
+                Just _ -> m
 
-                    Nothing ->
+                Nothing ->
+                    if new.idx == maxIdx && diff new <= 0 then
+                        { m | winner = Just new }
+                    else
                         case m.previous of
                             Nothing ->
-                                if new.idx == 0 then
-                                    { m | winner = Just new }
-                                else
-                                    { m | previous = Just new }
+                                { m | previous = Just new }
 
                             Just old ->                            
-                                if flips old new || new.idx == 0 then
-                                    { m | winner = Just new }
+                                if flips new old then
+                                    { m | winner = Just old }
                                 else
                                     { m | previous = Just new }
 
@@ -2302,26 +2259,23 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
         mouseLocator =
             -- find the last character whose top is just above the mouse pos
             -- ( starting from the end, find the first character where flip occurs )
-            IntDict.foldr f start e.located
+            IntDict.foldl f start e.located
 
         g : ScreenElement -> Int -> ScreenElement -> Maybe Int -> Maybe Int
         g a _ b x =
-            if a.idx == 0 then
-                Just 0
-            else
-                case x of
-                    Just _ -> x
-                    Nothing ->
-                        if b.idx > a.idx then
-                            Nothing
+            case x of
+                Just _ -> x
+                Nothing ->
+                    if b.idx > a.idx then
+                        Nothing
+                    else
+                        if not (onSameLine a b) then
+                            Just (b.idx +1)
                         else
-                            if not (onSameLine a b) then
-                                Just (b.idx +1)
+                            if b.idx == 0 then
+                                Just 0
                             else
-                                if b.idx == 0 then
-                                    Just 0
-                                else
-                                    Nothing
+                                Nothing
 
         getBounds : ScreenElement -> Maybe (Int, Int)
         getBounds a =
@@ -2390,7 +2344,7 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                         SelectWord ->
                             ( selectCurrentWord a, b )
             in
-            case IntDict.foldl h Nothing e.located of
+            case  IntDict.foldl h Nothing e.located of
                 Just closest ->
                     maybeSelectWord
                         ( detectFontStyle closest.idx
@@ -3112,7 +3066,7 @@ strikeThroughStyle =
     ("text-decoration", "line-through")
 
 
-textAlign : TextAlign -> Editor -> ( Editor, Cmd Msg )
+textAlign : TextAlignType -> Editor -> ( Editor, Cmd Msg )
 textAlign alignment e =
     let
         style =

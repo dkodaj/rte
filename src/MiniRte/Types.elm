@@ -1,8 +1,4 @@
-module MiniRte.Types exposing (..)
-
-import MiniRte.CoreTypes
-
-{-| For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
+module MiniRte.Types exposing (
         Character
       , Child(..)
       , Content
@@ -16,6 +12,25 @@ import MiniRte.CoreTypes
       , TextAlignType(..)
     )
 
+{-|
+@docs Msg, InputBox
+
+# Writing highlighters
+When writing a highlighter, pass in a `Content -> Content` function on init.
+The function should modify the `highlightClasses` or `highlightStyling` fields of the elements.
+Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
+Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
+Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
+
+@docs Content, Element, Character, EmbeddedHtml, LineBreak, Child, FontStyle, StyleTags, TextAlignType
+-}
+
+
+import MiniRte.CoreTypes
+
+
+{-|    
+For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.        
       Active Bool       -- turn editing on/off
     | AddText String    -- insert text
     | Bold              -- make text bold
@@ -51,7 +66,6 @@ import MiniRte.CoreTypes
     | Unindent          -- decrease indent of current para
     | Unlink            -- remove the link the cursor is touching
 -}
-
 type Msg =
       Active Bool 
     | AddText String

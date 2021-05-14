@@ -15,7 +15,6 @@ module MiniRte exposing (
     , onOffSwitch
     , Parameters
     , Rte
-    , RteStyled
     , subscriptions
     , SwitchParams
     , textarea
@@ -32,8 +31,8 @@ module MiniRte exposing (
 
 # Toolbar
 @docs emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams,
-fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams, InputBox,
-onOffSwitch, SwitchParams, Msg
+fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams,
+onOffSwitch, SwitchParams
 
 # Info
 @docs encodedContent, isActive, textContent

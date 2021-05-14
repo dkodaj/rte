@@ -23,7 +23,6 @@ module MiniRte.Styled exposing (
     )
 
 {-|
-
 Same as `MiniRte` except it uses [Html.Styled.Attributes](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled-Attributes).
 
 # Init and update
@@ -34,8 +33,8 @@ Same as `MiniRte` except it uses [Html.Styled.Attributes](https://package.elm-la
 
 # Toolbar
 @docs emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams,
-fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams, InputBox,
-onOffSwitch, SwitchParams, Msg
+fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
+onOffSwitch, SwitchParams
 
 # Info
 @docs encodedContent, isActive, textContent

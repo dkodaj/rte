@@ -143,7 +143,7 @@ type alias InputBoxParams msg =
 
 `fontSizeUnit` defaults to `"px"`.
 
-`highlighter` runs before each view update and it re-styles the text. See the [Content](#Content) type and the [example](https://github.com/dkodaj/rte/tree/master/example).
+`highlighter` runs before each view update and it re-styles the text. See the [Content](MiniRte-Types#Content) type and the [example](https://github.com/dkodaj/rte/tree/master/example).
 
 `indentUnit` defaults to `(50,"px")`.
 
@@ -151,7 +151,7 @@ type alias InputBoxParams msg =
 
 `styling.active` styles the textarea div in active mode (when editing). Use `update (Active True/False)` to switch between modes.
 
-`tagger` turns the package's own [Msg](#Msg) type into your app's msg.
+`tagger` turns the package's own [Msg](MiniRte-Types#Msg) type into your app's msg.
 -}
 type alias Parameters msg =
     { id : String    

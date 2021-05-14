@@ -33,7 +33,7 @@ Same as `MiniRte` except it uses [Html.Styled.Attributes](https://package.elm-la
 
 # Toolbar
 @docs emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams,
-fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
+fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams,
 onOffSwitch, SwitchParams
 
 # Info

@@ -18,6 +18,7 @@ type Msg =
     | Copy
     | Cut
     | KeyDown Float String
+    | KeyDownTimeStamp Float
     | KeyUp String
     | LocatedChar Int (Result Error Dom.Element)
     | MouseDown (Float,Float) Float

@@ -14,6 +14,7 @@ module MiniRte.Core exposing (
     , fontFamily
     , fontSize
     , init
+    , initCmd
     , initWith
     , initWithContent
     , initWithText
@@ -55,6 +56,7 @@ import Json.Decode.Pipeline as Pipeline
 import MiniRte.CoreTypes exposing (..)
 import MiniRte.Types exposing  (Content, Element(..), Character, EmbeddedHtml, LineBreak,
       Child(..), FontStyle, StyleTags, TextAlignType(..))
+import Process
 import Task
 import Time
 
@@ -312,17 +314,10 @@ update msg e0 =
             let
                 cursorVisible =
                     if e.cursorThrottled then True else (not e.cursorVisible)
-
-                typing =
-                    if e.lastKeyDown <= time - tickPeriod then
-                        False
-                    else
-                        e.typing
             in
             ( { e |
-                  cursorThrottled = typing
+                  cursorThrottled = e.typing
                 , cursorVisible = cursorVisible
-                , typing = typing       
               }
             , Cmd.none
             )
@@ -412,6 +407,13 @@ update msg e0 =
                         }
             in
             keyDown timeStamp key (f e)
+
+
+        KeyDownTimeStamp float ->
+            if e.lastKeyDown == float then
+                ( { e | typing = False }, Cmd.none )
+            else
+                ( e, Cmd.none )
 
 
         KeyUp str ->
@@ -722,12 +724,6 @@ updateUndo msg e =
 view : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
 view tagger userDefinedStyles e =        
     let
-        f _ =
-            showContent tagger userDefinedStyles e
-
-        g _ =
-            cursorHtml e.cursorScreen e.box e.cursorVisible e.typing e.selection e.cursor
-
         dummy =
             Html.map tagger
             <| Html.input
@@ -749,18 +745,28 @@ view tagger userDefinedStyles e =
             showContent tagger userDefinedStyles { e | selection = Nothing }
 
         Edit ->
+            let
+                maxIdx =
+                    List.length e.content - 1
+
+                f x _ =
+                    showContent tagger userDefinedStyles x
+
+                g x _ =
+                    cursorHtml x.cursorScreen x.box x.cursorVisible x.typing
+            in
             Html.div
                 [ ]
-                [ (Lazy.lazy f) e.sentry
-                , (Lazy.lazy g) e.sentry
+                [ (Lazy.lazy (f e)) e.sentry
+                , (Lazy.lazy (g e)) e.sentry
                 , dummy
                 ]
 
         Freeze ->
             Html.div
                 [ ]
-                [ (Lazy.lazy f) e
-                , (Lazy.lazy g) { e | cursorVisible = True }
+                [ showContent tagger userDefinedStyles e
+                , cursorHtml e.cursorScreen e.box True False
                 ]
 
 
@@ -1149,10 +1155,10 @@ currentWord e =
             (beg, List.length e.content - 1)
 
 
-cursorHtml : Box -> Box -> Bool -> Bool -> Maybe (Int,Int) -> Int -> Html msg
-cursorHtml cursor box visible typing selection idx =
+cursorHtml : Box -> Box -> Bool -> Bool -> Html msg
+cursorHtml cursor box visible typing =
     if typing || not visible then
-        Html.div [] []    
+        Html.div [] []
     else
         let
             visibleHeight =
@@ -1785,7 +1791,7 @@ keyDown timeStamp str e =
 
         "ArrowRight" ->
             if e.cursor >= maxIdx then
-                ( { e | selection = Nothing }, Cmd.none )
+                ( { e | cursor = maxIdx, selection = Nothing }, Cmd.none )
             else
                 if not e.shiftDown && e.selection == Just (0, maxIdx) then
                     ( detectFontStyle maxIdx
@@ -2836,8 +2842,8 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
                         [ Attr.href href ]
                         [ x ]
 
-        child =
-            if typing && idx == cursor then
+        child =            
+            if typing && idx == cursor then                
                 [ linked (text (String.fromChar ch.char))
                 , cursorHtml2 cursorScreen
                 ]
@@ -3232,7 +3238,7 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 Just timeStamp ->
                     { editor0 |
                         lastKeyDown = timeStamp 
-                      , typing = timeStamp - editor0.lastKeyDown <= tickPeriod
+                      , typing = True
                     }
 
                 Nothing -> editor0
@@ -3272,7 +3278,16 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
             else
                 e.clipboard
 
-        maxIdx = List.length e.content - 1
+        timeStampCmd =
+            case maybeTimeStamp of
+                Nothing -> Cmd.none
+                Just x -> Process.sleep tickPeriod |> Task.perform (\_ -> KeyDownTimeStamp x)
+
+        cmds =
+            Cmd.batch
+                [ timeStampCmd
+                , placeCursor ScrollIfNeeded e.editorID
+                ]
     in
     case e.selection of
         Nothing ->
@@ -3282,11 +3297,14 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 , cursor = e.cursor + txtLength
                 , idCounter = newIdCounter
               }
-            , placeCursor ScrollIfNeeded e.editorID
+            , cmds
             )
 
         Just (beg, x) ->
             let
+                maxIdx =
+                    List.length e.content - 1
+
                 end =
                     if x == maxIdx then maxIdx - 1 else x
                     -- prevent last Break from being deleted
@@ -3298,7 +3316,7 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 , idCounter = newIdCounter
                 , selection = Nothing
               }
-            , placeCursor ScrollIfNeeded e.editorID
+            , cmds
             )
 
 

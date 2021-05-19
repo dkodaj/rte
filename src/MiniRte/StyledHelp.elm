@@ -112,7 +112,14 @@ apply f model =
 
 updateFrame : Msg -> RteFrame a msg-> ( RteFrame a msg, Cmd msg )
 updateFrame msg model =
-    if model.textarea.state == MiniRte.CoreTypes.Display && msg /= Active True then
+    let
+        coreOrActiveMsg =
+            case msg of
+                Active True -> True
+                Core _ -> True
+                _ -> False
+    in
+    if model.textarea.state == MiniRte.CoreTypes.Display && not coreOrActiveMsg then
         ( model, Cmd.none )
     else
         case msg of

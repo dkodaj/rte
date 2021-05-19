@@ -286,15 +286,20 @@ subscriptions e =
         mouseMove =
             Browser.Events.onMouseMove (decodeTargetIdAndTime MouseMove) 
     in
-    if e.state == Edit then
-        case e.drag of
-            NoDrag ->
-                Sub.batch default
+    case e.state of
+        Display ->
+            detectViewport
 
-            _ ->
-                Sub.batch ( mouseMove :: default )
-    else
-        Sub.none
+        Edit ->
+            case e.drag of
+                NoDrag ->
+                    Sub.batch default
+
+                _ ->
+                    Sub.batch ( mouseMove :: default )
+
+        Freeze ->
+            detectViewport
 
 
 update : Msg -> Editor -> ( Editor, Cmd Msg )
@@ -476,22 +481,25 @@ update msg e0 =
 
 
         MouseDown (x,y) timeStamp ->
-            if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
-                case e.locating of
-                    Idle ->
-                        ( selectCurrentWord e
-                        , focusOnEditor e.state e.editorID
-                        )
-
-                    Mouse a b c ->
-                        ( { e | locating = Mouse SelectWord b c }
-                        , focusOnEditor e.state e.editorID
-                        )
-
-                    _ ->
-                        mouseDown (x,y) timeStamp e
+            if e.state == Freeze then
+                ( e, Cmd.none )
             else
-                mouseDown (x,y) timeStamp e
+                if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
+                    case e.locating of
+                        Idle ->
+                            ( selectCurrentWord e
+                            , focusOnEditor e.state e.editorID
+                            )
+
+                        Mouse a b c ->
+                            ( { e | locating = Mouse SelectWord b c }
+                            , focusOnEditor e.state e.editorID
+                            )
+
+                        _ ->
+                            mouseDown (x,y) timeStamp e
+                else
+                    mouseDown (x,y) timeStamp e
 
 
         MouseMove targetId timeStamp ->
@@ -775,10 +783,6 @@ view tagger userDefinedStyles e =
             showContent viewTextareaParams { viewTextareaContent | selection = Nothing }
 
         Edit ->
-            let
-                maxIdx =
-                    List.length e.content - 1
-            in
             Html.div
                 [ ]
                 [ (Lazy.lazy (showContent viewTextareaParams)) viewTextareaContent
@@ -789,7 +793,7 @@ view tagger userDefinedStyles e =
         Freeze ->
             Html.div
                 [ ]
-                [ showContent viewTextareaParams viewTextareaContent
+                [ (Lazy.lazy (showContent viewTextareaParams)) viewTextareaContent
                 , cursorHtml
                     { cursorScreen = e.cursorScreen
                     , cursorVisible = True
@@ -2954,18 +2958,23 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
 showContent : ViewTextareaParams msg -> ViewTextareaContent -> Html msg
 showContent params c =
     let
+        listeners =
+            [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
+            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
+            ]
+
         attrs =
             ( params.userDefinedStyles ++ 
+              listeners ++  
             [ css
                 [ property "cursor" "text"
                 , property "user-select" "none"
                 , whiteSpace preWrap
                 , property "word-break" "break-word"
                 ]
-            , Attr.id params.editorID 
-            , Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
-            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
-            ])
+            , Attr.id params.editorID
+            ]
+            )
 
         highlight =
             case params.highlighter of
@@ -3119,7 +3128,7 @@ state new e =
             if new == Edit then
                 focusOnEditor Edit e.editorID
             else
-                Cmd.none
+                focusOnEditor Edit e.editorID
     in
     ( { e | state = new }, cmd )
 

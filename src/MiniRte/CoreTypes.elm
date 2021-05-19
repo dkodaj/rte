@@ -10,7 +10,7 @@ import Json.Decode as Decode exposing (Decoder, Value)
 
 type Msg =
       AddText String
-    | Blink Float
+    | Blink
     | CompositionEnd String
     | CompositionStart
     | CompositionUpdate String

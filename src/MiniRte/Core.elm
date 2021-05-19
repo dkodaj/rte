@@ -275,7 +275,7 @@ subscriptions e =
             ]
 
         cursorBlink =
-            Time.every tickPeriod ( \x -> Blink <| toFloat <| Time.posixToMillis x )
+            Time.every tickPeriod ( \_ -> Blink )
 
         detectViewport =
             if not e.typing then
@@ -310,7 +310,7 @@ update msg e0 =
         AddText txt ->
             typed txt e Nothing False
 
-        Blink time ->
+        Blink ->
             let
                 cursorVisible =
                     if e.cursorThrottled then True else (not e.cursorVisible)
@@ -411,7 +411,12 @@ update msg e0 =
 
         KeyDownTimeStamp float ->
             if e.lastKeyDown == float then
-                ( { e | typing = False }, Cmd.none )
+                ( { e |
+                      cursorVisible = False
+                    , typing = False 
+                  }
+                , Cmd.none 
+                )
             else
                 ( e, Cmd.none )
 
@@ -2639,7 +2644,7 @@ scrollIfNeeded cursor box viewport editorID =
         in
         scrollTo editorID (viewY + yDelta)
     else
-        if cursor.y + cursor.height > box.y + box.height then
+        if cursor.y > box.y + box.height then
             let
                 yDelta = 
                     cursor.y + cursor.height - box.y - box.height

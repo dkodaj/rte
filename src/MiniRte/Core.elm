@@ -744,36 +744,84 @@ view tagger userDefinedStyles e =
                     , width (vw 10)
                     ]
                 ] []
+
+        viewCursorData =
+            { cursorScreen = e.cursorScreen
+            , cursorVisible = e.cursorVisible
+            , editorBox = e.box
+            , typing = e.typing
+            }
+
+        viewTextareaContent =
+            { content = e.content
+            , cursor = e.cursor
+            , cursorScreen = e.cursorScreen
+            , selection = e.selection
+            , typing = e.typing
+            }
+
+        viewTextareaParams =
+            { editorID = e.editorID
+            , fontSizeUnit = e.fontSizeUnit
+            , highlighter = e.highlighter
+            , indentUnit = e.indentUnit
+            , selectionStyle = e.selectionStyle
+            , userDefinedStyles = userDefinedStyles
+            , tagger = tagger
+            }
     in
     case e.state of
-        Display ->
-            showContent tagger userDefinedStyles { e | selection = Nothing }
+        Display ->            
+            showContent viewTextareaParams { viewTextareaContent | selection = Nothing }
 
         Edit ->
             let
                 maxIdx =
                     List.length e.content - 1
-
-                f x _ =
-                    showContent tagger userDefinedStyles x
-
-                g x _ =
-                    cursorHtml x.cursorScreen x.box x.cursorVisible x.typing
             in
             Html.div
                 [ ]
-                [ (Lazy.lazy (f e)) e.sentry
-                , (Lazy.lazy (g e)) e.sentry
+                [ (Lazy.lazy (showContent viewTextareaParams)) viewTextareaContent
+                , (Lazy.lazy cursorHtml) viewCursorData
                 , dummy
                 ]
 
         Freeze ->
             Html.div
                 [ ]
-                [ showContent tagger userDefinedStyles e
-                , cursorHtml e.cursorScreen e.box True False
+                [ showContent viewTextareaParams viewTextareaContent
+                , cursorHtml
+                    { cursorScreen = e.cursorScreen
+                    , cursorVisible = True
+                    , editorBox = e.box
+                    , typing = False
+                    }
                 ]
 
+type alias ViewCursorData =
+    { cursorScreen : Box
+    , cursorVisible : Bool
+    , editorBox : Box
+    , typing : Bool
+    }
+
+type alias ViewTextareaContent =
+    { content : Content
+    , cursor : Int
+    , cursorScreen : Box
+    , selection : Maybe (Int,Int)
+    , typing : Bool
+    }
+
+type alias ViewTextareaParams msg =
+    { editorID : String
+    , fontSizeUnit : Maybe String
+    , highlighter : Maybe (Content -> Content)
+    , indentUnit : Maybe (Float,String)
+    , selectionStyle : List (Attribute Msg)
+    , userDefinedStyles : List (Attribute msg)
+    , tagger : (Msg -> msg)
+    }
 
 
 --- === Helper functions === ---
@@ -1160,8 +1208,17 @@ currentWord e =
             (beg, List.length e.content - 1)
 
 
-cursorHtml : Box -> Box -> Bool -> Bool -> Html msg
-cursorHtml cursor box visible typing =
+cursorHtml : ViewCursorData -> Html msg
+cursorHtml data =
+    let
+        cursor = data.cursorScreen
+
+        box = data.editorBox
+
+        visible = data.cursorVisible
+
+        typing = data.typing
+    in
     if typing || not visible then
         Html.div [] []
     else
@@ -2894,31 +2951,31 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
     )
 
 
-showContent : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
-showContent tagger userDefinedStyles e =
+showContent : ViewTextareaParams msg -> ViewTextareaContent -> Html msg
+showContent params c =
     let
         attrs =
-            ( userDefinedStyles ++ 
+            ( params.userDefinedStyles ++ 
             [ css
                 [ property "cursor" "text"
                 , property "user-select" "none"
                 , whiteSpace preWrap
                 , property "word-break" "break-word"
                 ]
-            , Attr.id e.editorID 
-            , Events.on "mousedown" (decodeMouse (\x y -> tagger <| MouseDown x y))
-            , Events.on "scroll" (Decode.map ( tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
+            , Attr.id params.editorID 
+            , Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
+            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
             ])
 
         highlight =
-            case e.highlighter of
+            case params.highlighter of
                 Just f -> f << List.map dehighlight
                 Nothing -> identity
 
         paragraphs =
             List.map
-                (showPara tagger e.cursor e.cursorScreen e.indentUnit e.selection e.selectionStyle e.typing e.fontSizeUnit)
-                (breakIntoParas (highlight e.content))
+                (showPara params.tagger c.cursor c.cursorScreen params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
+                (breakIntoParas (highlight c.content))
     in
     Keyed.node "div"
         attrs

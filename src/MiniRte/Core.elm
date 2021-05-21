@@ -87,7 +87,6 @@ type alias Editor =
     , nextCursorScreen : Maybe Box
     , selection : Maybe (Int,Int)
     , selectionStyle : List (Attribute Msg)
-    , sentry : Int
     , shiftDown : Bool
     , state : State
     , typing : Bool
@@ -212,7 +211,6 @@ init1 editorID =
     , nextCursorScreen = Nothing
     , selection = Nothing
     , selectionStyle = defaultSelectionStyle
-    , sentry = 0
     , shiftDown = False
     , state = Edit
     , typing = False
@@ -288,7 +286,7 @@ subscriptions e =
     in
     case e.state of
         Display ->
-            detectViewport
+            Sub.none
 
         Edit ->
             case e.drag of
@@ -629,8 +627,6 @@ update msg e0 =
                                       y = x.cursorScreen.y + yDelta
                                   }
 
-                              , sentry = x.sentry + 1 
-
                               , viewport = { vp0 | viewport = { vp1 | y = scrollTop } }
                             }
                     in
@@ -638,10 +634,7 @@ update msg e0 =
 
 
         SwitchTo newState ->
-            if newState /= e.state then
-                state newState e
-            else
-                ( e, Cmd.none )
+            state newState e
 
 
         ToBrowserClipboard txt ->
@@ -763,7 +756,6 @@ view tagger userDefinedStyles e =
         viewTextareaContent =
             { content = e.content
             , cursor = e.cursor
-            , cursorScreen = e.cursorScreen
             , selection = e.selection
             , typing = e.typing
             }
@@ -812,7 +804,6 @@ type alias ViewCursorData =
 type alias ViewTextareaContent =
     { content : Content
     , cursor : Int
-    , cursorScreen : Box
     , selection : Maybe (Int,Int)
     , typing : Bool
     }
@@ -1262,14 +1253,14 @@ cursorHtml data =
                 [ ]
 
 
-cursorHtml2 : Box -> Html msg
-cursorHtml2 cursor  =
+cursorHtml2 : Html msg
+cursorHtml2  =
     Html.div
         [ css
             [ borderLeft2 (px 3) solid
             , borderColor (rgb 0 0 0)
             , boxSizing borderBox
-            , height (px cursor.height)
+            , height (em 1.3)
             , left (px 0)
             , position absolute
             , top (px 0)
@@ -2885,8 +2876,8 @@ setSelection (a,b) e =
     )
 
 
-showChar : Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Box -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
-showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch =
+showChar : Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
+showChar selection selectionStyle cursor typing idx fontSizeUnit ch =
     let
         id =
             String.fromInt ch.id
@@ -2911,7 +2902,7 @@ showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
         child =            
             if typing && idx == cursor then                
                 [ linked (text (String.fromChar ch.char))
-                , cursorHtml2 cursorScreen
+                , cursorHtml2
                 ]
             else
                 [ linked (text (String.fromChar ch.char)) ]
@@ -2983,7 +2974,7 @@ showContent params c =
 
         paragraphs =
             List.map
-                (showPara params.tagger c.cursor c.cursorScreen params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
+                (showPara params.tagger c.cursor params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
                 (breakIntoParas (highlight c.content))
     in
     Keyed.node "div"
@@ -3011,7 +3002,7 @@ showContentInactive userDefinedStyles fontSizeUnit highlighter indentUnit tagger
 
         paragraphs x =
                 List.map
-                    (Tuple.second << showPara tagger -1 null indentUnit Nothing [] False fontSizeUnit)
+                    (Tuple.second << showPara tagger -1 indentUnit Nothing [] False fontSizeUnit)
                     (breakIntoParas (highlight x))
 
         render x =
@@ -3056,12 +3047,12 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : (Msg -> msg) -> Int -> Box -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
-showPara tagger cursor cursorScreen maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
+showPara : (Msg -> msg) -> Int -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
+showPara tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
         print : Int -> Character -> KeyedNode Msg
         print idx ch =
-            showChar selection selectionStyle cursor cursorScreen typing idx fontSizeUnit ch
+            showChar selection selectionStyle cursor typing idx fontSizeUnit ch
             
         f : EmbeddedHtml -> KeyedNode Msg
         f html =
@@ -3128,7 +3119,7 @@ state new e =
             if new == Edit then
                 focusOnEditor Edit e.editorID
             else
-                focusOnEditor Edit e.editorID
+                Cmd.none
     in
     ( { e | state = new }, cmd )
 

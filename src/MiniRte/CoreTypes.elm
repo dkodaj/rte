@@ -1,6 +1,6 @@
 module MiniRte.CoreTypes exposing (Msg(..), ScrollMode(..), State(..))
 
-import Browser.Dom as Dom exposing (Error, Viewport)
+import Browser.Dom as Dom exposing (Error)
 import Html.Styled as Html exposing (Attribute, Html, text)
 import Html.Styled.Attributes as Attr exposing (css)
 import IntDict exposing (IntDict)
@@ -24,8 +24,9 @@ type Msg =
     | MouseUp
     | NoOp
     | Paste String
-    | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
-    | PlaceCursor2_CursorParent ScrollMode (Result Error Dom.Element)
+    | PlaceCursor1_EditorViewport ScrollMode (Result Error Dom.Viewport)
+    | PlaceCursor2_EditorElement ScrollMode (Result Error Dom.Element)
+    | PlaceCursor3_CursorElement ScrollMode (Result Error Dom.Element)
     | SwitchTo State
     | ToBrowserClipboard String
     | UndoAction

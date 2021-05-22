@@ -63,16 +63,16 @@ import Time
 
 
 type alias Editor =
-    { box : Dom.Element
-    , clipboard : Maybe Content
+    { clipboard : Maybe Content
     , compositionStart : Content
     , compositionUpdate : String
     , content : Content
     , ctrlDown : Bool
     , cursor : Int
-    , cursorScreen : Box
+    , cursorScreen : Dom.Element
     , drag : Drag
     , editorID : String
+    , editorScreen : Dom.Element
     , fontSizeUnit : Maybe String
     , fontStyle : MiniRte.Types.FontStyle        
     , highlighter : Maybe (Content -> Content)
@@ -89,13 +89,7 @@ type alias Editor =
     , state : State
     , typing : Bool
     , undo : List Undo
-    }
-
-type alias Box =
-    { x : Float
-    , y : Float
-    , width : Float
-    , height : Float
+    , viewport : Dom.Viewport
     }
 
 
@@ -183,24 +177,41 @@ init editorID =
 
 init1 : String -> Editor
 init1 editorID =
-    { box =
-        { scene =
-            { width = 0
+    let
+        nullBox =
+            { x = 0
+            , y = 0
             , height = 0
+            , width = 0
             }
-        , viewport =  null
-        , element = null
-        }
 
-    , clipboard = Nothing
+        nullElement =
+            { scene =
+                { width = 0
+                , height = 0
+                }
+            , viewport =  nullBox
+            , element = nullBox
+            }
+
+        nullViewport =
+            { scene =
+                { width = 0
+                , height = 0
+                }
+            , viewport =  nullBox
+            }
+    in
+    { clipboard = Nothing
     , compositionStart = []
     , compositionUpdate = ""
     , content = [Break (defaultLineBreak 0)]
     , ctrlDown = False
     , cursor = 0
-    , cursorScreen = null
+    , cursorScreen = nullElement
     , drag = NoDrag
     , editorID = editorID
+    , editorScreen = nullElement
     , fontSizeUnit = Nothing
     , fontStyle = emptyFontStyle            
     , highlighter = Nothing
@@ -217,6 +228,7 @@ init1 editorID =
     , state = Edit
     , typing = False
     , undo = []
+    , viewport = nullViewport
     }
 
 
@@ -327,16 +339,16 @@ update msg e0 =
                     , Cmd.none 
                     )
 
-                Just (beg,end) ->
-                    ( { e |
-                          compositionStart = List.take (end-beg+1) (List.drop beg e.content)
-                        , compositionUpdate = ""
-                        , content = delete beg (end+1) e
-                        , cursor = beg
-                        , selection = Nothing
-                      }
-                    , placeCursor ScrollIfNeeded e.editorID
-                    )
+                Just (beg,end) ->                    
+                       ( { e |
+                            compositionStart = List.take (end-beg+1) (List.drop beg e.content)
+                          , compositionUpdate = ""
+                          , content = delete beg (end+1) e
+                          , cursor = beg
+                          , selection = Nothing
+                        }
+                       , placeCursor ScrollIfNeeded e.editorID
+                       ) 
 
 
         CompositionUpdate txt ->
@@ -429,7 +441,7 @@ update msg e0 =
                         page a b (f e)
 
 
-        LocatedChar _ (Err err) ->
+        LocatedChar _ (Err err) ->            
             ( e, Cmd.none )
 
 
@@ -508,33 +520,41 @@ update msg e0 =
                     if toText internalClipboard /= str then
                         typed str e Nothing True
                     else
-                        addContent internalClipboard e                    
+                        addContent internalClipboard e   
 
 
-        PlaceCursor1_EditorPos scroll (Ok data) ->
-            locateCursorParent { e | box = data } scroll
+        PlaceCursor1_EditorViewport scroll (Ok data) ->
+            ( { e | viewport = data }, Task.attempt (PlaceCursor2_EditorElement scroll) (Dom.getElement e.editorID) )
 
 
-        PlaceCursor1_EditorPos _ (Err err) ->
+        PlaceCursor1_EditorViewport _ (Err err) ->
             ( e, Cmd.none )
 
 
-        PlaceCursor2_CursorParent scroll (Ok data) ->
+        PlaceCursor2_EditorElement scroll (Ok data) ->
+            locateCursorParent { e | editorScreen = data } scroll
+
+
+        PlaceCursor2_EditorElement _ (Err err) ->
+            ( e, Cmd.none )
+
+
+        PlaceCursor3_CursorElement scroll (Ok data) ->
             let
                 f x =
-                    { x | cursorScreen = data.element }
+                    { x | cursorScreen = data }
             in
             case scroll of
                 ScrollIfNeeded ->
                     ( f e
-                    , scrollIfNeeded data e.box e.editorID
+                    , scrollIfNeeded data e.editorScreen e.viewport e.cursor e.editorID
                     )
 
                 NoScroll ->
                     ( f e, Cmd.none )
 
 
-        PlaceCursor2_CursorParent _ (Err err) ->
+        PlaceCursor3_CursorElement _ (Err err) ->
             ( e, Cmd.none )
 
 
@@ -742,23 +762,23 @@ addContent added e =
     in
     case e.selection of
         Nothing ->
-            ( { e |
-                  content = j e.cursor e.content e.cursor
-                , cursor = e.cursor + List.length added
-                , idCounter = e.idCounter + List.length added
-              }
-            , placeCursor ScrollIfNeeded e.editorID
-            )
+              ( { e |
+                    content = j e.cursor e.content e.cursor
+                  , cursor = e.cursor + List.length added
+                  , idCounter = e.idCounter + List.length added
+                }
+              , placeCursor ScrollIfNeeded e.editorID
+              )  
 
-        Just (beg,end) ->
-            ( { e |
-                  content = j beg e.content (end+1)
-                , cursor = beg + List.length added
-                , idCounter = e.idCounter + List.length added
-                , selection = Nothing
-              }
-            , placeCursor ScrollIfNeeded e.editorID
-            )
+        Just (beg,end) ->            
+              ( { e |
+                    content = j beg e.content (end+1)
+                  , cursor = beg + List.length added
+                  , idCounter = e.idCounter + List.length added
+                  , selection = Nothing
+                }
+              , placeCursor ScrollIfNeeded e.editorID
+              )
 
 
 addIds : Content -> Content
@@ -1512,7 +1532,7 @@ jump f isRelevant direction (beg,end) e =
                   located = IntDict.empty
                 , locating = Idle 
               }
-            , Cmd.none
+            , placeCursor ScrollIfNeeded e.editorID
             )
     in
     case jumpHelp isRelevant direction (beg,end) e of
@@ -1542,9 +1562,9 @@ jumpHelp isRelevant direction (beg,end) e =
 
         cursor = 
             { idx = e.cursor
-            , x = e.cursorScreen.x
-            , y = e.cursorScreen.y
-            , height = e.cursorScreen.height
+            , x = e.cursorScreen.element.x
+            , y = e.cursorScreen.element.y
+            , height = e.cursorScreen.element.height
             }
 
         better : ScreenElement -> ScreenElement -> Bool
@@ -1625,7 +1645,8 @@ keyDownHelp timeStamp str e =
         like x =
             update (KeyDown timeStamp x) e
     
-        maxIdx = List.length e.content - 1
+        maxIdx =
+            List.length e.content - 1
     in
     if String.length str == 1 then
         if not e.ctrlDown then
@@ -1851,13 +1872,13 @@ keyDownHelp timeStamp str e =
             if e.cursor == maxIdx then
                 ( e, Cmd.none )
             else
-                locateChars e (pageEstimate Down maxIdx e.cursor e.box) (Page Down)
+                locateChars e (pageEstimate Down maxIdx e.cursor e.viewport) (Page Down)
 
         "PageUp" ->
             if e.cursor == 0 then
                 ( e, Cmd.none )
             else
-                locateChars e (pageEstimate Up maxIdx e.cursor e.box) (Page Up)
+                locateChars e (pageEstimate Up maxIdx e.cursor e.viewport) (Page Up)
 
         "Shift" ->
             ( { e | shiftDown = True }, Cmd.none )
@@ -1882,9 +1903,9 @@ lineBoundary direction (beg,end) e =
 
         cursor = 
             { idx = e.cursor
-            , x = e.cursorScreen.x
-            , y = e.cursorScreen.y
-            , height = e.cursorScreen.height
+            , x = e.cursorScreen.element.x
+            , y = e.cursorScreen.element.y
+            , height = e.cursorScreen.element.height
             }
 
         f : Int -> ScreenElement -> (Maybe ScreenElement, Maybe ScreenElement) -> (Maybe ScreenElement, Maybe ScreenElement)
@@ -2094,7 +2115,7 @@ locateCursorParent e scroll =
     in
     case id of
         Just x ->
-            ( e, Task.attempt (PlaceCursor2_CursorParent scroll) <| Dom.getElement <| e.editorID ++ String.fromInt x )
+            ( e, Task.attempt (PlaceCursor3_CursorElement scroll) <| Dom.getElement <| e.editorID ++ String.fromInt x )
 
         Nothing ->
             ( e, Cmd.none )
@@ -2299,19 +2320,16 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
 mouseDown : (Float,Float) -> Float -> Editor -> ( Editor, Cmd Msg )
 mouseDown (mouseX,mouseY) timeStamp e =
     let
-        (pX,pY) = (e.box.element.x, e.box.element.y)
-
-        viewport = e.box.viewport
-
-        (vX,vY) = (viewport.x, viewport.y)
-
-        sceneHeight = e.box.scene.height
+        cursorIdx = e.cursor
 
         maxIdx = List.length e.content - 1
 
+        pageSizeGuess =
+            toFloat maxIdx * e.viewport.viewport.height / e.viewport.scene.height
+
         guess : Int
         guess =
-            Basics.round (toFloat maxIdx * ((mouseY - pY) + vY) / sceneHeight)
+            cursorIdx + Basics.round ( ( mouseY - e.cursorScreen.element.y ) / pageSizeGuess )
 
         bounds =
             (guess - jumpSize, guess + jumpSize)
@@ -2384,15 +2402,6 @@ nonAlphaNumAt idx content =
     not (alphaNumAt idx content)
 
 
-null : Box
-null =
-    { x = 0
-    , y = 0
-    , height = 0
-    , width = 0
-    }
-
-
 onSameLine : ScreenElement -> ScreenElement -> Bool
 onSameLine a b =
     a.y == b.y ||
@@ -2406,26 +2415,22 @@ page direction (beg,end) e =
         f : ScreenElement -> ScreenElement -> Bool
         f cursor idx =
             case direction of
-                Down -> idx.y >= cursor.y + e.box.element.height
-                Up -> idx.y <= cursor.y - e.box.element.height
+                Down -> idx.y >= cursor.y + e.viewport.viewport.height
+                Up -> idx.y <= cursor.y - e.viewport.viewport.height
     in
     jump Page f direction (beg,end) e
 
 
-pageEstimate : Vertical -> Int -> Int -> Dom.Element -> (Int,Int)
-pageEstimate direction maxIdx cursor editorElem =
+pageEstimate : Vertical -> Int -> Int -> Dom.Viewport -> (Int,Int)
+pageEstimate direction maxIdx cursorIdx viewport =
     let
-        scene = editorElem.scene
-
-        v = editorElem.viewport
-
-        pageSizeGuess =            
-            Basics.round (toFloat (maxIdx + 1) * v.height / scene.height)
+        pageSizeGuess =               
+            Basics.round <| toFloat maxIdx * viewport.viewport.height / viewport.scene.height
 
         cursorGuess =
             case direction of
-                Down -> min maxIdx (cursor + pageSizeGuess)
-                Up -> max 0 (cursor - pageSizeGuess)
+                Down -> min maxIdx (cursorIdx + pageSizeGuess)
+                Up -> max 0 (cursorIdx - pageSizeGuess)
     in
     ( cursorGuess - jumpSize, cursorGuess + jumpSize )
 
@@ -2487,7 +2492,7 @@ parasInSelection e =
 
 placeCursor : ScrollMode -> String -> Cmd Msg
 placeCursor scroll editorID =    
-    Task.attempt (PlaceCursor1_EditorPos scroll) (Dom.getElement editorID)
+    Task.attempt (PlaceCursor1_EditorViewport scroll) (Dom.getViewportOf editorID)
 
 
 previous : (Int -> Content -> Bool) -> Int -> Content -> Maybe Int
@@ -2553,22 +2558,24 @@ restore x editor =
     }
 
 
-scrollIfNeeded : Dom.Element -> Dom.Element -> String -> Cmd Msg
-scrollIfNeeded cursorData editorData editorID =
+scrollIfNeeded : Dom.Element -> Dom.Element -> Dom.Viewport -> Int -> String -> Cmd Msg
+scrollIfNeeded cursorData editorData viewportData cursorIdx editorID =
     let
         cursor = cursorData.element
 
-        viewport = editorData.element
+        editor = editorData.element
+
+        viewport = viewportData.viewport
 
         scrollTo y =
             Task.attempt (\_ -> NoOp)
                 <| Dom.setViewportOf editorID 0 y
     in
-    if cursor.y + cursor.height > viewport.y + viewport.height then
-        scrollTo (viewport.y + cursor.y + cursor.height)
+    if cursor.y + cursor.height > editor.y + editor.height then
+        scrollTo ( viewport.y + cursor.y + cursor.height - editor.y - editor.height )
     else
-        if cursor.y < viewport.y then
-            scrollTo cursor.y
+        if cursor.y < editor.y then
+            scrollTo ( viewport.y + cursor.y - editor.y )
         else
             Cmd.none
 
@@ -2818,7 +2825,7 @@ showContent params c =
                 [ property "cursor" "text"
                 , property "user-select" "none"
                 , whiteSpace preWrap
-                , property "word-break" "break-word"
+                , property "word-break" "break-word"                
                 ]
             , Attr.id params.editorID
             ]
@@ -3304,7 +3311,7 @@ wrap editorID (amount, unit) l =
         addId x func ys = (x, func ys)
 
         id =
-            editorID ++ String.fromInt l.id 
+            editorID ++ String.fromInt l.id ++ "wrap"
 
         indentation =
             l.indent + l.highlightIndent

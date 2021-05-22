@@ -25,9 +25,7 @@ type Msg =
     | NoOp
     | Paste String
     | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
-    | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
-    | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
-    | Scrolled Float
+    | PlaceCursor2_CursorParent ScrollMode (Result Error Dom.Element)
     | SwitchTo State
     | ToBrowserClipboard String
     | UndoAction

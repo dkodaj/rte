@@ -1,5 +1,3 @@
---? remove Scrolled
-
 module MiniRte.Core exposing (
       addContent
     , addText
@@ -65,7 +63,7 @@ import Time
 
 
 type alias Editor =
-    { box : Box
+    { box : Dom.Element
     , clipboard : Maybe Content
     , compositionStart : Content
     , compositionUpdate : String
@@ -91,7 +89,6 @@ type alias Editor =
     , state : State
     , typing : Bool
     , undo : List Undo
-    , viewport : Viewport
     }
 
 type alias Box =
@@ -186,7 +183,15 @@ init editorID =
 
 init1 : String -> Editor
 init1 editorID =
-    { box = null
+    { box =
+        { scene =
+            { width = 0
+            , height = 0
+            }
+        , viewport =  null
+        , element = null
+        }
+
     , clipboard = Nothing
     , compositionStart = []
     , compositionUpdate = ""
@@ -212,13 +217,6 @@ init1 editorID =
     , state = Edit
     , typing = False
     , undo = []
-    , viewport =
-            { scene =
-                { width = 0
-                , height = 0
-                }
-            , viewport =  null
-            }
     }
 
 
@@ -514,24 +512,14 @@ update msg e0 =
 
 
         PlaceCursor1_EditorPos scroll (Ok data) ->
-            ( { e | box = data.element }
-            , getViewport (PlaceCursor2_Viewport scroll) e.editorID 
-            )
+            locateCursorParent { e | box = data } scroll
 
 
         PlaceCursor1_EditorPos _ (Err err) ->
             ( e, Cmd.none )
 
 
-        PlaceCursor2_Viewport scroll (Ok data) ->            
-            locateCursorParent { e | viewport = data } scroll
-
-        
-        PlaceCursor2_Viewport _ (Err err) ->
-            ( e, Cmd.none )        
-
-
-        PlaceCursor3_CursorParent scroll (Ok data) ->
+        PlaceCursor2_CursorParent scroll (Ok data) ->
             let
                 f x =
                     { x | cursorScreen = data.element }
@@ -539,38 +527,15 @@ update msg e0 =
             case scroll of
                 ScrollIfNeeded ->
                     ( f e
-                    , scrollIfNeeded data.element e.box e.viewport e.editorID
+                    , scrollIfNeeded data e.box e.editorID
                     )
 
                 NoScroll ->
                     ( f e, Cmd.none )
 
 
-        PlaceCursor3_CursorParent _ (Err err) ->
+        PlaceCursor2_CursorParent _ (Err err) ->
             ( e, Cmd.none )
-
-
-        Scrolled scrollTop ->
-            let
-                cursorScreen = e.cursorScreen
-
-                vp0 = e.viewport
-
-                vp1 = vp0.viewport
-
-                yDelta = vp1.y - scrollTop
-            in
-            ( { e |
-                  cursorScreen =
-                    { cursorScreen |
-                        y = e.cursorScreen.y + yDelta
-                    }
-
-                , viewport = { vp0 | viewport = { vp1 | y = scrollTop } }
-              }
-
-            , Cmd.none
-            )
 
 
         SwitchTo newState ->
@@ -1416,12 +1381,6 @@ getIdx idStr content =
             Nothing
 
 
-getViewport : (Result Error Viewport -> Msg) -> String -> Cmd Msg
-getViewport msg editorID =
-    Task.attempt msg (Dom.getViewportOf editorID)
-
-
-
 idOf : Element -> Int
 idOf elem =
     case elem of
@@ -1892,13 +1851,13 @@ keyDownHelp timeStamp str e =
             if e.cursor == maxIdx then
                 ( e, Cmd.none )
             else
-                locateChars e (pageEstimate Down maxIdx e.cursor e.viewport) (Page Down)
+                locateChars e (pageEstimate Down maxIdx e.cursor e.box) (Page Down)
 
         "PageUp" ->
             if e.cursor == 0 then
                 ( e, Cmd.none )
             else
-                locateChars e (pageEstimate Up maxIdx e.cursor e.viewport) (Page Up)
+                locateChars e (pageEstimate Up maxIdx e.cursor e.box) (Page Up)
 
         "Shift" ->
             ( { e | shiftDown = True }, Cmd.none )
@@ -2135,7 +2094,7 @@ locateCursorParent e scroll =
     in
     case id of
         Just x ->
-            ( e, Task.attempt (PlaceCursor3_CursorParent scroll) <| Dom.getElement <| e.editorID ++ String.fromInt x )
+            ( e, Task.attempt (PlaceCursor2_CursorParent scroll) <| Dom.getElement <| e.editorID ++ String.fromInt x )
 
         Nothing ->
             ( e, Cmd.none )
@@ -2340,13 +2299,13 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
 mouseDown : (Float,Float) -> Float -> Editor -> ( Editor, Cmd Msg )
 mouseDown (mouseX,mouseY) timeStamp e =
     let
-        (pX,pY) = (e.box.x, e.box.y)
+        (pX,pY) = (e.box.element.x, e.box.element.y)
 
-        viewport = e.viewport.viewport
+        viewport = e.box.viewport
 
         (vX,vY) = (viewport.x, viewport.y)
 
-        sceneHeight = e.viewport.scene.height
+        sceneHeight = e.box.scene.height
 
         maxIdx = List.length e.content - 1
 
@@ -2447,18 +2406,18 @@ page direction (beg,end) e =
         f : ScreenElement -> ScreenElement -> Bool
         f cursor idx =
             case direction of
-                Down -> idx.y >= cursor.y + e.box.height
-                Up -> idx.y <= cursor.y - e.box.height
+                Down -> idx.y >= cursor.y + e.box.element.height
+                Up -> idx.y <= cursor.y - e.box.element.height
     in
     jump Page f direction (beg,end) e
 
 
-pageEstimate : Vertical -> Int -> Int -> Viewport -> (Int,Int)
-pageEstimate direction maxIdx cursor viewport =
+pageEstimate : Vertical -> Int -> Int -> Dom.Element -> (Int,Int)
+pageEstimate direction maxIdx cursor editorElem =
     let
-        scene = viewport.scene
+        scene = editorElem.scene
 
-        v = viewport.viewport
+        v = editorElem.viewport
 
         pageSizeGuess =            
             Basics.round (toFloat (maxIdx + 1) * v.height / scene.height)
@@ -2594,36 +2553,24 @@ restore x editor =
     }
 
 
-scrollIfNeeded : Box -> Box -> Viewport -> String -> Cmd Msg
-scrollIfNeeded cursor box viewport editorID =
+scrollIfNeeded : Dom.Element -> Dom.Element -> String -> Cmd Msg
+scrollIfNeeded cursorData editorData editorID =
     let
-        viewY = viewport.viewport.y
+        cursor = cursorData.element
+
+        viewport = editorData.element
+
+        scrollTo y =
+            Task.attempt (\_ -> NoOp)
+                <| Dom.setViewportOf editorID 0 y
     in
-    if cursor.y < box.y then
-        let
-            yDelta =  -box.y + cursor.y
-        in
-        scrollTo editorID (viewY + yDelta)
+    if cursor.y + cursor.height > viewport.y + viewport.height then
+        scrollTo (viewport.y + cursor.y + cursor.height)
     else
-        if cursor.y > box.y + box.height then
-            let
-                yDelta = 
-                    cursor.y + cursor.height - box.y - box.height
-            in
-            scrollTo editorID (viewY + yDelta)
+        if cursor.y < viewport.y then
+            scrollTo cursor.y
         else
             Cmd.none
-
-
-scrollTo : String -> Float -> Cmd Msg
-scrollTo editorID y =
-    Task.attempt (\_ -> NoOp)
-        <| Dom.setViewportOf editorID 0 y
-
-
-scrollToCursor : Editor -> Cmd Msg
-scrollToCursor e =
-    placeCursor ScrollIfNeeded e.editorID
 
 
 selectCurrentWord : Editor -> Editor
@@ -2789,7 +2736,7 @@ showChar : String -> Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> I
 showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch =
     let
         id =
-            editorID  ++ String.fromInt ch.id
+            editorID ++ String.fromInt ch.id
 
         fontFamilyAttr =
             if ch.fontStyle.fontFamily == [] then
@@ -2862,7 +2809,6 @@ showContent params c =
     let
         listeners =
             [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
-            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled ) (Decode.at ["target", "scrollTop"] Decode.float))
             ]
 
         attrs =
@@ -3358,7 +3304,7 @@ wrap editorID (amount, unit) l =
         addId x func ys = (x, func ys)
 
         id =
-            editorID  ++ String.fromInt l.id ++ "wrap"
+            editorID ++ String.fromInt l.id 
 
         indentation =
             l.indent + l.highlightIndent

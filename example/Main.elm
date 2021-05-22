@@ -86,7 +86,7 @@ view model =
             , Rte.textarea model.rte
 
             , Html.a
-                [ Attr.href "https://github.com/dkodaj/rte" 
+                [ Attr.href "https://github.com/dkodaj/rte/tree/master/example" 
                 , class "source"
                 ]
                 [ text "Source" ]

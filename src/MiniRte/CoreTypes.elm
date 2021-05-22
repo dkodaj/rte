@@ -10,16 +10,14 @@ import Json.Decode as Decode exposing (Decoder, Value)
 
 type Msg =
       AddText String
-    | Blink
     | CompositionEnd String
     | CompositionStart
     | CompositionUpdate String
-    | DetectViewport
     | Copy
     | Cut
     | KeyDown Float String
     | KeyDownTimeStamp Float
-    | KeyUp String
+    | KeyUp String    
     | LocatedChar Int (Result Error Dom.Element)
     | MouseDown (Float,Float) Float
     | MouseMove String Float
@@ -29,7 +27,7 @@ type Msg =
     | PlaceCursor1_EditorPos ScrollMode (Result Error Dom.Element)
     | PlaceCursor2_Viewport ScrollMode (Result Error Viewport)
     | PlaceCursor3_CursorParent ScrollMode (Result Error Dom.Element)
-    | Scrolled (Maybe Float)
+    | Scrolled Float
     | SwitchTo State
     | ToBrowserClipboard String
     | UndoAction

@@ -1,3 +1,5 @@
+--? remove Scrolled
+
 module MiniRte.Core exposing (
       addContent
     , addText
@@ -44,6 +46,7 @@ module MiniRte.Core exposing (
 import Browser.Dom as Dom exposing (Error, Viewport)
 import Browser.Events
 import Css exposing (..)
+import Css.Animations as CssAnim
 import Html.Styled as Html exposing (Attribute, Html, text)
 import Html.Styled.Attributes as Attr exposing (css)
 import Html.Styled.Events as Events
@@ -70,8 +73,6 @@ type alias Editor =
     , ctrlDown : Bool
     , cursor : Int
     , cursorScreen : Box
-    , cursorThrottled : Bool
-    , cursorVisible : Bool
     , drag : Drag
     , editorID : String
     , fontSizeUnit : Maybe String
@@ -84,7 +85,6 @@ type alias Editor =
     , locateBacklog : Int
     , located : IntDict ScreenElement
     , locating : Locating
-    , nextCursorScreen : Maybe Box
     , selection : Maybe (Int,Int)
     , selectionStyle : List (Attribute Msg)
     , shiftDown : Bool
@@ -194,8 +194,6 @@ init1 editorID =
     , ctrlDown = False
     , cursor = 0
     , cursorScreen = null
-    , cursorThrottled = False
-    , cursorVisible = False
     , drag = NoDrag
     , editorID = editorID
     , fontSizeUnit = Nothing
@@ -208,7 +206,6 @@ init1 editorID =
     , locateBacklog = 0
     , located = IntDict.empty
     , locating = Idle
-    , nextCursorScreen = Nothing
     , selection = Nothing
     , selectionStyle = defaultSelectionStyle
     , shiftDown = False
@@ -238,7 +235,10 @@ init3 editorID highlighter selectionStyle =
 
 initCmd : String -> Cmd Msg
 initCmd editorID =
-    focusOnEditor Edit editorID
+    Cmd.batch
+        [ focusOnEditor Edit editorID
+        , placeCursor ScrollIfNeeded editorID
+        ]
 
 
 initWith : String -> String -> ( Editor, Cmd Msg )
@@ -268,18 +268,7 @@ subscriptions e =
             [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
             , Browser.Events.onKeyUp (decodeKey KeyUp)
             , Browser.Events.onMouseUp (Decode.succeed MouseUp) 
-            , cursorBlink
-            , detectViewport
             ]
-
-        cursorBlink =
-            Time.every tickPeriod ( \_ -> Blink )
-
-        detectViewport =
-            if not e.typing then
-                Time.every (tickPeriod/5) (\_ -> DetectViewport)
-            else
-                Sub.none
 
         mouseMove =
             Browser.Events.onMouseMove (decodeTargetIdAndTime MouseMove) 
@@ -297,12 +286,12 @@ subscriptions e =
                     Sub.batch ( mouseMove :: default )
 
         Freeze ->
-            detectViewport
+            Sub.none
 
 
 update : Msg -> Editor -> ( Editor, Cmd Msg )
 update msg e0 =
-    let       
+    let     
         maxIdx =
             List.length e.content - 1
 
@@ -312,18 +301,6 @@ update msg e0 =
     case msg of
         AddText txt ->
             typed txt e Nothing False
-
-        Blink ->
-            let
-                cursorVisible =
-                    if e.cursorThrottled then True else (not e.cursorVisible)
-            in
-            ( { e |
-                  cursorThrottled = e.typing
-                , cursorVisible = cursorVisible
-              }
-            , Cmd.none
-            )
 
 
         CompositionEnd txt ->
@@ -391,33 +368,13 @@ update msg e0 =
             cut e
 
 
-        DetectViewport ->
-            ( e, placeCursor NoScroll e.editorID )
-
-
-        KeyDown timeStamp key ->
-            let
-                f x =
-                    if String.startsWith "Arrow" key then
-                        { x |
-                            cursorThrottled = True
-                          , cursorVisible = True
-                        }
-                    else
-                        { x |
-                            cursorThrottled = True
-                          , cursorVisible = False
-                        }
-            in
-            keyDown timeStamp key (f e)
+        KeyDown timeStamp key ->            
+            keyDown timeStamp key e
 
 
         KeyDownTimeStamp float ->
             if e.lastKeyDown == float then
-                ( { e |
-                      cursorVisible = False
-                    , typing = False 
-                  }
+                ( { e | typing = False }
                 , Cmd.none 
                 )
             else
@@ -515,7 +472,6 @@ update msg e0 =
                         in
                         ( { e | 
                               cursor = newCursor
-                            , cursorVisible = False  
                             , selection = Just (beg,end)
                           }
                         , Cmd.none 
@@ -578,7 +534,7 @@ update msg e0 =
         PlaceCursor3_CursorParent scroll (Ok data) ->
             let
                 f x =
-                    { x | nextCursorScreen = Just data.element }
+                    { x | cursorScreen = data.element }
             in
             case scroll of
                 ScrollIfNeeded ->
@@ -587,50 +543,34 @@ update msg e0 =
                     )
 
                 NoScroll ->
-                    update (Scrolled Nothing) (f e)
+                    ( f e, Cmd.none )
 
 
         PlaceCursor3_CursorParent _ (Err err) ->
             ( e, Cmd.none )
 
 
-        Scrolled maybeFloat ->
+        Scrolled scrollTop ->
             let
-                f x = 
-                    case x.nextCursorScreen of
-                        Nothing -> x
-                        Just y ->
-                            { x |
-                                cursorScreen = y 
-                              , nextCursorScreen = Nothing
-                            }
+                cursorScreen = e.cursorScreen
+
+                vp0 = e.viewport
+
+                vp1 = vp0.viewport
+
+                yDelta = vp1.y - scrollTop
             in
-            case maybeFloat of
-                Nothing ->
-                    ( f e, Cmd.none )
+            ( { e |
+                  cursorScreen =
+                    { cursorScreen |
+                        y = e.cursorScreen.y + yDelta
+                    }
 
-                Just scrollTop ->
-                    let
-                        g x =
-                            let
-                                cursorScreen = x.cursorScreen
+                , viewport = { vp0 | viewport = { vp1 | y = scrollTop } }
+              }
 
-                                vp0 = x.viewport
-
-                                vp1 = vp0.viewport
-
-                                yDelta = vp1.y - scrollTop
-                            in
-                            { x |
-                                cursorScreen =
-                                  { cursorScreen |
-                                      y = x.cursorScreen.y + yDelta
-                                  }
-
-                              , viewport = { vp0 | viewport = { vp1 | y = scrollTop } }
-                            }
-                    in
-                    ( g (f e), Cmd.none )
+            , Cmd.none
+            )
 
 
         SwitchTo newState ->
@@ -746,13 +686,6 @@ view tagger userDefinedStyles e =
                     ]
                 ] []
 
-        viewCursorData =
-            { cursorScreen = e.cursorScreen
-            , cursorVisible = e.cursorVisible
-            , editorBox = e.box
-            , typing = e.typing
-            }
-
         viewTextareaContent =
             { content = e.content
             , cursor = e.cursor
@@ -772,34 +705,21 @@ view tagger userDefinedStyles e =
     in
     case e.state of
         Display ->            
-            showContent viewTextareaParams { viewTextareaContent | selection = Nothing }
+            showContent viewTextareaParams { viewTextareaContent | cursor = -1, selection = Nothing }
 
         Edit ->
             Html.div
                 [ ]
                 [ (Lazy.lazy (showContent viewTextareaParams)) viewTextareaContent
-                , (Lazy.lazy cursorHtml) viewCursorData
                 , dummy
                 ]
 
         Freeze ->
             Html.div
                 [ ]
-                [ (Lazy.lazy (showContent viewTextareaParams)) viewTextareaContent
-                , cursorHtml
-                    { cursorScreen = e.cursorScreen
-                    , cursorVisible = True
-                    , editorBox = e.box
-                    , typing = False
-                    }
+                [ (Lazy.lazy (showContent viewTextareaParams)) { viewTextareaContent | typing = True }
                 ]
 
-type alias ViewCursorData =
-    { cursorScreen : Box
-    , cursorVisible : Bool
-    , editorBox : Box
-    , typing : Bool
-    }
 
 type alias ViewTextareaContent =
     { content : Content
@@ -807,6 +727,7 @@ type alias ViewTextareaContent =
     , selection : Maybe (Int,Int)
     , typing : Bool
     }
+
 
 type alias ViewTextareaParams msg =
     { editorID : String
@@ -1203,70 +1124,41 @@ currentWord e =
             (beg, List.length e.content - 1)
 
 
-cursorHtml : ViewCursorData -> Html msg
-cursorHtml data =
+cursorHtml : Bool -> Html msg
+cursorHtml typing =
     let
-        cursor = data.cursorScreen
-
-        box = data.editorBox
-
-        visible = data.cursorVisible
-
-        typing = data.typing
-    in
-    if typing || not visible then
-        Html.div [] []
-    else
-        let
-            visibleHeight =
-                if cursor.y >= box.y then
-                    min cursor.height (box.y + box.height - cursor.y)
-                else
-                    cursor.y + cursor.height - box.y                    
-
-            onScreen =
-                cursor.y + cursor.height >= box.y
-                && cursor.y <= box.y + box.height
-                && cursor.x >= box.x
-                && cursor.x <= box.x + box.width
-
-            topPos =
-                if cursor.y >= box.y then
-                    cursor.y
-                else
-                    box.y
-        in
-        if not onScreen then
-            Html.div [] []
-        else
-            Html.div
-                [ css
-                    [ borderLeft2 (px 3) solid
-                    , borderColor (rgb 0 0 0)
-                    , boxSizing borderBox
-                    , height (px visibleHeight)
-                    , left (px cursor.x)
-                    , position absolute
-                    , top (px topPos)
-                    ]
+        blink =
+            CssAnim.keyframes
+                [ (0, [CssAnim.opacity (int 1)])
+                , (49, [CssAnim.opacity (int 1)])
+                , (50, [CssAnim.opacity (int 0)])
+                , (100, [CssAnim.opacity (int 0)])
                 ]
-                [ ]
 
-
-cursorHtml2 : Html msg
-cursorHtml2  =
+        anim =
+            if not typing then
+                [ animationName blink
+                , animationDuration (ms (2*tickPeriod))
+                , property "animation-iteration-count" "infinite"
+                ]
+            else
+                []
+    in
     Html.div
         [ css
-            [ borderLeft2 (px 3) solid
-            , borderColor (rgb 0 0 0)
-            , boxSizing borderBox
-            , height (em 1.3)
-            , left (px 0)
-            , position absolute
-            , top (px 0)
-            ]
-        ]
-        [ ]
+            ( [ borderLeft2 (px 3) solid
+              , borderColor (rgb 0 0 0)
+              , boxSizing borderBox
+              , height (em 1.17)
+              , left (px 0)
+              , position absolute
+              , top (em 0.05)
+              , marginRight (em -0.5)
+              ]
+              ++
+              anim
+            )  
+        ] []
 
 
 cut : Editor -> ( Editor, Cmd Msg )
@@ -1752,6 +1644,24 @@ jumpSize = 100
 keyDown : Float -> String -> Editor -> (Editor, Cmd Msg)
 keyDown timeStamp str e =
     let
+        timeStampCmd =
+            Process.sleep tickPeriod |> Task.perform (\_ -> KeyDownTimeStamp timeStamp)
+
+        f (x,y) =
+            ( { x |
+                lastKeyDown = timeStamp
+              , typing = True 
+              }
+            , Cmd.batch [timeStampCmd,y] 
+            )
+    in
+    f (keyDownHelp timeStamp str e)
+
+
+keyDownHelp : Float -> String -> Editor -> (Editor, Cmd Msg)
+keyDownHelp timeStamp str e =
+    let
+
         like : String -> ( Editor, Cmd Msg )
         like x =
             update (KeyDown timeStamp x) e
@@ -1769,7 +1679,7 @@ keyDown timeStamp str e =
                 "1" ->
                     typed "—" e (Just timeStamp) False -- M dash-}
 
-                "a" ->                      
+                "a" ->
                     ( { e |
                          selection = Just (0, maxIdx)
                       }
@@ -1802,7 +1712,7 @@ keyDown timeStamp str e =
     else
     case str of
         "ArrowDown" ->
-            if e.cursor == maxIdx then
+            if e.cursor >= maxIdx then
                 ( e, Cmd.none )
             else
                 locateChars e (e.cursor + 1, e.cursor + jumpSize) (LineJump Down)
@@ -2182,9 +2092,9 @@ loadTextHelp txt shell =
         }
 
 
-locateCmd : Int -> Int -> Cmd Msg
+locateCmd : Int -> String -> Cmd Msg
 locateCmd idx id =    
-    Task.attempt (LocatedChar idx) (Dom.getElement (String.fromInt id))
+    Task.attempt (LocatedChar idx) (Dom.getElement id)
 
 
 locateChars : Editor -> (Int,Int) -> ( (Int,Int) -> Locating ) -> ( Editor, Cmd Msg )
@@ -2202,7 +2112,7 @@ locateChars e (a,b) func =
                     xs
 
                 Just id ->
-                    locateCmd idx id :: xs
+                    locateCmd idx (e.editorID ++ String.fromInt id) :: xs
 
         cmds : List (Cmd Msg)
         cmds =
@@ -2212,7 +2122,6 @@ locateChars e (a,b) func =
           locateBacklog = List.length cmds
         , located = IntDict.empty
         , locating = func (beg,end)
-        , cursorVisible = False
       }
     , Cmd.batch (focusOnEditor e.state e.editorID :: cmds)
     )
@@ -2226,7 +2135,7 @@ locateCursorParent e scroll =
     in
     case id of
         Just x ->
-            ( e, Task.attempt (PlaceCursor3_CursorParent scroll) (Dom.getElement (String.fromInt x)) )
+            ( e, Task.attempt (PlaceCursor3_CursorParent scroll) <| Dom.getElement <| e.editorID ++ String.fromInt x )
 
         Nothing ->
             ( e, Cmd.none )
@@ -2250,7 +2159,7 @@ locateMoreChars e (a,b) func newRegions =
                     xs
 
                 Just id ->
-                    locateCmd idx id :: xs
+                    locateCmd idx (e.editorID ++ String.fromInt id) :: xs
 
         toList (x,y) = List.range x y
 
@@ -2703,7 +2612,7 @@ scrollIfNeeded cursor box viewport editorID =
             in
             scrollTo editorID (viewY + yDelta)
         else
-            Task.perform identity (Task.succeed (Scrolled Nothing))
+            Cmd.none
 
 
 scrollTo : String -> Float -> Cmd Msg
@@ -2876,11 +2785,11 @@ setSelection (a,b) e =
     )
 
 
-showChar : Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
-showChar selection selectionStyle cursor typing idx fontSizeUnit ch =
+showChar : String -> Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
+showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch =
     let
         id =
-            String.fromInt ch.id
+            editorID  ++ String.fromInt ch.id
 
         fontFamilyAttr =
             if ch.fontStyle.fontFamily == [] then
@@ -2900,16 +2809,18 @@ showChar selection selectionStyle cursor typing idx fontSizeUnit ch =
                         [ x ]
 
         child =            
-            if typing && idx == cursor then                
+            if idx == cursor then                
                 [ linked (text (String.fromChar ch.char))
-                , cursorHtml2
+                , cursorHtml typing
                 ]
             else
                 [ linked (text (String.fromChar ch.char)) ]
 
         pos =
-            if typing && idx == cursor then
-                [ css [position relative] ]
+            if idx == cursor then
+                [ css
+                    [ position relative ]
+                ]
             else
                 []
 
@@ -2951,7 +2862,7 @@ showContent params c =
     let
         listeners =
             [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
-            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled << Just ) (Decode.at ["target", "scrollTop"] Decode.float))
+            , Events.on "scroll" (Decode.map ( params.tagger << Scrolled ) (Decode.at ["target", "scrollTop"] Decode.float))
             ]
 
         attrs =
@@ -2974,7 +2885,7 @@ showContent params c =
 
         paragraphs =
             List.map
-                (showPara params.tagger c.cursor params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
+                (showPara params.editorID params.tagger c.cursor params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
                 (breakIntoParas (highlight c.content))
     in
     Keyed.node "div"
@@ -2982,8 +2893,8 @@ showContent params c =
         paragraphs
 
 
-showContentInactive : List (Attribute msg) -> Maybe String -> Maybe (Content -> Content) -> Maybe (Float, String) -> (Msg -> msg) -> String -> Html msg
-showContentInactive userDefinedStyles fontSizeUnit highlighter indentUnit tagger txt =
+showContentInactive : String -> List (Attribute msg) -> Maybe String -> Maybe (Content -> Content) -> Maybe (Float, String) -> (Msg -> msg) -> String -> Html msg
+showContentInactive editorID userDefinedStyles fontSizeUnit highlighter indentUnit tagger txt =
     let
         attrs =
             ( userDefinedStyles ++ 
@@ -3002,7 +2913,7 @@ showContentInactive userDefinedStyles fontSizeUnit highlighter indentUnit tagger
 
         paragraphs x =
                 List.map
-                    (Tuple.second << showPara tagger -1 indentUnit Nothing [] False fontSizeUnit)
+                    (Tuple.second << showPara editorID tagger -1 indentUnit Nothing [] False fontSizeUnit)
                     (breakIntoParas (highlight x))
 
         render x =
@@ -3047,12 +2958,12 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : (Msg -> msg) -> Int -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
-showPara tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
+showPara : String -> (Msg -> msg) -> Int -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
+showPara editorID tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
         print : Int -> Character -> KeyedNode Msg
         print idx ch =
-            showChar selection selectionStyle cursor typing idx fontSizeUnit ch
+            showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch
             
         f : EmbeddedHtml -> KeyedNode Msg
         f html =
@@ -3083,7 +2994,7 @@ showPara tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeU
             (x, Html.map tagger y)
     in
     tag
-        <| wrap indentUnit p.lineBreak
+        <| wrap editorID indentUnit p.lineBreak
             <| List.foldr g [zeroSpace p.idx p.lineBreak.id] p.children
 
 
@@ -3293,18 +3204,8 @@ toText content =
 
 
 typed : String -> Editor -> Maybe Float -> Bool -> ( Editor, Cmd Msg )
-typed txt editor0 maybeTimeStamp modifyClipboard =
+typed txt e maybeTimeStamp modifyClipboard =
     let
-        e = 
-            case maybeTimeStamp of
-                Just timeStamp ->
-                    { editor0 |
-                        lastKeyDown = timeStamp 
-                      , typing = True
-                    }
-
-                Nothing -> editor0
-
         txtLength = List.length (String.toList txt)
 
         activeLink =
@@ -3339,17 +3240,6 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 Just newContent
             else
                 e.clipboard
-
-        timeStampCmd =
-            case maybeTimeStamp of
-                Nothing -> Cmd.none
-                Just x -> Process.sleep tickPeriod |> Task.perform (\_ -> KeyDownTimeStamp x)
-
-        cmds =
-            Cmd.batch
-                [ timeStampCmd
-                , placeCursor ScrollIfNeeded e.editorID
-                ]
     in
     case e.selection of
         Nothing ->
@@ -3359,7 +3249,7 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 , cursor = e.cursor + txtLength
                 , idCounter = newIdCounter
               }
-            , cmds
+            , placeCursor ScrollIfNeeded e.editorID
             )
 
         Just (beg, x) ->
@@ -3378,7 +3268,7 @@ typed txt editor0 maybeTimeStamp modifyClipboard =
                 , idCounter = newIdCounter
                 , selection = Nothing
               }
-            , cmds
+            , placeCursor ScrollIfNeeded e.editorID
             )
 
 
@@ -3462,12 +3352,13 @@ wordAt idx content =
     not (spaceOrLineBreakAt idx content)
 
 
-wrap : (Float, String) -> LineBreak -> Wrapper
-wrap (amount, unit) l =
+wrap : String -> (Float, String) -> LineBreak -> Wrapper
+wrap editorID (amount, unit) l =
     let
         addId x func ys = (x, func ys)
 
-        str x y = String.fromInt x ++ y
+        id =
+            editorID  ++ String.fromInt l.id ++ "wrap"
 
         indentation =
             l.indent + l.highlightIndent
@@ -3485,10 +3376,10 @@ wrap (amount, unit) l =
     in
     case l.nodeType of
         Nothing ->
-            addId (str l.id "wrap") (Keyed.node "div" <| indentAttr ++ attributes (Break l))
+            addId id (Keyed.node "div" <| indentAttr ++ attributes (Break l))
 
         Just nodeType ->
-            addId (str l.id "wrap") (Keyed.node nodeType <| indentAttr ++ attributes (Break l))
+            addId id (Keyed.node nodeType <| indentAttr ++ attributes (Break l))
 
 
 zeroWidthChar =

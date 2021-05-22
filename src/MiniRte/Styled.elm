@@ -89,6 +89,7 @@ type alias DisplayParams msg =
     { content : String
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
+    , id : String
     , indentUnit : Maybe (Float, String)
     , styling : List (Html.Styled.Attribute msg)
     }
@@ -208,7 +209,7 @@ If you want to preserve the option of editing it, create an editor with [init](#
 -}
 display : (Msg -> msg) -> DisplayParams msg -> Html.Styled.Html msg
 display tagger p =
-    MiniRte.Core.showContentInactive p.styling p.fontSizeUnit p.highlighter p.indentUnit (tagger << Core) p.content
+    MiniRte.Core.showContentInactive p.id p.styling p.fontSizeUnit p.highlighter p.indentUnit (tagger << Core) p.content
 
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
@@ -466,7 +467,7 @@ textContent rte =
     MiniRte.Core.toText rte.textarea.content
 
 
-{-| Displays the edited text plus the cursor. This object *must not* be the child of a `position: relative` node. It screws up cursor placement.    
+{-| Displays the edited text plus the cursor.
 -}
 textarea :  Rte msg-> Html.Styled.Html msg
 textarea rte =

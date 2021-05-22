@@ -1,9 +1,9 @@
 {
     "type": "package",
     "name": "dkodaj/rte",
-    "summary": "Rich text editor for relatively short texts",
+    "summary": "Rich text editor for blogpost-sized texts",
     "license": "MIT",
-    "version": "2.1.9",
+    "version": "3.0.0",
     "exposed-modules": [
         "MiniRte",
         "MiniRte.Styled",

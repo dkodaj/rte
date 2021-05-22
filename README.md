@@ -1,6 +1,6 @@
 # Mini-Rte
 
-Pure Elm rich text editor for relatively short texts (< 2000 words / 12K characters).
+Pure Elm rich text editor for relatively short texts (< 3500 words / 20K characters).
 It supports non-Western keyboard input via [CompositionEvent](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent).
 
 [Demo](https://dkodaj.github.io/rte)
@@ -9,8 +9,7 @@ It supports non-Western keyboard input via [CompositionEvent](https://developer.
 
 It cannot justify text.
 
-It gets increasingly slow for longer texts because of frequent trips to the DOM
-when calculating the cursor's position ([discussion on Elm-Discourse](https://discourse.elm-lang.org/t/pure-elm-rich-text-editor/7111)).
+It gets sluggish for longer texts ([discussion on Elm-Discourse](https://discourse.elm-lang.org/t/pure-elm-rich-text-editor/7111)).
 
 If you need better performance, use [mweiss/elm-rte-toolkit](https://package.elm-lang.org/packages/mweiss/elm-rte-toolkit/latest/).
 

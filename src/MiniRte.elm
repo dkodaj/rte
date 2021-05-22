@@ -94,6 +94,7 @@ type alias DisplayParams msg =
     { content : String
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (Types.Content -> Types.Content)
+    , id : String
     , indentUnit : Maybe (Float, String)
     , styling : List (Html.Attribute msg)
     }
@@ -212,6 +213,7 @@ display tagger p =
             { content = p.content
             , fontSizeUnit = p.fontSizeUnit
             , highlighter = p.highlighter
+            , id = p.id
             , indentUnit = p.indentUnit
             , styling = tostyled p.styling
             }
@@ -305,7 +307,7 @@ textContent rte =
     MiniRte.Core.toText rte.textarea.content
 
 
-{-| Displays the edited text plus the cursor. This object *must not* be the child of a `position: relative` node. It screws up cursor placement.    
+{-| Displays the edited text plus the cursor.
 -}
 textarea :  Rte msg-> Html msg
 textarea rte =

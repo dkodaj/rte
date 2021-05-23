@@ -121,7 +121,6 @@ type Locating =
     | LineBoundary Vertical (Int,Int)
     | LineJump Vertical (Int,Int)
     | Mouse Select (Float,Float) (Int,Int)
-    | Page Vertical (Int,Int)
 
 
 type alias MouseLocator =
@@ -178,31 +177,6 @@ init editorID =
 
 init1 : String -> Editor
 init1 editorID =
-    let
-        nullBox =
-            { x = 0
-            , y = 0
-            , height = 0
-            , width = 0
-            }
-
-        nullElement =
-            { scene =
-                { width = 0
-                , height = 0
-                }
-            , viewport =  nullBox
-            , element = nullBox
-            }
-
-        nullViewport =
-            { scene =
-                { width = 0
-                , height = 0
-                }
-            , viewport =  nullBox
-            }
-    in
     { clipboard = Nothing
     , compositionStart = []
     , compositionUpdate = ""
@@ -427,9 +401,6 @@ update msg e0 =
                     Mouse a b c ->
                         locateMouse a b c (f e)
 
-                    Page a b ->
-                        page a b (f e)
-
 
         LocatedChar _ (Err err) ->            
             ( e, Cmd.none )
@@ -546,19 +517,22 @@ update msg e0 =
         PlaceCursor3_CursorElement scroll (Ok data) ->
             let
                 f x =
-                    { x | cursorElement = data }
+                    { x |
+                        cursorElement = data 
+                      , locating = Idle
+                    }
             in
             case scroll of
                 ScrollIfNeeded ->
                     case scrollIfNeeded data e.editorElement e.viewport e.cursor e.editorID of
                         Nothing ->
-                            locateNext (f { e | locating = Idle })
+                            locateNext (f e)
 
                         Just scrollCmd ->                            
-                            ( f e, scrollCmd )
+                            ( e, scrollCmd )
 
                 NoScroll ->
-                    locateNext (f { e | locating = Idle })
+                    locateNext (f e)
 
 
         PlaceCursor3_CursorElement _ (Err err) ->
@@ -1582,7 +1556,9 @@ jumpHelp isRelevant direction (beg,end) e =
     let
         maxIdx = List.length e.content - 1
 
-        cursor = cursorScreenElem e
+        cursor =            
+            Maybe.withDefault nullScreenElement --locateChars guarantees that this is not used
+                <| IntDict.get e.cursor e.located
 
         better : ScreenElement -> ScreenElement -> Bool
         better a b =
@@ -1849,13 +1825,10 @@ keyDownHelp timeStamp str e =
 
 
         "End" ->
-            let
-                f a (x,y) = (a x, y)
-            in
             if e.ctrlDown then
-                f (detectFontStyle maxIdx)
-                    <| f (selectionMod e.cursor)
-                        <| placeCursor ScrollIfNeeded { e | cursor = maxIdx }
+                placeCursor ScrollIfNeeded 
+                    <| detectFontStyle maxIdx
+                        <| selectionMod e.cursor { e | cursor = maxIdx }
             else
                 if e.shiftDown then
                     locateChars e Nothing (LineBoundary Down)
@@ -1871,13 +1844,10 @@ keyDownHelp timeStamp str e =
 
 
         "Home" ->
-            let
-                f a (x,y) = (a x, y)
-            in
             if e.ctrlDown then
-                f (detectFontStyle 0)
-                    <| f (selectionMod e.cursor)
-                        <| placeCursor ScrollIfNeeded { e | cursor = 0  }
+                placeCursor ScrollIfNeeded
+                    <| detectFontStyle 0
+                        <| selectionMod e.cursor { e | cursor = 0 }
             else
                 if e.shiftDown then
                     locateChars e Nothing (LineBoundary Up)
@@ -1888,13 +1858,23 @@ keyDownHelp timeStamp str e =
             if e.cursor == maxIdx then
                 ( e, Cmd.none )
             else
-                locateChars e Nothing (Page Down)
+                let
+                    pageSize =
+                        Basics.round
+                            <| toFloat maxIdx * e.viewport.viewport.height / e.viewport.scene.height
+                in
+                locateChars { e | cursor = min maxIdx (e.cursor + pageSize) } Nothing (LineBoundary Down)
 
         "PageUp" ->
             if e.cursor == 0 then
                 ( e, Cmd.none )
             else
-                locateChars e Nothing (Page Up)
+                let
+                    pageSize =
+                        Basics.round
+                            <| toFloat maxIdx * e.viewport.viewport.height / e.viewport.scene.height
+                in
+                locateChars { e | cursor = max 0 (e.cursor - pageSize) } Nothing (LineBoundary Up)
 
         "Shift" ->
             ( { e | shiftDown = True }, Cmd.none )
@@ -1919,7 +1899,8 @@ lineBoundary direction (beg,end) e =
                 Up -> x.idx == 0
 
         cursor = 
-            cursorScreenElem e
+            Maybe.withDefault nullScreenElement --locateChars guarantees that this is not used
+                <| IntDict.get e.cursor e.located
 
         f : Int -> ScreenElement -> (Maybe ScreenElement, Maybe ScreenElement) -> (Maybe ScreenElement, Maybe ScreenElement)
         f _ a (candidate, winner) =
@@ -2127,12 +2108,6 @@ locateChars e maybeLimit func =
                                 in
                                 ( guess - 500, guess + 500 )
 
-                    Page Down _ ->
-                        ( limit, limit + 1000 )
-
-                    Page Up _ ->
-                        ( limit - 1000, limit )
-
             maxIdx = List.length e.content - 1
 
             (beg,end) =
@@ -2147,16 +2122,22 @@ locateChars e maybeLimit func =
                     Just id ->
                         locateCmd idx (e.editorID ++ String.fromInt id) :: xs
 
+            range =
+                if e.cursor < beg || e.cursor > end then
+                    e.cursor :: List.range beg end
+                else
+                    List.range beg end
+
             cmds : List (Cmd Msg)
             cmds =
-                List.foldr cmd [] (List.range beg end)
+                List.foldr cmd [] range
         in
         ( { e |
               locateBacklog = List.length cmds
             , located = IntDict.empty
             , locating = if List.length cmds == 0 then Idle else func (beg,end)
           }
-        , Cmd.batch (focusOnEditor e.state e.editorID :: cmds)
+        , Cmd.batch cmds
         )
 
 
@@ -2473,23 +2454,46 @@ nonAlphaNumAt idx content =
     not (alphaNumAt idx content)
 
 
+nullBox =
+    { x = 0
+    , y = 0
+    , height = 0
+    , width = 0
+    }
+
+
+nullElement =
+    { scene =
+        { width = 0
+        , height = 0
+        }
+    , viewport =  nullBox
+    , element = nullBox
+    }
+
+
+nullScreenElement =
+    { x = 0
+    , y = 0
+    , height = 0
+    , idx = -1
+    }
+
+
+nullViewport =
+    { scene =
+        { width = 0
+        , height = 0
+        }
+    , viewport =  nullBox
+    }
+
+
 onSameLine : ScreenElement -> ScreenElement -> Bool
 onSameLine a b =
     a.y == b.y ||
     a.y <= b.y && a.y + a.height >= b.y + b.height ||
     b.y <= a.y && b.y + b.height >= a.y + a.height    
-
-
-page : Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
-page direction (beg,end) e =
-    let
-        f : ScreenElement -> ScreenElement -> Bool
-        f cursor elem =
-            case direction of
-                Down -> elem.y >= cursor.y + e.editorElement.element.height
-                Up -> elem.y <= cursor.y - e.editorElement.element.height
-    in
-    jump Page f direction (beg,end) e
 
 
 paraClassAdd : String -> LineBreak -> LineBreak

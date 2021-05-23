@@ -27,6 +27,7 @@ type Msg =
     | PlaceCursor1_EditorViewport ScrollMode (Result Error Dom.Viewport)
     | PlaceCursor2_EditorElement ScrollMode (Result Error Dom.Element)
     | PlaceCursor3_CursorElement ScrollMode (Result Error Dom.Element)
+    | Scrolled
     | SwitchTo State
     | ToBrowserClipboard String
     | UndoAction

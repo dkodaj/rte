@@ -147,7 +147,12 @@ updateFrame msg model =
 
 
             Core rteMsg ->
-                apply (MiniRte.Core.update rteMsg) model
+                case rteMsg of
+                    MiniRte.CoreTypes.ToBrowserClipboard txt ->
+                        ( model, Task.perform model.tagger <| Task.succeed (ToBrowserClipboard txt) )
+
+                    _ ->
+                        apply (MiniRte.Core.update rteMsg) model
 
 
             Cut ->

@@ -409,10 +409,7 @@ update msg e0 =
                     }
             in
             if locateBacklog > 0 then
-                if e.locating /= Idle then
-                    ( f e, Cmd.none )
-                else
-                    ( e, Cmd.none )
+                ( f e, Cmd.none )
             else                
                 case e.locating of
                     Cursor ->
@@ -422,6 +419,7 @@ update msg e0 =
                         ( e, Cmd.none )
 
                     LineBoundary a b ->
+                        let _ = Debug.log "lineboundary!" (a,b) in
                         lineBoundary a b (f e)
 
                     LineJump a b ->
@@ -436,21 +434,6 @@ update msg e0 =
 
         LocatedChar _ (Err err) ->            
             ( e, Cmd.none )
-
-
-        MouseHit idx timeStamp ->
-            if timeStamp - e.lastMouseDown <= 500 && idx == e.cursor then
-                ( selectCurrentWord { e | drag = NoDrag }
-                , focusOnEditor e.state e.editorID
-                )
-            else
-                ( { e |
-                      cursor = idx
-                    , drag = DragFrom idx
-                    , lastMouseDown = timeStamp
-                  }
-                , focusOnEditor e.state e.editorID
-                )
 
 
         MouseDown (x,y) timeStamp ->
@@ -470,6 +453,23 @@ update msg e0 =
                         mouseDown (x,y) timeStamp e
             else
                 mouseDown (x,y) timeStamp e
+
+
+        MouseHit idx timeStamp ->
+            if timeStamp - e.lastMouseDown <= 500 && idx == e.cursor then                
+                ( selectCurrentWord { e | drag = NoDrag }
+                , focusOnEditor e.state e.editorID
+                )
+            else
+                placeCursor2 NoScroll
+                    ( { e |
+                          cursor = idx
+                        , drag = DragFrom idx
+                        , lastMouseDown = timeStamp
+                        , selection = Nothing
+                      }
+                    , focusOnEditor e.state e.editorID
+                    )
 
 
         MouseMove currentIdx timeStamp ->
@@ -567,7 +567,8 @@ update msg e0 =
 
 
         Scrolled ->            
-            locateNext { e | locating = Idle }
+            let _ = Debug.log "scrolled" (cursorScreenElem e) in
+            placeCursor NoScroll { e | locating = Idle }
 
 
         SwitchTo newState ->
@@ -1630,25 +1631,20 @@ jumpHelp isRelevant direction (beg,end) e =
         (_, Just winner) ->
             (Nothing, Just winner.idx)
 
-        (lastCandidate, Nothing) ->
+        (_, Nothing) ->
             case direction of
                 Down ->
-                    if Maybe.map .idx lastCandidate == Just maxIdx then
-                        ( Nothing, Just maxIdx )
+                    if end >= maxIdx then
+                        ( Nothing, Nothing )
                     else
-                        if end >= maxIdx then
-                            ( Nothing, Nothing )
-                        else
-                            ( Just (end-1, Down), Nothing )
+                        ( Just (end-1, Down), Nothing )
 
                 Up ->
-                    if Maybe.map .idx lastCandidate == Just 0 then
-                        ( Nothing, Just 0 )
+                    if beg <= 0 then
+                        ( Nothing, Nothing )
                     else
-                        if beg <= 0 then
-                            ( Nothing, Nothing )
-                        else
-                            ( Just (beg+1, Up), Nothing )
+                        ( Just (beg+1, Up), Nothing )
+
 
 
 keyDown : Float -> String -> Editor -> (Editor, Cmd Msg)
@@ -1855,10 +1851,13 @@ keyDownHelp timeStamp str e =
 
 
         "End" ->
+            let
+                f a (x,y) = (a x, y)
+            in
             if e.ctrlDown then
-                placeCursor ScrollIfNeeded
-                  <| detectFontStyle maxIdx
-                    <| selectionMod e.cursor { e | cursor = maxIdx }
+                f (detectFontStyle maxIdx)
+                    <| f (selectionMod e.cursor)
+                        <| placeCursor ScrollIfNeeded { e | cursor = maxIdx }
             else
                 if e.shiftDown then
                     locateChars e Nothing (LineBoundary Down)
@@ -1874,10 +1873,13 @@ keyDownHelp timeStamp str e =
 
 
         "Home" ->
+            let
+                f a (x,y) = (a x, y)
+            in
             if e.ctrlDown then
-                placeCursor ScrollIfNeeded
-                  <| detectFontStyle 0
-                    <| selectionMod e.cursor { e | cursor = 0  }
+                f (detectFontStyle 0)
+                    <| f (selectionMod e.cursor)
+                        <| placeCursor ScrollIfNeeded { e | cursor = 0  }
             else
                 if e.shiftDown then
                     locateChars e Nothing (LineBoundary Up)
@@ -1909,7 +1911,8 @@ keyDownHelp timeStamp str e =
 lineBoundary : Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
 lineBoundary direction (beg,end) e =
     let
-        maxIdx = List.length e.content - 1
+        maxIdx =
+            List.length e.content - 1
 
         last : ScreenElement -> Bool
         last x =
@@ -1918,11 +1921,7 @@ lineBoundary direction (beg,end) e =
                 Up -> x.idx == 0
 
         cursor = 
-            { idx = e.cursor
-            , x = e.cursorElement.element.x
-            , y = e.cursorElement.element.y
-            , height = e.cursorElement.element.height
-            }
+            Debug.log "cursor" <| cursorScreenElem e
 
         f : Int -> ScreenElement -> (Maybe ScreenElement, Maybe ScreenElement) -> (Maybe ScreenElement, Maybe ScreenElement)
         f _ a (candidate, winner) =
@@ -1931,7 +1930,7 @@ lineBoundary direction (beg,end) e =
                     (Nothing, winner)
 
                 Nothing ->                            
-                    if not (onSameLine a cursor) then
+                    if not (Debug.log "onsameline" <| onSameLine a cursor) then
                         (Nothing, candidate)
                     else
                         if last a then
@@ -1944,7 +1943,7 @@ lineBoundary direction (beg,end) e =
                 Down -> IntDict.foldl
                 Up -> IntDict.foldr                
     in
-    case fold f (Nothing,Nothing) e.located of
+    case Debug.log "lineBoundary" <| fold f (Nothing,Nothing) e.located of
         (_, Just a) ->
             placeCursor ScrollIfNeeded
               <| detectFontStyle a.idx
@@ -2086,7 +2085,10 @@ locateCmd idx id =
 
 locateChars : Editor -> Maybe (Int, Vertical) -> ((Int,Int) -> Locating ) -> ( Editor, Cmd Msg )
 locateChars e maybeLimit func =
-    if e.locating /= Idle && maybeLimit == Nothing then
+    let
+        _ = Debug.log "cursor in locateChars" (cursorScreenElem e)
+    in
+    if (Debug.log "locatin" e.locating) /= Idle && maybeLimit == Nothing then
         ( { e | locateNext = e.locateNext ++ [func] }, Cmd.none )
     else
         let
@@ -2095,7 +2097,7 @@ locateChars e maybeLimit func =
                     Nothing -> e.cursor
                     Just (x,_) -> x
 
-            (a,b) =
+            (a,b) =                
                 case func (0,0) of
                     Cursor ->
                         (0,-1)
@@ -2104,24 +2106,24 @@ locateChars e maybeLimit func =
                         (0,-1)
 
                     LineBoundary Down _ ->
-                        ( limit + 1, limit + 100 )
+                        ( limit, limit + 100 )
 
                     LineBoundary Up _ ->
-                        ( limit - 100, limit - 1 )
+                        ( limit - 100, limit )
 
                     LineJump Down _ ->
-                        ( limit + 1, limit + 150 )
+                        ( limit, limit + 150 )
 
                     LineJump Up _ ->
-                        ( limit - 150, limit - 1 )
+                        ( limit - 150, limit )
                     
                     Mouse select mousePos _ ->
                         case maybeLimit of
                             Just (x, Down) ->
-                                ( x + 1, x + 500 )
+                                ( x, x + 500 )
 
                             Just (x, Up) ->
-                                ( x - 500, x - 1 )
+                                ( x - 500, x )
 
                             Nothing ->
                                 let
@@ -2131,10 +2133,10 @@ locateChars e maybeLimit func =
                                 ( guess - 500, guess + 500 )
 
                     Page Down _ ->
-                        ( limit + 1, limit + 1000 )
+                        ( limit, limit + 1000 )
 
                     Page Up _ ->
-                        ( limit - 1000, limit - 1 )
+                        ( limit - 1000, limit )
 
             maxIdx = List.length e.content - 1
 
@@ -2552,25 +2554,19 @@ parasInSelection e =
 
 placeCursor : ScrollMode -> Editor -> ( Editor, Cmd Msg )
 placeCursor scroll e =
-    if e.locating == Idle then
-        ( { e | locating = Cursor }
-        , Cmd.batch
-            [ placeCursorCmd scroll e.editorID
-            , focusOnEditor e.state e.editorID
-            ]
-        )
-    else
-        ( e, Cmd.none )
+    ( { e | locateBacklog = 0, locating = Cursor }
+    , Cmd.batch
+        [ placeCursorCmd scroll e.editorID
+        , focusOnEditor e.state e.editorID
+        ]
+    )
 
 
 placeCursor2 : ScrollMode -> ( Editor, Cmd Msg ) -> ( Editor, Cmd Msg )
 placeCursor2 scroll (e,cmd) =
-    if e.locating == Idle then
-        ( { e | locating = Cursor }
-        , Cmd.batch [cmd, placeCursorCmd scroll e.editorID]
-        )
-    else
-        ( e, Cmd.none )
+    ( { e | locateBacklog = 0, locating = Cursor }
+    , Cmd.batch [cmd, placeCursorCmd scroll e.editorID]
+    )
 
 
 placeCursorCmd : ScrollMode -> String -> Cmd Msg
@@ -2885,7 +2881,7 @@ showChar editorID eState selection selectionStyle cursor typing idx fontSizeUnit
                         ( Decode.field "timeStamp" Decode.float ) 
                     )
 
-                , Events.on "mousemove"
+                , Events.on "mouseenter"
                     ( Decode.map
                         ( \x -> MouseMove idx x )
                         ( Decode.field "timeStamp" Decode.float ) 

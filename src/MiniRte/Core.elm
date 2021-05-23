@@ -54,7 +54,6 @@ import IntDict exposing (IntDict)
 import Json.Decode as Decode exposing (Decoder, Value)
 import Json.Encode as Encode
 import Json.Decode.Pipeline as Pipeline
-import List.Extra
 import MiniRte.CoreTypes exposing (..)
 import MiniRte.Types exposing  (Content, Element(..), Character, EmbeddedHtml, LineBreak,
       Child(..), FontStyle, StyleTags, TextAlignType(..))
@@ -448,6 +447,10 @@ update msg e0 =
 
         LocatedChar _ (Err err) ->            
             ( e, Cmd.none )
+
+
+        MouseHit idx ->
+            placeCursor NoScroll { e | cursor = idx }
 
 
         MouseDown (x,y) timeStamp ->
@@ -1960,18 +1963,10 @@ lineBoundary direction (beg,end) e =
         (Just _, _) ->
             case direction of
                 Down ->
-                    locateMoreChars
-                        e
-                        (e.cursor, end + jumpSize)
-                        (LineBoundary Down)
-                        [(end + 1, end + jumpSize)]
+                    locateChars e (Just (end-1, Down)) (LineBoundary Down)
 
                 Up ->
-                    locateMoreChars
-                        e
-                        (beg - jumpSize, e.cursor)
-                        (LineBoundary Up)
-                        [(beg - jumpSize, beg - 1)]
+                    locateChars e (Just (beg+1, Up)) (LineBoundary Up)
 
         (Nothing, Nothing) ->
             ( { e |
@@ -2141,10 +2136,10 @@ locateChars e maybeLimit func =
                                 ( guess - 500, guess + 500 )
 
                     Page Down _ ->
-                        ( limit + 1, limit + 2500 )
+                        ( limit + 1, limit + 1000 )
 
                     Page Up _ ->
-                        ( limit - 2500, limit - 1 )
+                        ( limit - 1000, limit - 1 )
 
             maxIdx = List.length e.content - 1
 
@@ -2210,8 +2205,7 @@ locateMoreChars e (a,b) func newRegions =
         toList (x,y) = List.range x y
 
         idxs =
-            List.Extra.unique
-                <| List.concat (List.map toList (List.map normalize newRegions))
+            List.concat (List.map toList (List.map normalize newRegions))
 
         cmds : List (Cmd Msg)
         cmds =
@@ -2314,23 +2308,30 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                 Just pos ->
                     getBounds pos
 
+        fail x =
+            ( { x |
+                  locateBacklog = 0
+                , located = IntDict.empty
+                , locating = Idle
+              }
+            , Cmd.none 
+            )
+
         continue x =
             if beg <= 0 && end >= maxIdx then                
-                ( { x |
-                      locateBacklog = 0
-                    , located = IntDict.empty
-                    , locating = Idle
-                  }
-                , Cmd.none 
-                )
-            else                
-                locateMoreChars
-                    x
-                    (beg - jumpSize, end + jumpSize)
-                    ( Mouse s (mouseX,mouseY) )
-                    [ (beg - jumpSize, beg - 1) 
-                    , (end + 1, end + jumpSize)
-                    ]
+                fail x
+            else      
+                case (IntDict.get beg e.located) of
+                    Nothing -> fail x
+                    
+                    Just begElem ->
+                        locateMoreChars
+                            x
+                            (beg - jumpSize, end + jumpSize)
+                            ( Mouse s (mouseX,mouseY) )
+                            [ (beg - jumpSize, beg - 1) 
+                            , (end + 1, end + jumpSize)
+                            ]
     in
     case targetLine of
         Nothing ->            
@@ -2555,7 +2556,10 @@ placeCursor : ScrollMode -> Editor -> ( Editor, Cmd Msg )
 placeCursor scroll e =
     if e.locating == Idle then
         ( { e | locating = Cursor }
-        , placeCursorCmd scroll e.editorID
+        , Cmd.batch
+            [ placeCursorCmd scroll e.editorID
+            , focusOnEditor e.state e.editorID
+            ]
         )
     else
         ( e, Cmd.none )
@@ -2874,10 +2878,14 @@ showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch =
                         []
 
                 Nothing -> []
+
+        mouseListener =
+            Events.stopPropagationOn "mousedown" ( Decode.succeed (MouseHit idx,True) )
     in
     ( id        
     , Html.span
         ( Attr.id id ::   
+          mouseListener ::
           attributes (Char ch) ++
           fontFamilyAttr ++
           pos ++

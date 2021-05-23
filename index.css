@@ -9,7 +9,6 @@ body {
 .blogpost {
     padding:30px;
     width:var(--rteWidth);    
-    word-break:break-word;
     font-family:'Playfair Display',serif;
     font-size:20px;
 }
@@ -96,15 +95,14 @@ body {
 }
 
 .rte-wrap {
-    border: 2px solid gray;
     padding:30px;
     border-radius:15px;
-    height:60vh;
     width:var(--rteWidth);    
-    word-break:break-word;
     font-family:'Playfair Display',serif;
     font-size:20px;
     overflow-y:scroll;
+    border: 2px solid gray;
+    height:60vh;
 }
 
 .select {

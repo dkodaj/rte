@@ -418,8 +418,7 @@ update msg e0 =
                     Idle ->
                         ( e, Cmd.none )
 
-                    LineBoundary a b ->
-                        let _ = Debug.log "lineboundary!" (a,b) in
+                    LineBoundary a b ->                        
                         lineBoundary a b (f e)
 
                     LineJump a b ->
@@ -566,8 +565,7 @@ update msg e0 =
             ( { e | locating = Idle }, Cmd.none )
 
 
-        Scrolled ->            
-            let _ = Debug.log "scrolled" (cursorScreenElem e) in
+        Scrolled ->
             placeCursor NoScroll { e | locating = Idle }
 
 
@@ -1921,7 +1919,7 @@ lineBoundary direction (beg,end) e =
                 Up -> x.idx == 0
 
         cursor = 
-            Debug.log "cursor" <| cursorScreenElem e
+            cursorScreenElem e
 
         f : Int -> ScreenElement -> (Maybe ScreenElement, Maybe ScreenElement) -> (Maybe ScreenElement, Maybe ScreenElement)
         f _ a (candidate, winner) =
@@ -1930,7 +1928,7 @@ lineBoundary direction (beg,end) e =
                     (Nothing, winner)
 
                 Nothing ->                            
-                    if not (Debug.log "onsameline" <| onSameLine a cursor) then
+                    if not (onSameLine a cursor) then
                         (Nothing, candidate)
                     else
                         if last a then
@@ -1943,7 +1941,7 @@ lineBoundary direction (beg,end) e =
                 Down -> IntDict.foldl
                 Up -> IntDict.foldr                
     in
-    case Debug.log "lineBoundary" <| fold f (Nothing,Nothing) e.located of
+    case fold f (Nothing,Nothing) e.located of
         (_, Just a) ->
             placeCursor ScrollIfNeeded
               <| detectFontStyle a.idx
@@ -2085,10 +2083,7 @@ locateCmd idx id =
 
 locateChars : Editor -> Maybe (Int, Vertical) -> ((Int,Int) -> Locating ) -> ( Editor, Cmd Msg )
 locateChars e maybeLimit func =
-    let
-        _ = Debug.log "cursor in locateChars" (cursorScreenElem e)
-    in
-    if (Debug.log "locatin" e.locating) /= Idle && maybeLimit == Nothing then
+    if e.locating /= Idle && maybeLimit == Nothing then
         ( { e | locateNext = e.locateNext ++ [func] }, Cmd.none )
     else
         let

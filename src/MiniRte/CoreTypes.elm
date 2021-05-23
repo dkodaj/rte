@@ -19,9 +19,9 @@ type Msg =
     | KeyDownTimeStamp Float
     | KeyUp String    
     | LocatedChar Int (Result Error Dom.Element)
-    | MouseHit Int
+    | MouseHit Int Float
     | MouseDown (Float,Float) Float
-    | MouseMove String Float
+    | MouseMove Int Float
     | MouseUp
     | NoOp
     | Paste String

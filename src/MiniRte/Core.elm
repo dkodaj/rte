@@ -275,27 +275,16 @@ initWithText content id =
 
 subscriptions : Editor -> Sub Msg
 subscriptions e =
-    let
-        default =
-            [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
-            , Browser.Events.onKeyUp (decodeKey KeyUp)
-            , Browser.Events.onMouseUp (Decode.succeed MouseUp) 
-            ]
-
-        mouseMove =
-            Browser.Events.onMouseMove (decodeTargetIdAndTime MouseMove) 
-    in
     case e.state of
         Display ->
             Sub.none
 
         Edit ->
-            case e.drag of
-                NoDrag ->
-                    Sub.batch default
-
-                _ ->
-                    Sub.batch ( mouseMove :: default )
+            Sub.batch
+                [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
+                , Browser.Events.onKeyUp (decodeKey KeyUp)
+                , Browser.Events.onMouseUp (Decode.succeed MouseUp) 
+                ]
 
         Freeze ->
             Sub.none
@@ -449,38 +438,46 @@ update msg e0 =
             ( e, Cmd.none )
 
 
-        MouseHit idx ->
-            placeCursor NoScroll { e | cursor = idx }
+        MouseHit idx timeStamp ->
+            if timeStamp - e.lastMouseDown <= 500 && idx == e.cursor then
+                ( selectCurrentWord { e | drag = NoDrag }
+                , focusOnEditor e.state e.editorID
+                )
+            else
+                ( { e |
+                      cursor = idx
+                    , drag = DragFrom idx
+                    , lastMouseDown = timeStamp
+                  }
+                , focusOnEditor e.state e.editorID
+                )
 
 
         MouseDown (x,y) timeStamp ->
-            if e.state == Freeze then
+            if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
+                case e.locating of
+                    Idle ->
+                        ( selectCurrentWord e
+                        , focusOnEditor e.state e.editorID
+                        )
+
+                    Mouse a b c ->
+                        ( { e | locating = Mouse SelectWord b c }
+                        , focusOnEditor e.state e.editorID
+                        )
+
+                    _ ->
+                        mouseDown (x,y) timeStamp e
+            else
+                mouseDown (x,y) timeStamp e
+
+
+        MouseMove currentIdx timeStamp ->
+            if timeStamp - e.lastMouseDown < 500 then --doublecliced
                 ( e, Cmd.none )
             else
-                if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
-                    case e.locating of
-                        Idle ->
-                            ( selectCurrentWord e
-                            , focusOnEditor e.state e.editorID
-                            )
-
-                        Mouse a b c ->
-                            ( { e | locating = Mouse SelectWord b c }
-                            , focusOnEditor e.state e.editorID
-                            )
-
-                        _ ->
-                            mouseDown (x,y) timeStamp e
-                else
-                    mouseDown (x,y) timeStamp e
-
-
-        MouseMove targetId timeStamp ->
-            if timeStamp - e.lastMouseDown < 200 then
-                ( e, Cmd.none )
-            else
-                case (e.drag, getIdx targetId e.content) of
-                    (DragFrom startIdx, Just currentIdx) ->
+                case e.drag of
+                    DragFrom startIdx ->
                         let
                             ((beg,end), newCursor) =
                                 if startIdx < currentIdx then
@@ -699,6 +696,7 @@ view tagger userDefinedStyles e =
             , highlighter = e.highlighter
             , indentUnit = e.indentUnit
             , selectionStyle = e.selectionStyle
+            , state = e.state
             , userDefinedStyles = userDefinedStyles
             , tagger = tagger
             }
@@ -735,6 +733,7 @@ type alias ViewTextareaParams msg =
     , highlighter : Maybe (Content -> Content)
     , indentUnit : Maybe (Float,String)
     , selectionStyle : List (Attribute Msg)
+    , state : State
     , userDefinedStyles : List (Attribute msg)
     , tagger : (Msg -> msg)
     }
@@ -1652,10 +1651,6 @@ jumpHelp isRelevant direction (beg,end) e =
                             ( Just (beg+1, Up), Nothing )
 
 
-jumpSize : Int
-jumpSize = 500
-
-
 keyDown : Float -> String -> Editor -> (Editor, Cmd Msg)
 keyDown timeStamp str e =
     let
@@ -2325,6 +2320,9 @@ locateMouse s (mouseX,mouseY) (beg,end) e =
                     Nothing -> fail x
                     
                     Just begElem ->
+                        let
+                            jumpSize = 500
+                        in
                         locateMoreChars
                             x
                             (beg - jumpSize, end + jumpSize)
@@ -2820,8 +2818,8 @@ setSelection (a,b) e =
       }
 
 
-showChar : String -> Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
-showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch =
+showChar : String -> State -> Maybe (Int,Int) -> List (Attribute Msg) -> Int -> Bool -> Int -> Maybe String -> Character -> KeyedNode Msg
+showChar editorID eState selection selectionStyle cursor typing idx fontSizeUnit ch =
     let
         id =
             editorID ++ String.fromInt ch.id
@@ -2879,15 +2877,29 @@ showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch =
 
                 Nothing -> []
 
-        mouseListener =
-            Events.stopPropagationOn "mousedown" ( Decode.succeed (MouseHit idx,True) )
+        mouseListeners =
+            if eState == Edit then
+                [ Events.stopPropagationOn "mousedown"
+                    ( Decode.map
+                        ( \x -> (MouseHit idx x,True) )
+                        ( Decode.field "timeStamp" Decode.float ) 
+                    )
+
+                , Events.on "mousemove"
+                    ( Decode.map
+                        ( \x -> MouseMove idx x )
+                        ( Decode.field "timeStamp" Decode.float ) 
+                    )
+                ]
+            else
+                []
     in
     ( id        
     , Html.span
         ( Attr.id id ::   
-          mouseListener ::
           attributes (Char ch) ++
           fontFamilyAttr ++
+          mouseListeners ++
           pos ++
           select ++
           size
@@ -2923,7 +2935,7 @@ showContent params c =
 
         paragraphs =
             List.map
-                (showPara params.editorID params.tagger c.cursor params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
+                (showPara params.editorID params.state params.tagger c.cursor params.indentUnit c.selection params.selectionStyle c.typing params.fontSizeUnit)
                 (breakIntoParas (highlight c.content))
     in
     Keyed.node "div"
@@ -2951,7 +2963,7 @@ showContentInactive editorID userDefinedStyles fontSizeUnit highlighter indentUn
 
         paragraphs x =
                 List.map
-                    (Tuple.second << showPara editorID tagger -1 indentUnit Nothing [] False fontSizeUnit)
+                    (Tuple.second << showPara editorID Display tagger -1 indentUnit Nothing [] False fontSizeUnit)
                     (breakIntoParas (highlight x))
 
         render x =
@@ -2996,12 +3008,12 @@ showEmbedded html =
             Html.node x attrs (textChild ++ List.map f html.children)
 
 
-showPara : String -> (Msg -> msg) -> Int -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
-showPara editorID tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
+showPara : String -> State -> (Msg -> msg) -> Int -> Maybe (Float, String) -> Maybe (Int,Int) -> List (Attribute Msg) -> Bool -> Maybe String -> Paragraph -> KeyedNode msg
+showPara editorID eState tagger cursor maybeIndentUnit selection selectionStyle typing fontSizeUnit p =
     let        
         print : Int -> Character -> KeyedNode Msg
         print idx ch =
-            showChar editorID selection selectionStyle cursor typing idx fontSizeUnit ch
+            showChar editorID eState selection selectionStyle cursor typing idx fontSizeUnit ch
             
         f : EmbeddedHtml -> KeyedNode Msg
         f html =

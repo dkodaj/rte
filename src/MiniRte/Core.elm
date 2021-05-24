@@ -339,7 +339,7 @@ update msg e0 =
             copy e
 
 
-        Cut ->
+        Cut ->            
             cut e
 
 
@@ -1147,7 +1147,7 @@ cursorHtml typing =
 cut : Editor -> ( Editor, Cmd Msg )
 cut e =
     let
-        ( copied, copyCmd ) = copy e
+        ( copied, copyCmd ) = copy e        
     in
     case e.selection of
         Nothing ->
@@ -2584,6 +2584,7 @@ placeCursor2 scroll (e,cmd) =
     , Cmd.batch
         [ placeCursorCmd scroll e.editorID
         , focusOnEditor e.state e.editorID
+        , cmd
         ]
     )
 

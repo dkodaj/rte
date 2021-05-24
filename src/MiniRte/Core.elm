@@ -397,7 +397,7 @@ update msg e0 =
                         lineBoundary Nothing a b (f e)
 
                     LineJump a b ->
-                        lineJump a b (f e)
+                        jump a b (f e)
 
                     Mouse a b c ->
                         locateMouse a b c (f e)
@@ -410,7 +410,7 @@ update msg e0 =
             ( e, Cmd.none )
 
 
-        MouseDown (x,y) timeStamp ->
+        MouseDown (x,y) timeStamp ->            
             if timeStamp - e.lastMouseDown <= 500 then --doubleclicked                
                 case e.locating of
                     Idle ->
@@ -1515,10 +1515,17 @@ italicStyle =
     ("font-style", "italic")
 
 
-jump : (Vertical -> (Int,Int) -> Locating) -> (ScreenElement -> ScreenElement -> Bool) -> Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
-jump f isRelevant direction (beg,end) e =
-    let
-        maxIdx = List.length e.content - 1
+jump : Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
+jump direction (beg,end) e =
+    let        
+        isRelevant : ScreenElement -> ScreenElement -> Bool
+        isRelevant cursor elem =
+            case direction of
+                Down -> elem.y > cursor.y && not (onSameLine elem cursor)
+                Up -> elem.y < cursor.y && not (onSameLine elem cursor)
+
+        maxIdx =
+            List.length e.content - 1
 
         g : Int -> Editor -> ( Editor, Cmd Msg )
         g idx x =
@@ -1552,7 +1559,7 @@ jump f isRelevant direction (beg,end) e =
             g idx e            
 
         (Just x, Nothing) ->
-            locateChars e (Just x) (f direction)
+            locateChars e (Just x) (LineJump direction)
 
 
 jumpHelp : (ScreenElement -> ScreenElement -> Bool) -> Vertical -> (Int,Int) -> Editor -> (Maybe (Int,Vertical), Maybe Int)
@@ -1592,13 +1599,16 @@ jumpHelp isRelevant direction (beg,end) e =
                                     (Just new, Nothing)
 
                             Just old ->
-                                if better old new then                                    
+                                if not (onSameLine old new) then
                                     (Nothing, Just old)
                                 else
-                                    if last new then                                        
-                                        (Nothing, Just new)
+                                    if better old new then                                    
+                                        (Nothing, Just old)
                                     else
-                                        (Just new, Nothing)
+                                        if last new then                                        
+                                            (Nothing, Just new)
+                                        else
+                                            (Just new, Nothing)
 
         fold =
             case direction of
@@ -1965,18 +1975,6 @@ lineBreakAt idx content =
 
         Nothing ->
             Nothing
-
-
-lineJump : Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
-lineJump direction (beg,end) editor =
-    let
-        f : ScreenElement -> ScreenElement -> Bool
-        f cursor elem =
-            case direction of
-                Down -> elem.y > cursor.y && not (onSameLine elem cursor)
-                Up -> elem.y < cursor.y && not (onSameLine elem cursor)
-    in
-    jump LineJump f direction (beg,end) editor
 
 
 link : String -> Editor -> Editor
@@ -2929,8 +2927,11 @@ showContent : ViewTextareaParams msg -> ViewTextareaContent -> Html msg
 showContent params c =
     let
         listeners =
-            [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
-            ]
+            if params.state == Edit then
+                [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y))
+                ]
+            else
+                []
 
         attrs =
             ( params.userDefinedStyles ++ 

@@ -96,14 +96,14 @@ body {
 
 .rte-wrap {
     padding:30px;
-    border-radius:15px;
     width:var(--rteWidth);    
     font-family:'Playfair Display',serif;
     font-size:20px;
     overflow-y:scroll;
-    border: 2px solid gray;
     height:60vh;
     /*
+    border-radius:15px;
+    border: 2px solid gray;
     */
 }
 

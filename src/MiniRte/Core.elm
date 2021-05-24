@@ -2565,14 +2565,20 @@ parasInSelection e =
 placeCursor : ScrollMode -> Editor -> ( Editor, Cmd Msg )
 placeCursor scroll e =
     ( { e | locateBacklog = 0, locating = Cursor }
-    , placeCursorCmd scroll e.editorID
+    , Cmd.batch
+        [ placeCursorCmd scroll e.editorID
+        , focusOnEditor e.state e.editorID
+        ]
     )
 
 
 placeCursor2 : ScrollMode -> ( Editor, Cmd Msg ) -> ( Editor, Cmd Msg )
 placeCursor2 scroll (e,cmd) =
     ( { e | locateBacklog = 0, locating = Cursor }
-    , placeCursorCmd scroll e.editorID
+    , Cmd.batch
+        [ placeCursorCmd scroll e.editorID
+        , focusOnEditor e.state e.editorID
+        ]
     )
 
 

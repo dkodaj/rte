@@ -2116,8 +2116,16 @@ locateChars e maybeLimit func =
                                 ( guess - 500, guess + 500 )
 
                     Page guess _ _ ->
-                        ( guess - 100, guess + 100 )
+                        case maybeLimit of
+                            Nothing ->
+                                ( guess - 100, guess + 100 )
 
+                            Just (x, Up) ->
+                                ( x - 100, guess )
+
+                            Just (x, Down) ->
+                                ( guess, x + 100 )
+            
             maxIdx =
                 List.length e.content - 1
 
@@ -2133,7 +2141,7 @@ locateChars e maybeLimit func =
                     Just id ->
                         locateCmd idx (e.editorID ++ String.fromInt id) :: xs
 
-            range =
+            range =                
                 if e.cursor < beg || e.cursor > end then
                     e.cursor :: List.range beg end
                 else

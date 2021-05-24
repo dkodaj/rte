@@ -121,6 +121,7 @@ type Locating =
     | LineBoundary Vertical (Int,Int)
     | LineJump Vertical (Int,Int)
     | Mouse Select (Float,Float) (Int,Int)
+    | Page Int Vertical (Int,Int)
 
 
 type alias MouseLocator =
@@ -393,13 +394,16 @@ update msg e0 =
                         ( e, Cmd.none )
 
                     LineBoundary a b ->                        
-                        lineBoundary a b (f e)
+                        lineBoundary Nothing a b (f e)
 
                     LineJump a b ->
                         lineJump a b (f e)
 
                     Mouse a b c ->
                         locateMouse a b c (f e)
+
+                    Page a _ c ->
+                        lineBoundary (Just a) Up c (f e)
 
 
         LocatedChar _ (Err err) ->            
@@ -1863,7 +1867,7 @@ keyDownHelp timeStamp str e =
                         Basics.round
                             <| toFloat maxIdx * e.viewport.viewport.height / e.viewport.scene.height
                 in
-                locateChars { e | cursor = min maxIdx (e.cursor + pageSize) } Nothing (LineBoundary Down)
+                locateChars e Nothing (Page (min maxIdx (e.cursor + pageSize)) Down)
 
         "PageUp" ->
             if e.cursor == 0 then
@@ -1874,7 +1878,7 @@ keyDownHelp timeStamp str e =
                         Basics.round
                             <| toFloat maxIdx * e.viewport.viewport.height / e.viewport.scene.height
                 in
-                locateChars { e | cursor = max 0 (e.cursor - pageSize) } Nothing (LineBoundary Up)
+                locateChars e Nothing (Page (max 0 (e.cursor - pageSize)) Up)
 
         "Shift" ->
             ( { e | shiftDown = True }, Cmd.none )
@@ -1886,8 +1890,8 @@ keyDownHelp timeStamp str e =
             ( e, Cmd.none )
 
 
-lineBoundary : Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
-lineBoundary direction (beg,end) e =
+lineBoundary : Maybe Int -> Vertical -> (Int,Int) -> Editor -> ( Editor, Cmd Msg )
+lineBoundary maybeIdx direction (beg,end) e =
     let
         maxIdx =
             List.length e.content - 1
@@ -1898,9 +1902,12 @@ lineBoundary direction (beg,end) e =
                 Down -> x.idx == maxIdx
                 Up -> x.idx == 0
 
+        cursorIdx =
+            Maybe.withDefault e.cursor maybeIdx
+
         cursor = 
             Maybe.withDefault nullScreenElement --locateChars guarantees that this is not used
-                <| IntDict.get e.cursor e.located
+                <| IntDict.get cursorIdx e.located
 
         f : Int -> ScreenElement -> (Maybe ScreenElement, Maybe ScreenElement) -> (Maybe ScreenElement, Maybe ScreenElement)
         f _ a (candidate, winner) =
@@ -2076,10 +2083,10 @@ locateChars e maybeLimit func =
             (a,b) =                
                 case func (0,0) of
                     Cursor ->
-                        (0,-1)
+                        (0,-1) --should never happen
 
                     Idle ->
-                        (0,-1)
+                        (0,-1) --should never happen
 
                     LineBoundary Down _ ->
                         ( limit, limit + 100 )
@@ -2108,7 +2115,11 @@ locateChars e maybeLimit func =
                                 in
                                 ( guess - 500, guess + 500 )
 
-            maxIdx = List.length e.content - 1
+                    Page guess _ _ ->
+                        ( guess - 100, guess + 100 )
+
+            maxIdx =
+                List.length e.content - 1
 
             (beg,end) =
                 (max 0 a, min maxIdx b)
@@ -2554,17 +2565,14 @@ parasInSelection e =
 placeCursor : ScrollMode -> Editor -> ( Editor, Cmd Msg )
 placeCursor scroll e =
     ( { e | locateBacklog = 0, locating = Cursor }
-    , Cmd.batch
-        [ placeCursorCmd scroll e.editorID
-        , focusOnEditor e.state e.editorID
-        ]
+    , placeCursorCmd scroll e.editorID
     )
 
 
 placeCursor2 : ScrollMode -> ( Editor, Cmd Msg ) -> ( Editor, Cmd Msg )
 placeCursor2 scroll (e,cmd) =
     ( { e | locateBacklog = 0, locating = Cursor }
-    , Cmd.batch [cmd, placeCursorCmd scroll e.editorID]
+    , placeCursorCmd scroll e.editorID
     )
 
 

@@ -14,6 +14,7 @@ module MiniRte.Core exposing (
     , fontFamily
     , fontSize
     , init
+    , init1
     , initCmd
     , initWith
     , initWithContent
@@ -1668,12 +1669,6 @@ keyDownHelp timeStamp str e =
             typed str e (Just timeStamp) False
         else
             case str of
-                {-"0" ->
-                    typed "–" e (Just timeStamp) False  -- N dash                            
-
-                "1" ->
-                    typed "—" e (Just timeStamp) False -- M dash-}
-
                 "a" ->
                     ( { e |
                          selection = Just (0, maxIdx)
@@ -2457,13 +2452,19 @@ nextBreakFrom begIdx content =
 
 
 nextWordBoundary : Editor -> Int
-nextWordBoundary e =    
+nextWordBoundary e =
+    let
+        f x =
+            Maybe.withDefault (List.length e.content - 1)
+                <| next nonAlphaNumAt x.cursor x.content
+
+        g x =
+            { x | cursor = f x }
+    in
     if alphaNumAt e.cursor e.content then
-        Maybe.withDefault (List.length e.content - 1)
-            <| next nonAlphaNumAt e.cursor e.content
+        f e        
     else
-        Maybe.withDefault (List.length e.content - 1)
-            <| next alphaNumAt e.cursor e.content
+        f (g (g e))
 
 
 nonAlphaNumAt : Int -> Content -> Bool
@@ -2620,14 +2621,24 @@ previousLineBreak idx content =
 
 previousWordBoundary : Editor -> Int
 previousWordBoundary e =
+    let
+        f x =
+            Maybe.withDefault 0
+                <| Maybe.map (\a -> a + 1)
+                    <| previous nonAlphaNumAt x.cursor x.content
+
+        g x =
+            Maybe.withDefault 0
+                <| Maybe.map (\a -> a + 1)
+                    <| previous alphaNumAt x.cursor x.content            
+
+        h x =
+            { x | cursor = g x }
+    in
     if alphaNumAt (e.cursor-1) e.content then
-        Maybe.withDefault 0
-            <| Maybe.map (\x -> x + 1)
-                <| previous nonAlphaNumAt e.cursor e.content
+        f e
     else
-        Maybe.withDefault 0
-            <| Maybe.map (\x -> x + 1)
-                <| previous alphaNumAt e.cursor e.content
+        f (h e)
 
 
 replaceLink : String -> Editor -> Editor

@@ -2464,7 +2464,7 @@ nextWordBoundary e =
     if alphaNumAt e.cursor e.content then
         f e        
     else
-        f (g (g e))
+        f (g e)
 
 
 nonAlphaNumAt : Int -> Content -> Bool
@@ -2655,7 +2655,15 @@ replaceLink href editor =
 
 replaceText : String -> Editor -> Editor
 replaceText txt editor =
-    loadTextHelp txt editor
+    let
+        addCounter x =
+            { x | idCounter = List.length x.content }
+    in    
+    addCounter
+        { editor |        
+            content = addIds (textToContent txt)
+          , state = Edit
+        }
 
 
 restore : Undo -> Editor -> Editor

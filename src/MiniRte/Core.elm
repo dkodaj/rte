@@ -491,16 +491,19 @@ update msg e0 =
             ( e, Cmd.none )
 
 
-        Paste str ->           
-            case e.clipboard of
-                Nothing ->
-                    typed str e Nothing True
-
-                Just internalClipboard ->
-                    if toText internalClipboard /= str then
+        Paste str ->
+            if e.state == Edit then
+                case e.clipboard of
+                    Nothing ->
                         typed str e Nothing True
-                    else
-                        addContent internalClipboard e   
+
+                    Just internalClipboard ->
+                        if toText internalClipboard /= str then
+                            typed str e Nothing True
+                        else
+                            addContent internalClipboard e
+            else
+                ( e, Cmd.none )
 
 
         PlaceCursor1_EditorViewport scroll (Ok data) ->
@@ -583,11 +586,11 @@ updateUndo msg e =
                     contentMod
                 else
                     case str of
-                        {-"0" ->
+                        "0" ->
                             contentMod
 
                         "1" ->
-                            contentMod-}
+                            contentMod
 
                         "x" ->
                             if e.selection /= Nothing then
@@ -928,11 +931,11 @@ contentChanged msg e =
                     True
                 else
                     case str of
-                        {-"0" ->
+                        "0" ->
                             True
 
                         "1" ->
-                            True-}
+                            True
 
                         "x" ->
                             True
@@ -1257,32 +1260,6 @@ defaultSelectionStyle =
         , color (hsl 0 0 1)
         ]
     ]
-
-
-dehighlight : Element -> Element
-dehighlight elem =
-    case elem of
-        Break br ->
-            Break
-                { br |
-                    highlightClasses = []
-                  , highlightIndent = 0
-                  , highlightStyling = []
-                }
-
-        Char ch ->
-            Char
-                { ch |
-                    highlightClasses = []
-                  , highlightStyling = []
-                }
-
-        Embedded html ->
-            Embedded
-                { html |
-                    highlightClasses = []
-                  , highlightStyling = []
-                }
 
 
 delete : Int -> Int -> Editor -> Content
@@ -1669,6 +1646,12 @@ keyDownHelp timeStamp str e =
             typed str e (Just timeStamp) False
         else
             case str of
+                "0" ->
+                    typed "–" e Nothing False -- en dash
+
+                "1" ->
+                    typed "—" e Nothing False -- em dash
+
                 "a" ->
                     ( { e |
                          selection = Just (0, maxIdx)
@@ -2967,9 +2950,7 @@ showContent params c =
             )
 
         highlight =
-            case params.highlighter of
-                Just f -> f << List.map dehighlight
-                Nothing -> identity
+            Maybe.withDefault identity params.highlighter
 
         paragraphs =
             List.map
@@ -2982,7 +2963,7 @@ showContent params c =
 
 
 showContentInactive : String -> List (Attribute msg) -> Maybe String -> Maybe (Content -> Content) -> Maybe (Float, String) -> (Msg -> msg) -> String -> Html msg
-showContentInactive editorID userDefinedStyles fontSizeUnit highlighter indentUnit tagger txt =
+showContentInactive editorID userDefinedStyles fontSizeUnit maybeHighlighter indentUnit tagger txt =
     let
         attrs =
             ( userDefinedStyles ++ 
@@ -2994,15 +2975,13 @@ showContentInactive editorID userDefinedStyles fontSizeUnit highlighter indentUn
                 ]
             ])
 
-        highlight =
-            case highlighter of
-                Just f -> f << List.map dehighlight
-                Nothing -> identity
+        highlighter =
+            Maybe.withDefault identity maybeHighlighter
 
         paragraphs x =
                 List.map
-                    (Tuple.second << showPara editorID Display tagger -1 indentUnit Nothing [] False fontSizeUnit)
-                    (breakIntoParas (highlight x))
+                    ( Tuple.second << showPara editorID Display tagger -1 indentUnit Nothing [] False fontSizeUnit )
+                    ( breakIntoParas (highlighter x) )
 
         render x =
             Html.div
@@ -3417,7 +3396,7 @@ undo e =
 
 
 undoMaxDepth : Int
-undoMaxDepth = 10
+undoMaxDepth = 300
 
 
 unlink : Editor -> Editor

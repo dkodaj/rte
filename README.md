@@ -37,6 +37,14 @@ app.ports.toBrowserClipboard.subscribe(txt => {
     });
 });
 
+window.addEventListener('copy', (event) => {  
+    event.preventDefault()
+})
+
+window.addEventListener('cut', (event) => {  
+    event.preventDefault()
+})
+
 window.addEventListener('paste', (event) => {            
     app.ports.fromBrowserClipboard.send(event.clipboardData.getData('text'))                        
 })

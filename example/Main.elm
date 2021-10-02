@@ -68,21 +68,10 @@ update msg model =
 
         Internal rteMsg ->
             let
-                oldRte =
-                    model.rte
-
-                isActive =
-                    if Rte.isActive oldRte /= Rte.isActive newRte then
-                        rteIsActive (Rte.isActive newRte)
-                    else
-                        Cmd.none
+                ( rte, cmd ) =
+                    Rte.update rteMsg model.rte
             in
-            ( { rte = newRte }
-            , Cmd.batch
-                [ rteCmd
-                , isActive
-                ]
-            )
+            ( { model | rte = rte }, cmd )
 
 
 view : Model -> Browser.Document Msg
@@ -214,7 +203,5 @@ port fromBrowserClipboard : (String -> msg) -> Sub msg
 
 
 --from Elm to JavaScript
-
-port rteIsActive : Bool -> Cmd msg
 
 port toBrowserClipboard : String -> Cmd msg

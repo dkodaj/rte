@@ -673,6 +673,8 @@ view tagger userDefinedStyles e =
                     , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
                     , Events.on "compositionstart" (Decode.succeed CompositionStart)
                     , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
+                    , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
+                    , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
                     , css
                         [ position absolute
                         , left (vw -100)

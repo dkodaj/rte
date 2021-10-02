@@ -387,11 +387,11 @@ inputBoxBehaviour x =
             }
 
 
-{-| Checks if the editor is active. Suitable for both `Rte` and `Rte`.
+{-| Checks if the editor is active.
 -}
 isActive : Rte msg -> Bool
 isActive rte =
-    rte.textarea.state /= MiniRte.CoreTypes.Display
+    rte.textarea.state == MiniRte.CoreTypes.Edit
 
 
 {-| A switch that turns editing on/off. The `params.width` field controls its width in px.

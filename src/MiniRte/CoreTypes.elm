@@ -7,9 +7,8 @@ import IntDict exposing (IntDict)
 import Json.Decode as Decode exposing (Decoder, Value)
 
 
-
-type Msg =
-      AddText String
+type Msg
+    = AddText String
     | CompositionEnd String
     | CompositionStart
     | CompositionUpdate String
@@ -17,10 +16,10 @@ type Msg =
     | Cut
     | KeyDown Float String
     | KeyDownTimeStamp Float
-    | KeyUp String    
+    | KeyUp String
     | LocatedChar Int (Result Error Dom.Element)
     | MouseHit Int Float
-    | MouseDown (Float,Float) Float
+    | MouseDown ( Float, Float ) Float
     | MouseMove Int Float
     | MouseUp
     | NoOp
@@ -34,14 +33,16 @@ type Msg =
     | UndoAction
 
 
+
 -- == subsidiary types == --
 
 
-type ScrollMode =
-    ScrollIfNeeded | NoScroll
+type ScrollMode
+    = ScrollIfNeeded
+    | NoScroll
 
 
-type State =
-      Display
+type State
+    = Display
     | Edit
     | Freeze

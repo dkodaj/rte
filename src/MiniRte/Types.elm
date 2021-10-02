@@ -1,21 +1,15 @@
-module MiniRte.Types exposing (
-        Character
-      , Child(..)
-      , Content
-      , Element(..)
-      , EmbeddedHtml
-      , FontStyle
-      , InputBox(..)
-      , LineBreak
-      , Msg(..)
-      , StyleTags
-      , TextAlignType(..)
+module MiniRte.Types exposing
+    ( Msg(..), InputBox(..), TextAlignType(..)
+    , Content, Element(..), Character, EmbeddedHtml, LineBreak, Child(..), FontStyle, StyleTags
     )
 
 {-|
+
 @docs Msg, InputBox, TextAlignType
 
+
 # Writing highlighters
+
 When writing a highlighter, pass in a `Content -> Content` function on init.
 The function should modify the `highlightClasses` or `highlightStyling` fields of the elements.
 Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
@@ -23,19 +17,18 @@ Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
 Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
 
 @docs Content, Element, Character, EmbeddedHtml, LineBreak, Child, FontStyle, StyleTags
--}
 
+-}
 
 import MiniRte.CoreTypes
 
 
-{-|    
-For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
-    
+{-| For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
+
       Active Bool       -- turn editing on/off
     | AddText String    -- insert text
     | Bold              -- make text bold
-    | Class String      -- put a class on current paragraph 
+    | Class String      -- put a class on current paragraph
     | Core MiniRte.CoreTypes.Msg
                         -- normally, you won't need this
     | Cut
@@ -66,9 +59,10 @@ For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/
     | Undo              -- undo last action
     | Unindent          -- decrease indent of current para
     | Unlink            -- remove the link the cursor is touching
+
 -}
-type Msg =
-      Active Bool 
+type Msg
+    = Active Bool
     | AddText String
     | Bold
     | Class String
@@ -98,14 +92,13 @@ type Msg =
     | Unlink
 
 
-{-|
--}
-type InputBox =
-      ImageInputBox String
+{-| -}
+type InputBox
+    = ImageInputBox String
     | LinkInputBox String
 
 
-{-|-}
+{-| -}
 type alias Character =
     { char : Char
     , fontStyle : FontStyle
@@ -116,23 +109,26 @@ type alias Character =
     }
 
 
-{-|-}
-type Child =
-    Child EmbeddedHtml
+{-| -}
+type Child
+    = Child EmbeddedHtml
 
-{-|-}
+
+{-| -}
 type alias Content =
     List Element
 
-{-|-}
-type Element =
-      Break LineBreak
+
+{-| -}
+type Element
+    = Break LineBreak
     | Char Character
     | Embedded EmbeddedHtml
 
-{-|-}
-type alias EmbeddedHtml =    
-    { attributes : List (String, String)
+
+{-| -}
+type alias EmbeddedHtml =
+    { attributes : List ( String, String )
     , classes : List String
     , children : List Child
     , highlightClasses : List String
@@ -143,7 +139,8 @@ type alias EmbeddedHtml =
     , text : Maybe String
     }
 
-{-|-}
+
+{-| -}
 type alias FontStyle =
     { classes : List String
     , fontFamily : List String
@@ -151,7 +148,8 @@ type alias FontStyle =
     , styling : StyleTags
     }
 
-{-|-}
+
+{-| -}
 type alias LineBreak =
     { classes : List String
     , highlightClasses : List String
@@ -163,12 +161,14 @@ type alias LineBreak =
     , styling : StyleTags
     }
 
-{-|-}
-type alias StyleTags =
-    List (String, String)
 
-{-|-}
-type TextAlignType =
-      Center
+{-| -}
+type alias StyleTags =
+    List ( String, String )
+
+
+{-| -}
+type TextAlignType
+    = Center
     | Left
     | Right

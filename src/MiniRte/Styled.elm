@@ -1,47 +1,37 @@
-module MiniRte.Styled exposing (
-      display
-    , DisplayParams
-    , emojiBox
-    , EmojiBoxParams
-    , encodedContent
-    , fontSelector
-    , FontSelectorParams
-    , fontSizeSelector
-    , FontSizeSelectorParams
-    , init
-    , inputBox
-    , InputBoxParams
-    , isActive
-    , onOffSwitch
-    , Parameters
-    , Rte
-    , subscriptions
-    , SwitchParams
-    , textarea
-    , textContent
-    , update
+module MiniRte.Styled exposing
+    ( init, Rte, Parameters, subscriptions, update
+    , textarea, display, DisplayParams
+    , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
+    , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
+    , onOffSwitch, SwitchParams
+    , encodedContent, isActive, textContent
     )
 
-{-|
-Same as `MiniRte` except it uses [Html.Styled](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled).
+{-| Same as `MiniRte` except it uses [Html.Styled](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled).
+
 
 # Init and update
+
 @docs init, Rte, Parameters, subscriptions, update
 
+
 # View
+
 @docs textarea, display, DisplayParams
 
+
 # Toolbar
-@docs emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams,
-fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams,
-onOffSwitch, SwitchParams
+
+@docs emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
+@docs fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
+@docs onOffSwitch, SwitchParams
+
 
 # Info
+
 @docs encodedContent, isActive, textContent
 
 -}
-
-
 
 import Browser.Dom as Dom
 import Css exposing (..)
@@ -57,6 +47,7 @@ import MiniRte.CoreTypes
 import MiniRte.StyledHelp as StyledHelp
 import MiniRte.Types exposing (InputBox(..), Msg(..))
 import Task
+
 
 
 --== Main types ==--
@@ -75,30 +66,32 @@ type alias Rte msg =
     }
 
 
+
 --== Subsidiary types ==--
+
 
 {-| `content` can be plain text or a json string created with [encodedContent](#encodedContent).
 
 `fontSizeUnit` defaults to `"px"`.
-    
+
 `indentUnit` defaults to `(50,"px")`.
 
 The attributes in `styling` will be attached to the div that contains the text.
+
 -}
 type alias DisplayParams msg =
     { content : String
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
     , id : String
-    , indentUnit : Maybe (Float, String)
+    , indentUnit : Maybe ( Float, String )
     , styling : List (Html.Styled.Attribute msg)
     }
 
 
-{-|
--}
+{-| -}
 type alias EmojiBoxParams msg =
-    { styling : 
+    { styling :
         { active : List (Html.Styled.Attribute msg)
         , inactive : List (Html.Styled.Attribute msg)
         }
@@ -106,16 +99,14 @@ type alias EmojiBoxParams msg =
     }
 
 
-{-|
--}
+{-| -}
 type alias FontSelectorParams msg =
     { styling : List (Html.Styled.Attribute msg)
     , fonts : List (List String)
     }
 
 
-{-|
--}
+{-| -}
 type alias FontSizeSelectorParams msg =
     { styling : List (Html.Styled.Attribute msg)
     , sizes : List Float
@@ -130,8 +121,7 @@ type alias InputBoxBehaviour =
     }
 
 
-{-|
--}
+{-| -}
 type alias InputBoxParams msg =
     { styling :
         { active : List (Html.Styled.Attribute msg)
@@ -155,14 +145,15 @@ type alias InputBoxParams msg =
 `styling.active` styles the textarea div in active mode (when editing). Use `update (Active True/False)` to switch between modes.
 
 `tagger` turns the package's own [Msg](MiniRte-Types#Msg) type into your app's msg.
+
 -}
 type alias Parameters msg =
-    { id : String    
+    { id : String
     , content : Maybe String
     , fontSizeUnit : Maybe String
-    , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)    
-    , indentUnit : Maybe (Float,String)
-    , selectionStyle : List (String,String) 
+    , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
+    , indentUnit : Maybe ( Float, String )
+    , selectionStyle : List ( String, String )
     , styling :
         { active : List (Html.Styled.Attribute msg)
         , inactive : List (Html.Styled.Attribute msg)
@@ -171,41 +162,44 @@ type alias Parameters msg =
     }
 
 
-{-|
--}
+{-| -}
 type alias SwitchParams =
     { activeColor : String
     , inactiveColor : String
-    , width : Float   
+    , width : Float
     }
-    
+
+
 
 --== Main functions ==--
 
-{-|
--}
+
+{-| -}
 init : Parameters msg -> ( Rte msg, Cmd msg )
 init =
     StyledHelp.initFrame
 
-{-|
--}
+
+{-| -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =
     StyledHelp.subscriptionsFrame
 
-{-|
--}
+
+{-| -}
 update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
     StyledHelp.updateFrame
 
 
+
 --== Helpers in ABC order ==--
+
 
 {-| Display formatted text, without an editor.
 
 If you want to preserve the option of editing it, create an editor with [init](#init) and put it in passive mode with `update (Active False)`.
+
 -}
 display : (Msg -> msg) -> DisplayParams msg -> Html.Styled.Html msg
 display tagger p =
@@ -219,18 +213,22 @@ emojiBox : Rte msg -> EmojiBoxParams msg -> Html.Styled.Html msg
 emojiBox rte params =
     let
         styling =
-            if rte.emojiBox then params.styling.active else params.styling.inactive
+            if rte.emojiBox then
+                params.styling.active
+
+            else
+                params.styling.inactive
 
         toDiv x =
             div
-                [ Html.Styled.Events.onClick (rte.tagger (AddText x)) 
-                , css [cursor pointer]
+                [ Html.Styled.Events.onClick (rte.tagger (AddText x))
+                , css [ cursor pointer ]
                 ]
                 [ text x ]
-    in    
+    in
     div
         styling
-        (List.map toDiv params.emojis)    
+        (List.map toDiv params.emojis)
 
 
 {-| Serialize the content of the textarea, including formatting, links, and images.
@@ -239,11 +237,11 @@ You can write the result into a database and use it later with [init](#init) or 
 encodedContent : Rte msg -> String
 encodedContent rte =
     MiniRte.Core.encode rte.textarea
-   
+
 
 {-| A `Html.select` element that triggers `update Font` events.
 -}
-fontSelector : Rte msg-> FontSelectorParams msg -> Html.Styled.Html msg
+fontSelector : Rte msg -> FontSelectorParams msg -> Html.Styled.Html msg
 fontSelector rte params =
     let
         maybeFontName =
@@ -251,8 +249,11 @@ fontSelector rte params =
 
         selected x =
             case maybeFontName of
-                Nothing -> False
-                Just y -> x == y
+                Nothing ->
+                    False
+
+                Just y ->
+                    x == y
 
         placeholder =
             Html.Styled.option
@@ -263,7 +264,9 @@ fontSelector rte params =
 
         o xs =
             case xs of
-                [] -> div [] []
+                [] ->
+                    div [] []
+
                 x :: _ ->
                     Html.Styled.option
                         [ Html.Styled.Attributes.value x
@@ -272,13 +275,16 @@ fontSelector rte params =
                         [ text x ]
 
         msg x =
-            case List.filter (\a -> List.head a == Just x ) params.fonts of
-                xs :: _ -> Just (rte.tagger (Font xs))
-                [] -> Nothing
+            case List.filter (\a -> List.head a == Just x) params.fonts of
+                xs :: _ ->
+                    Just (rte.tagger (Font xs))
+
+                [] ->
+                    Nothing
     in
     Html.Styled.select
-        ( Html.Styled.Events.on "change" (selectDecode msg) :: params.styling )
-        ( placeholder :: List.map o params.fonts )
+        (Html.Styled.Events.on "change" (selectDecode msg) :: params.styling)
+        (placeholder :: List.map o params.fonts)
 
 
 {-| A `Html.select` element that triggers `update FontSize` events.
@@ -291,15 +297,18 @@ fontSizeSelector rte params =
 
         selected x =
             case maybeSize of
-                Nothing -> False
-                Just y -> x == y
+                Nothing ->
+                    False
+
+                Just y ->
+                    x == y
 
         msg x =
             Maybe.map (rte.tagger << FontSize) (String.toFloat x)
-        
+
         o x =
             Html.Styled.option
-                [ Html.Styled.Attributes.value (String.fromFloat x) 
+                [ Html.Styled.Attributes.value (String.fromFloat x)
                 , Html.Styled.Attributes.selected (selected x)
                 ]
                 [ text (String.fromFloat x) ]
@@ -312,16 +321,15 @@ fontSizeSelector rte params =
                 [ text "size" ]
     in
     Html.Styled.select
-        ( Html.Styled.Events.on "change" (selectDecode msg) :: params.styling )
-        ( placeholder :: List.map o params.sizes )
-
+        (Html.Styled.Events.on "change" (selectDecode msg) :: params.styling)
+        (placeholder :: List.map o params.sizes)
 
 
 {-| Input box for adding hyperlinks and image links.
 Make it appear/disappear with `update ToggleImageBox` or `update ToggleLinkBox`.
 It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`.
 -}
-inputBox : Rte msg-> InputBoxParams msg -> Html.Styled.Html msg
+inputBox : Rte msg -> InputBoxParams msg -> Html.Styled.Html msg
 inputBox rte params =
     case Maybe.map inputBoxBehaviour rte.inputBox of
         Just behaviour ->
@@ -329,19 +337,20 @@ inputBox rte params =
                 value =
                     if behaviour.content == "" then
                         Html.Styled.Attributes.placeholder behaviour.placeholder
+
                     else
-                        Html.Styled.Attributes.value behaviour.content                    
+                        Html.Styled.Attributes.value behaviour.content
             in
             div
                 params.styling.active
-                ( List.map (Html.Styled.map rte.tagger)
+                (List.map (Html.Styled.map rte.tagger)
                     [ Html.Styled.input
                         [ value
                         , Html.Styled.Attributes.type_ "text"
                         , Html.Styled.Events.onInput behaviour.inputMsg
                         , Html.Styled.Attributes.id (StyledHelp.inputBoxId rte)
-                        ] []
-
+                        ]
+                        []
                     , Html.Styled.button
                         [ Html.Styled.Events.onClick (behaviour.okMsg behaviour.content) ]
                         [ text "Ok" ]
@@ -354,7 +363,6 @@ inputBox rte params =
                 [ Html.Styled.input
                     [ Html.Styled.Attributes.type_ "text" ]
                     []
-
                 , Html.Styled.button
                     []
                     [ text "Ok" ]
@@ -388,13 +396,13 @@ isActive rte =
 
 {-| A switch that turns editing on/off. The `params.width` field controls its width in px.
 -}
-onOffSwitch : Rte msg-> SwitchParams -> Html.Styled.Html msg
+onOffSwitch : Rte msg -> SwitchParams -> Html.Styled.Html msg
 onOffSwitch rte params =
     let
         switch =
             [ position relative
             , Css.display inlineBlock
-            , height (px (0.57*params.width))
+            , height (px (0.57 * params.width))
             , width (px params.width)
             ]
 
@@ -402,11 +410,16 @@ onOffSwitch rte params =
             rte.textarea.state /= MiniRte.CoreTypes.Display
 
         sliderColor =
-            if checked then params.activeColor else params.inactiveColor
+            if checked then
+                params.activeColor
+
+            else
+                params.inactiveColor
 
         pos =
             if checked then
-                transforms [translateX (px (0.43*params.width))]
+                transforms [ translateX (px (0.43 * params.width)) ]
+
             else
                 transforms []
 
@@ -419,14 +432,14 @@ onOffSwitch rte params =
             , bottom (px 0)
             , property "background-color" sliderColor
             , transition [ Css.Transitions.backgroundColor 400 ]
-            , borderRadius  (px (0.57*params.width))
+            , borderRadius (px (0.57 * params.width))
             , before
                 [ position absolute
                 , property "content" "''"
-                , height (px (0.43*params.width))
-                , width (px (0.43*params.width))
-                , left (px (0.067*params.width))
-                , bottom (px (0.067*params.width))
+                , height (px (0.43 * params.width))
+                , width (px (0.43 * params.width))
+                , left (px (0.067 * params.width))
+                , bottom (px (0.067 * params.width))
                 , backgroundColor (hex "FFFFFF")
                 , transition [ Css.Transitions.transform 400 ]
                 , pos
@@ -434,15 +447,15 @@ onOffSwitch rte params =
                 ]
             ]
     in
-    Html.Styled.map rte.tagger
-    <| Html.Styled.label
-        [ css switch ]
-        [ Html.Styled.span
-            [ css slider
-            , Html.Styled.Events.onClick (Active (not checked))
+    Html.Styled.map rte.tagger <|
+        Html.Styled.label
+            [ css switch ]
+            [ Html.Styled.span
+                [ css slider
+                , Html.Styled.Events.onClick (Active (not checked))
+                ]
+                []
             ]
-            []
-        ]
 
 
 selectDecode : (String -> Maybe msg) -> Decoder msg
@@ -456,8 +469,8 @@ selectDecode check =
                 Nothing ->
                     Decode.fail "bad value"
     in
-    Decode.at ["target","value"]
-        ( Decode.string |> Decode.andThen f )
+    Decode.at [ "target", "value" ]
+        (Decode.string |> Decode.andThen f)
 
 
 {-| The plain text content of the textarea. Suitable for both `Rte` and `Rte`.
@@ -469,12 +482,13 @@ textContent rte =
 
 {-| Displays the edited text plus the cursor.
 -}
-textarea :  Rte msg-> Html.Styled.Html msg
+textarea : Rte msg -> Html.Styled.Html msg
 textarea rte =
     let
         styling =
             if rte.textarea.state == MiniRte.CoreTypes.Display then
                 rte.styling.inactive
+
             else
                 rte.styling.active
     in

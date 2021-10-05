@@ -272,9 +272,9 @@ subscriptions e =
         Display ->
             Sub.none
 
-        Edit ->
+        Edit ->            
             Sub.batch
-                [ Browser.Events.onKeyDown (decodeKeyAndTime KeyDown)
+                [ Browser.Events.onKeyDown (decodeKey KeyDown)
                 , Browser.Events.onKeyUp (decodeKey KeyUp)
                 , Browser.Events.onMouseUp (Decode.succeed MouseUp)
                 ]
@@ -356,10 +356,10 @@ update msg e0 =
         Cut ->
             cut e
 
-        KeyDown timeStamp key ->
-            keyDown timeStamp key e
+        Input timeStamp key ->            
+            onInput timeStamp key e
 
-        KeyDownTimeStamp float ->
+        InputTimeStamp float ->
             if e.lastKeyDown == float then
                 ( { e | typing = False }
                 , Cmd.none
@@ -367,6 +367,9 @@ update msg e0 =
 
             else
                 ( e, Cmd.none )
+
+        KeyDown key ->
+            keyDown key e
 
         KeyUp str ->
             case str of
@@ -577,10 +580,10 @@ updateUndo msg e =
             List.length e.content - 1
     in
     case msg of
-        KeyDown timeStamp str ->
+        Input timeStamp str ->
             let
                 contentMod =
-                    if timeStamp - e.lastKeyDown < 1000 then
+                    if timeStamp - e.lastKeyDown < 400 then
                         undoRefreshHead e
 
                     else
@@ -588,74 +591,75 @@ updateUndo msg e =
 
                 like : String -> Editor
                 like x =
-                    updateUndo (KeyDown timeStamp x) e
+                    updateUndo (Input timeStamp x) e
             in
-            if String.length str == 1 then
-                if not e.ctrlDown then
-                    contentMod
-
-                else
-                    case str of
-                        "0" ->
-                            contentMod
-
-                        "1" ->
-                            contentMod
-
-                        "x" ->
-                            if e.selection /= Nothing then
-                                undoAddNew e
-
-                            else
-                                e
-
-                        "X" ->
-                            like "x"
-
-                        "v" ->
-                            if e.clipboard /= Nothing then
-                                undoAddNew e
-
-                            else
-                                e
-
-                        "V" ->
-                            like "v"
-
-                        _ ->
-                            e
-
+            if String.length str /= 1 || e.ctrlDown then
+                e
             else
-                case str of
-                    "Backspace" ->
-                        case e.selection of
-                            Nothing ->
-                                if e.cursor > 0 then
-                                    contentMod
+                contentMod
 
-                                else
-                                    e
+        KeyDown str ->
+            case str of
+                "Backspace" ->
+                    case e.selection of
+                        Nothing ->
+                            if e.cursor > 0 then
+                                undoAddNew e
 
-                            Just _ ->
-                                contentMod
+                            else
+                                e
 
-                    "Delete" ->
-                        case e.selection of
-                            Nothing ->
-                                if e.cursor < maxIdx then
-                                    contentMod
+                        Just _ ->
+                            undoAddNew e
 
-                                else
-                                    e
+                "Delete" ->
+                    case e.selection of
+                        Nothing ->
+                            if e.cursor < maxIdx then
+                                undoAddNew e
 
-                            Just _ ->
-                                contentMod
+                            else
+                                e
 
-                    "Enter" ->
-                        contentMod
+                        Just _ ->
+                            undoAddNew e
 
-                    _ ->
+                "Enter" ->
+                    undoAddNew e
+
+                _ ->
+                    if not e.ctrlDown then
                         e
+                    else
+                        case str of
+                            "0" ->
+                                undoAddNew e
+
+                            "1" ->
+                                undoAddNew e
+
+                            "x" ->
+                                if e.selection /= Nothing then
+                                    undoAddNew e
+
+                                else
+                                    e
+
+                            "X" ->
+                                updateUndo (KeyDown "x") e
+
+                            "v" ->
+                                if e.clipboard /= Nothing then
+                                    undoAddNew e
+
+                                else
+                                    e
+
+                            "V" ->
+                                updateUndo (KeyDown "v") e
+
+                            _ ->
+                                e
 
         _ ->
             e
@@ -673,6 +677,7 @@ view tagger userDefinedStyles e =
                     , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
                     , Events.on "compositionstart" (Decode.succeed CompositionStart)
                     , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
+                    , Events.on "input" (decodeInputAndTime Input)
                     , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
                     , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
                     , css
@@ -955,12 +960,14 @@ contentChanged msg e =
         AddText txt ->
             txt /= ""
 
-        KeyDown timeStamp str ->
+        Input timeStamp str ->
             let
                 like x =
-                    contentChanged (KeyDown timeStamp x) e
+                    contentChanged (Input timeStamp x) e
             in
-            if String.length str == 1 then
+            if String.length str /= 1 then
+                False
+            else
                 if not e.ctrlDown then
                     True
 
@@ -993,37 +1000,37 @@ contentChanged msg e =
                         _ ->
                             False
 
-            else
-                case str of
-                    "Backspace" ->
-                        case e.selection of
-                            Nothing ->
-                                if e.cursor > 0 then
-                                    True
-
-                                else
-                                    False
-
-                            Just _ ->
+        KeyDown str ->            
+            case str of
+                "Backspace" ->
+                    case e.selection of
+                        Nothing ->
+                            if e.cursor > 0 then
                                 True
 
-                    "Delete" ->
-                        case e.selection of
-                            Nothing ->
-                                if e.cursor < maxIdx then
-                                    True
+                            else
+                                False
 
-                                else
-                                    False
+                        Just _ ->
+                            True
 
-                            Just _ ->
+                "Delete" ->
+                    case e.selection of
+                        Nothing ->
+                            if e.cursor < maxIdx then
                                 True
 
-                    "Enter" ->
-                        True
+                            else
+                                False
 
-                    _ ->
-                        False
+                        Just _ ->
+                            True
+
+                "Enter" ->
+                    True
+
+                _ ->
+                    False
 
         Paste str ->
             str /= "" || Maybe.map toText e.clipboard /= Just ""
@@ -1232,16 +1239,16 @@ decodeClipboardData f =
         (Decode.field "clipboardData" Decode.value)
 
 
+decodeInputAndTime : (Float -> String -> msg) -> Decoder msg
+decodeInputAndTime f =    
+    Decode.map2 f
+        (Decode.field "timeStamp" Decode.float)
+        (Decode.field "data" Decode.string)
+
+
 decodeKey : (String -> Msg) -> Decoder Msg
 decodeKey f =
     Decode.map f
-        (Decode.field "key" Decode.string)
-
-
-decodeKeyAndTime : (Float -> String -> Msg) -> Decoder Msg
-decodeKeyAndTime f =
-    Decode.map2 f
-        (Decode.field "timeStamp" Decode.float)
         (Decode.field "key" Decode.string)
 
 
@@ -1761,294 +1768,270 @@ jumpHelp isRelevant direction ( beg, end ) e =
                         ( Just ( beg + 1, Up ), Nothing )
 
 
-keyDown : Float -> String -> Editor -> ( Editor, Cmd Msg )
-keyDown timeStamp str e =
+keyDown : String -> Editor -> ( Editor, Cmd Msg )
+keyDown str e =
     let
-        timeStampCmd =
-            Process.sleep tickPeriod |> Task.perform (\_ -> KeyDownTimeStamp timeStamp)
-
-        f ( x, y ) =
-            ( { x
-                | lastKeyDown = timeStamp
-                , typing = True
-              }
-            , Cmd.batch [ timeStampCmd, y ]
-            )
-    in
-    f (keyDownHelp timeStamp str e)
-
-
-keyDownHelp : Float -> String -> Editor -> ( Editor, Cmd Msg )
-keyDownHelp timeStamp str e =
-    let
-        like : String -> ( Editor, Cmd Msg )
-        like x =
-            update (KeyDown timeStamp x) e
-
         maxIdx =
             List.length e.content - 1
     in
-    if String.length str == 1 then
-        if not e.ctrlDown then
-            typed str e (Just timeStamp) False
+    case str of
+        "ArrowDown" ->
+            if e.cursor >= maxIdx then
+                ( e, Cmd.none )
 
-        else
-            case str of
-                "0" ->
-                    typed "–" e Nothing False
+            else
+                locateChars e Nothing (LineJump Down)
 
-                -- en dash
-                "1" ->
-                    typed "—" e Nothing False
-
-                -- em dash
-                "a" ->
+        "ArrowLeft" ->
+            if e.cursor < 1 then
+                if not e.shiftDown then
                     ( { e
-                        | selection = Just ( 0, maxIdx )
+                        | cursor = 0
+                        , selection = Nothing
                       }
                     , Cmd.none
                     )
 
-                "A" ->
-                    like "a"
-
-                "c" ->
-                    update Copy e
-
-                "C" ->
-                    like "c"
-
-                "x" ->
-                    update Cut e
-
-                "X" ->
-                    like "x"
-
-                "z" ->
-                    ( e, Task.perform identity (Task.succeed UndoAction) )
-
-                "Z" ->
-                    like "z"
-
-                _ ->
-                    ( e, Cmd.none )
-
-    else
-        case str of
-            "ArrowDown" ->
-                if e.cursor >= maxIdx then
-                    ( e, Cmd.none )
-
                 else
-                    locateChars e Nothing (LineJump Down)
+                    ( e, Cmd.none )
 
-            "ArrowLeft" ->
-                if e.cursor < 1 then
-                    if not e.shiftDown then
-                        ( { e
-                            | cursor = 0
+            else if e.ctrlDown then
+                let
+                    newCursor =
+                        previousWordBoundary e
+                in
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle newCursor <|
+                        selectionMod e.cursor { e | cursor = newCursor }
+
+            else
+                let
+                    f x =
+                        max 0 x
+
+                    newCursor =
+                        if e.shiftDown then
+                            f (e.cursor - 1)
+
+                        else
+                            case e.selection of
+                                Nothing ->
+                                    f (e.cursor - 1)
+
+                                Just ( beg, _ ) ->
+                                    beg
+                in
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle newCursor <|
+                        selectionMod e.cursor { e | cursor = newCursor }
+
+        "ArrowRight" ->
+            if e.cursor >= maxIdx then
+                ( { e | cursor = maxIdx, selection = Nothing }, Cmd.none )
+
+            else if not e.shiftDown && e.selection == Just ( 0, maxIdx ) then
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle maxIdx
+                        { e
+                            | cursor = maxIdx
                             , selection = Nothing
-                          }
-                        , Cmd.none
-                        )
+                        }
+
+            else if e.ctrlDown then
+                let
+                    newCursor =
+                        nextWordBoundary e
+                in
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle newCursor <|
+                        selectionMod e.cursor { e | cursor = newCursor }
+
+            else
+                let
+                    f x =
+                        min x maxIdx
+
+                    newCursor =
+                        if e.shiftDown then
+                            f (e.cursor + 1)
+
+                        else
+                            case e.selection of
+                                Nothing ->
+                                    f (e.cursor + 1)
+
+                                Just ( _, end ) ->
+                                    f (end + 1)
+                in
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle newCursor <|
+                        selectionMod e.cursor { e | cursor = newCursor }
+
+        "ArrowUp" ->
+            if e.cursor == 0 then
+                ( e, Cmd.none )
+
+            else
+                locateChars e Nothing (LineJump Up)
+
+        "Backspace" ->
+            case e.selection of
+                Nothing ->
+                    if e.cursor > 0 then
+                        placeCursor ScrollIfNeeded <|
+                            detectFontStyle (e.cursor - 1)
+                                { e
+                                    | content = List.take (e.cursor - 1) e.content ++ List.drop e.cursor e.content
+                                    , cursor = e.cursor - 1
+                                }
 
                     else
                         ( e, Cmd.none )
 
-                else if e.ctrlDown then
-                    let
-                        newCursor =
-                            previousWordBoundary e
-                    in
+                Just ( beg, end ) ->
                     placeCursor ScrollIfNeeded <|
-                        detectFontStyle newCursor <|
-                            selectionMod e.cursor { e | cursor = newCursor }
-
-                else
-                    let
-                        f x =
-                            max 0 x
-
-                        newCursor =
-                            if e.shiftDown then
-                                f (e.cursor - 1)
-
-                            else
-                                case e.selection of
-                                    Nothing ->
-                                        f (e.cursor - 1)
-
-                                    Just ( beg, _ ) ->
-                                        beg
-                    in
-                    placeCursor ScrollIfNeeded <|
-                        detectFontStyle newCursor <|
-                            selectionMod e.cursor { e | cursor = newCursor }
-
-            "ArrowRight" ->
-                if e.cursor >= maxIdx then
-                    ( { e | cursor = maxIdx, selection = Nothing }, Cmd.none )
-
-                else if not e.shiftDown && e.selection == Just ( 0, maxIdx ) then
-                    placeCursor ScrollIfNeeded <|
-                        detectFontStyle maxIdx
+                        detectFontStyle beg
                             { e
-                                | cursor = maxIdx
+                                | content = List.take beg e.content ++ List.drop (end + 1) e.content
+                                , cursor = beg
                                 , selection = Nothing
                             }
 
-                else if e.ctrlDown then
-                    let
-                        newCursor =
-                            nextWordBoundary e
-                    in
+        "Control" ->
+            ( { e | ctrlDown = True }, Cmd.none )
+
+        "Delete" ->
+            case e.selection of
+                Nothing ->
+                    if e.cursor < maxIdx then
+                        placeCursor ScrollIfNeeded
+                            { e
+                                | content = delete e.cursor (e.cursor + 1) e
+                            }
+
+                    else
+                        ( e, Cmd.none )
+
+                Just ( beg, end ) ->
                     placeCursor ScrollIfNeeded <|
-                        detectFontStyle newCursor <|
-                            selectionMod e.cursor { e | cursor = newCursor }
+                        detectFontStyle beg
+                            { e
+                                | content = delete beg (end + 1) e
+                                , cursor = beg
+                                , selection = Nothing
+                            }
 
-                else
-                    let
-                        f x =
-                            min x maxIdx
+        "End" ->
+            if e.ctrlDown then
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle maxIdx <|
+                        selectionMod e.cursor { e | cursor = maxIdx }
 
-                        newCursor =
-                            if e.shiftDown then
-                                f (e.cursor + 1)
+            else if e.shiftDown then
+                locateChars e Nothing (LineBoundary Down)
 
-                            else
-                                case e.selection of
-                                    Nothing ->
-                                        f (e.cursor + 1)
+            else
+                locateChars { e | selection = Nothing } Nothing (LineBoundary Down)
 
-                                    Just ( _, end ) ->
-                                        f (end + 1)
-                    in
-                    placeCursor ScrollIfNeeded <|
-                        detectFontStyle newCursor <|
-                            selectionMod e.cursor { e | cursor = newCursor }
+        "Enter" ->
+            if e.shiftDown then
+                update (KeyDown "\n") e
 
-            "ArrowUp" ->
-                if e.cursor == 0 then
-                    ( e, Cmd.none )
+            else
+                placeCursor ScrollIfNeeded <|
+                    insertBreak (currentParaStyle e.idCounter e) Nothing e
 
-                else
-                    locateChars e Nothing (LineJump Up)
+        "Home" ->
+            if e.ctrlDown then
+                placeCursor ScrollIfNeeded <|
+                    detectFontStyle 0 <|
+                        selectionMod e.cursor { e | cursor = 0 }
 
-            "Backspace" ->
-                case e.selection of
-                    Nothing ->
-                        if e.cursor > 0 then
-                            placeCursor ScrollIfNeeded <|
-                                detectFontStyle (e.cursor - 1)
-                                    { e
-                                        | content = List.take (e.cursor - 1) e.content ++ List.drop e.cursor e.content
-                                        , cursor = e.cursor - 1
-                                    }
+            else if e.shiftDown then
+                locateChars e Nothing (LineBoundary Up)
 
-                        else
-                            ( e, Cmd.none )
+            else
+                locateChars { e | selection = Nothing } Nothing (LineBoundary Up)
 
-                    Just ( beg, end ) ->
-                        placeCursor ScrollIfNeeded <|
-                            detectFontStyle beg
-                                { e
-                                    | content = List.take beg e.content ++ List.drop (end + 1) e.content
-                                    , cursor = beg
-                                    , selection = Nothing
-                                }
-
-            "Control" ->
-                ( { e | ctrlDown = True }, Cmd.none )
-
-            "Delete" ->
-                case e.selection of
-                    Nothing ->
-                        if e.cursor < maxIdx then
-                            placeCursor ScrollIfNeeded
-                                { e
-                                    | content = delete e.cursor (e.cursor + 1) e
-                                }
-
-                        else
-                            ( e, Cmd.none )
-
-                    Just ( beg, end ) ->
-                        placeCursor ScrollIfNeeded <|
-                            detectFontStyle beg
-                                { e
-                                    | content = delete beg (end + 1) e
-                                    , cursor = beg
-                                    , selection = Nothing
-                                }
-
-            "End" ->
-                if e.ctrlDown then
-                    placeCursor ScrollIfNeeded <|
-                        detectFontStyle maxIdx <|
-                            selectionMod e.cursor { e | cursor = maxIdx }
-
-                else if e.shiftDown then
-                    locateChars e Nothing (LineBoundary Down)
-
-                else
-                    locateChars { e | selection = Nothing } Nothing (LineBoundary Down)
-
-            "Enter" ->
-                if e.shiftDown then
-                    update (KeyDown timeStamp "\n") e
-
-                else
-                    placeCursor ScrollIfNeeded <|
-                        insertBreak (currentParaStyle e.idCounter e) (Just timeStamp) e
-
-            "Home" ->
-                if e.ctrlDown then
-                    placeCursor ScrollIfNeeded <|
-                        detectFontStyle 0 <|
-                            selectionMod e.cursor { e | cursor = 0 }
-
-                else if e.shiftDown then
-                    locateChars e Nothing (LineBoundary Up)
-
-                else
-                    locateChars { e | selection = Nothing } Nothing (LineBoundary Up)
-
-            "PageDown" ->
-                if e.cursor == maxIdx then
-                    ( e, Cmd.none )
-
-                else
-                    let
-                        pageSize =
-                            Basics.round <|
-                                toFloat maxIdx
-                                    * e.viewport.viewport.height
-                                    / e.viewport.scene.height
-                    in
-                    locateChars e Nothing (Page (min maxIdx (e.cursor + pageSize)) Down)
-
-            "PageUp" ->
-                if e.cursor == 0 then
-                    ( e, Cmd.none )
-
-                else
-                    let
-                        pageSize =
-                            Basics.round <|
-                                toFloat maxIdx
-                                    * e.viewport.viewport.height
-                                    / e.viewport.scene.height
-                    in
-                    locateChars e Nothing (Page (max 0 (e.cursor - pageSize)) Up)
-
-            "Shift" ->
-                ( { e | shiftDown = True }, Cmd.none )
-
-            "Tab" ->
+        "PageDown" ->
+            if e.cursor == maxIdx then
                 ( e, Cmd.none )
 
-            _ ->
+            else
+                let
+                    pageSize =
+                        Basics.round <|
+                            toFloat maxIdx
+                                * e.viewport.viewport.height
+                                / e.viewport.scene.height
+                in
+                locateChars e Nothing (Page (min maxIdx (e.cursor + pageSize)) Down)
+
+        "PageUp" ->
+            if e.cursor == 0 then
                 ( e, Cmd.none )
+
+            else
+                let
+                    pageSize =
+                        Basics.round <|
+                            toFloat maxIdx
+                                * e.viewport.viewport.height
+                                / e.viewport.scene.height
+                in
+                locateChars e Nothing (Page (max 0 (e.cursor - pageSize)) Up)
+
+        "Shift" ->
+            ( { e | shiftDown = True }, Cmd.none )
+
+        _ ->
+            if not e.ctrlDown then
+                ( e, Cmd.none )
+            else
+                let
+                    like x =
+                        keyDown x e
+                in
+                case str of
+                    "0" ->
+                        typed "–" e Nothing False
+
+                    -- en dash
+                    "1" ->
+                        typed "—" e Nothing False
+
+                    -- em dash
+                    "a" ->
+                        ( { e
+                            | selection = Just ( 0, maxIdx )
+                          }
+                        , Cmd.none
+                        )
+
+                    "A" ->
+                        like "a"
+
+                    "c" ->
+                        update Copy e
+
+                    "C" ->
+                        like "c"
+
+                    "x" ->
+                        update Cut e
+
+                    "X" ->
+                        like "x"
+
+                    "z" ->
+                        ( e, Task.perform identity (Task.succeed UndoAction) )
+
+                    "Z" ->
+                        like "z"
+
+                    _ ->
+                        ( e, Cmd.none )
+
 
 
 lineBoundary : Maybe Int -> Vertical -> ( Int, Int ) -> Editor -> ( Editor, Cmd Msg )
@@ -2724,6 +2707,42 @@ nullViewport =
     }
 
 
+onInput : Float -> String -> Editor -> ( Editor, Cmd Msg )
+onInput timeStamp str e =
+    let
+        timeStampCmd =
+            Process.sleep tickPeriod |> Task.perform (\_ -> InputTimeStamp timeStamp)
+
+        f ( x, y ) =
+            ( { x
+                | lastKeyDown = timeStamp
+                , typing = True
+              }
+            , Cmd.batch [ timeStampCmd, y ]
+            )
+    in
+    f (onInputHelp timeStamp str e)
+
+
+onInputHelp : Float -> String -> Editor -> ( Editor, Cmd Msg )
+onInputHelp timeStamp str e =
+    let
+        like : String -> ( Editor, Cmd Msg )
+        like x =
+            update (Input timeStamp x) e
+
+        maxIdx =
+            List.length e.content - 1
+    in
+    if String.length str /= 1 then
+        ( e, Cmd.none )
+    else
+        if not e.ctrlDown then
+            typed str e (Just timeStamp) False
+        else
+            ( e, Cmd.none )
+
+
 onSameLine : ScreenElement -> ScreenElement -> Bool
 onSameLine a b =
     a.y == b.y
@@ -3219,7 +3238,7 @@ showContent params c =
     let
         listeners =
             if params.state == Edit then
-                [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y)) ]
+                [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| MouseDown x y)) ] 
 
             else
                 []
@@ -3651,7 +3670,6 @@ typed txt e maybeTimeStamp modifyClipboard =
 
                     else
                         x
-
                 -- prevent last Break from being deleted
             in
             placeCursor ScrollIfNeeded

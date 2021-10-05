@@ -14,8 +14,9 @@ type Msg
     | CompositionUpdate String
     | Copy
     | Cut
-    | KeyDown Float String
-    | KeyDownTimeStamp Float
+    | Input Float String
+    | InputTimeStamp Float
+    | KeyDown String
     | KeyUp String
     | LocatedChar Int (Result Error Dom.Element)
     | MouseHit Int Float

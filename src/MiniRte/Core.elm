@@ -961,44 +961,10 @@ contentChanged msg e =
             txt /= ""
 
         Input timeStamp str ->
-            let
-                like x =
-                    contentChanged (Input timeStamp x) e
-            in
             if String.length str /= 1 then
                 False
             else
-                if not e.ctrlDown then
-                    True
-
-                else
-                    case str of
-                        "0" ->
-                            True
-
-                        "1" ->
-                            True
-
-                        "x" ->
-                            True
-
-                        "X" ->
-                            like "x"
-
-                        "v" ->
-                            True
-
-                        "V" ->
-                            like "v"
-
-                        "z" ->
-                            True
-
-                        "Z" ->
-                            like "z"
-
-                        _ ->
-                            False
+                not e.ctrlDown
 
         KeyDown str ->            
             case str of
@@ -1030,7 +996,36 @@ contentChanged msg e =
                     True
 
                 _ ->
-                    False
+                    if e.ctrlDown then
+                        case str of
+                            "0" ->
+                                True
+
+                            "1" ->
+                                True
+
+                            "x" ->
+                                True
+
+                            "X" ->
+                                True
+
+                            "v" ->
+                                True
+
+                            "V" ->
+                                True
+
+                            "z" ->
+                                True
+
+                            "Z" ->
+                                True
+
+                            _ ->
+                                False
+                    else
+                        False
 
         Paste str ->
             str /= "" || Maybe.map toText e.clipboard /= Just ""

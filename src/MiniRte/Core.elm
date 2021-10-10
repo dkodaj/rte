@@ -673,6 +673,7 @@ view tagger userDefinedStyles e =
                 Html.input
                     [ Attr.type_ "text"
                     , Attr.id (dummyID e.editorID)
+                    , Attr.autocomplete False
                     , Events.on "focus" (Decode.succeed (SwitchTo Edit))
                     , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
                     , Events.on "compositionstart" (Decode.succeed CompositionStart)

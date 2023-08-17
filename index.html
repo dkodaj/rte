@@ -21,8 +21,49 @@
             });
         });
 
-        window.addEventListener('paste', (event) => {            
-            app.ports.fromBrowserClipboard.send(event.clipboardData.getData('text'))                        
+        window.addEventListener('paste', (event) => {
+            var text = event.clipboardData.getData('text')
+            if (text !== "") {
+                app.ports.fromBrowserClipboard.send(text)
+            } else {
+
+                var file = event.clipboardData.files[0];
+
+                    // Ensure it's an image
+                if (!file || !file.type.match(/image.*/)) { return }
+
+                // Load the image
+                var reader = new FileReader();                
+                reader.onload = function (readerEvent) {
+                    var image = new Image();
+                    image.onload = function (imageEvent) {
+                        // Resize the image
+                        var canvas = document.createElement('canvas'),
+                            max_size = 600,
+                            width = image.width,
+                            height = image.height;
+                        if (width > height) {
+                            if (width > max_size) {
+                                height *= max_size / width;
+                                width = max_size;
+                            }
+                        } else {
+                            if (height > max_size) {
+                                width *= max_size / height;
+                                height = max_size;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+                        app.ports.fromBrowserClipboard.send(canvas.toDataURL('image/jpeg'));
+                    }
+                    image.src = readerEvent.target.result;
+                }
+                reader.readAsDataURL(file);
+
+            }
+
         })
     </script>
     

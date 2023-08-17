@@ -883,29 +883,25 @@ boldStyle =
 breakIntoParas : Content -> Paragraphs
 breakIntoParas content =
     let
-        f : Element -> ( Int, Paragraph, Paragraphs ) -> ( Int, Paragraph, Paragraphs )
-        f elem ( idx, y, paras ) =            
+        f : Element -> ( Int, Paragraphs ) -> ( Int, Paragraphs )
+        f elem ( idx, ys ) =
             case elem of
                 Break br ->
-                    ( idx - 1, Paragraph idx [] br, y :: paras )
+                    ( idx - 1, Paragraph idx [] br :: ys )
 
-                other ->
-                    ( idx - 1, { y | children = ( idx, elem ) :: y.children }, paras )
+                _ ->
+                    case ys of
+                        [] ->
+                            ( idx - 1, [] )
+
+                        -- trouble if content doesn't end with a Break element
+                        x :: rest ->
+                            ( idx - 1, { x | children = ( idx, elem ) :: x.children } :: rest )
 
         maxIdx =
             List.length content - 1
     in
-    case List.reverse content of
-        [] ->
-            [ Paragraph 0 [] (defaultLineBreak 1)]
-
-        Break br :: rest ->
-            List.foldl f (maxIdx, Paragraph maxIdx [] br, []) rest
-            |> (\(x,y,zs) -> y::zs)
-
-        list ->
-            List.foldl f (maxIdx, Paragraph maxIdx [] (defaultLineBreak maxIdx), []) list
-            |> (\(x,y,zs) -> y::zs)
+    Tuple.second (List.foldr f ( maxIdx, [] ) content)
 
 
 changeContent : (Element -> Element) -> Int -> Content -> Content

@@ -1,13 +1,18 @@
 port module Main exposing (main)
 
-import App.Content
-import App.Highlight
 import Browser
+import Bytes exposing (Bytes)
+import Content
+import File exposing (File)
+import File.Download
+import File.Select
+import Highlighter exposing (highlighter)
 import Html exposing (div, Html, text)
 import Html.Attributes as Attr exposing (class)
 import Html.Events as Events
 import MiniRte as Rte
-import MiniRte.Types as RteTypes
+import MiniRte.Types as Rtypes
+import Task
 
 
 main =
@@ -24,24 +29,35 @@ type alias Model =
 
 
 type Msg =
-    Internal RteTypes.Msg
+      DownloadContentStart
+    | DownloadContentEnd Bytes  
+    | FileDecoded Bytes
+    | FileSelected File
+    | FileSelect
+    | Rte Rtypes.Msg
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
+        content =
+            Rte.decodeContentString Content.json
+            |> Result.withDefault []
+
         parameters =
             { id = "MyRTE"
-            , content = Just App.Content.json
+            , content = content
             , fontSizeUnit = Nothing
-            , highlighter = Just App.Highlight.code
-            , indentUnit = Nothing            
+            , highlighter = Just highlighter
+            , indentUnit = Nothing
+            , pasteImageLinksAsImages = True
+            , pasteLinksAsLinks = True
             , selectionStyle = []
             , styling =
                 { active =  [ class "rte-wrap" ]
                 , inactive =  [ class "blogpost" ]
                 }            
-            , tagger = Internal
+            , tagger = Rte
             }
 
         ( rte, cmd ) =
@@ -56,17 +72,49 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Rte.subscriptions model.rte
-        , fromBrowserClipboard ( Internal << RteTypes.FromBrowserClipboard )
+        , fromBrowserClipboard ( Rte << Rtypes.FromBrowserClipboard )        
         ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Internal (RteTypes.ToBrowserClipboard txt) ->
+        DownloadContentStart ->
+            let
+                bytes =
+                    Rte.encodeContentGZip model.rte
+            in
+            ( model
+            , Task.perform identity (Task.succeed (DownloadContentEnd bytes))
+            )
+
+        DownloadContentEnd bytes ->
+            ( model
+            , File.Download.bytes "content.gz" "application/zip" bytes
+            )
+
+        FileDecoded bytes ->
+            case Rte.decodeContentGZip bytes of
+                Ok content ->
+                    update (Rte (Rtypes.LoadContent content)) model
+
+                Err err ->
+                    update (Rte (Rtypes.LoadText ("File open error: " ++ err))) model
+
+        FileSelected file ->
+            ( model
+            , Task.perform FileDecoded (File.toBytes file)
+            )
+
+        FileSelect ->
+            ( model
+            , File.Select.file ["application/gz"] FileSelected
+            )
+
+        Rte (Rtypes.ToBrowserClipboard txt) ->
             ( model, toBrowserClipboard txt )
 
-        Internal rteMsg ->
+        Rte rteMsg ->
             let
                 ( rte, cmd ) =
                     Rte.update rteMsg model.rte
@@ -90,7 +138,7 @@ view model =
                 [ text "Source" ]
 
             , Html.a
-                [ Attr.href "/rte/icon-credits.html" 
+                [ Attr.href "icon-credits.html" 
                 , class "source"
                 ]
                 [ text "Icon Credits" ]
@@ -99,14 +147,20 @@ view model =
     }
 
 
+---== Helpers
+
+
 toolbar : Model -> Html Msg
 toolbar model =
     let
         icon name msg =
+            icon2 name (Rte msg)
+
+        icon2 name msg =
             Html.img
-                [ Attr.src ("/rte/icon/" ++ name ++ ".svg")
+                [ Attr.src ("icon/" ++ name)
                 , class "icon"
-                , Events.onClick (Internal msg)
+                , Events.onClick msg
                 ] []
     in
     div
@@ -117,37 +171,41 @@ toolbar model =
             , width = 60
             }
 
-        , icon "Bold" RteTypes.Bold
+        , icon "Bold.svg" Rtypes.Bold
 
-        , icon "Italic" RteTypes.Italic
+        , icon "Italic.svg" Rtypes.Italic
 
-        , icon "Underline" RteTypes.Underline
+        , icon "Underline.svg" Rtypes.Underline
 
-        , icon "Strikethrough" RteTypes.StrikeThrough
+        , icon "Strikethrough.svg" Rtypes.StrikeThrough
 
-        , icon "Undo" RteTypes.Undo
+        , icon "Undo.svg" Rtypes.Undo
         
-        , icon "Left" (RteTypes.TextAlign RteTypes.Left)
+        , icon "Left.svg" (Rtypes.TextAlign Rtypes.Left)
 
-        , icon "Center" (RteTypes.TextAlign RteTypes.Center)
+        , icon "Center.svg" (Rtypes.TextAlign Rtypes.Center)
         
-        , icon "Right" (RteTypes.TextAlign RteTypes.Right)
+        , icon "Right.svg" (Rtypes.TextAlign Rtypes.Right)
 
-        , icon "Unindent"  RteTypes.Unindent
+        , icon "Unindent.svg"  Rtypes.Unindent
 
-        , icon "Indent"  RteTypes.Indent
+        , icon "Indent.svg" Rtypes.Indent
 
-        , icon "Heading"  RteTypes.Heading
+        , icon "Heading.svg"  Rtypes.Heading
 
-        , icon "Coding" (RteTypes.Class "Code")
+        , icon "Coding.svg" (Rtypes.Class "code")
 
-        , icon "Emoji" RteTypes.ToggleEmojiBox
+        , icon "Emoji.svg" Rtypes.ToggleEmojiBox
 
-        , icon "Link"  RteTypes.ToggleLinkBox
+        , icon "Link.svg"  Rtypes.ToggleLinkBox
 
-        , icon "Unlink" RteTypes.Unlink
+        , icon "Unlink.svg" Rtypes.Unlink
 
-        , icon "Picture" RteTypes.ToggleImageBox
+        , icon "Picture.svg" Rtypes.ToggleImageBox
+
+        , icon "ListBullets.png" (Rtypes.Class "bullets")
+
+        , icon "ListNumbered.png" (Rtypes.Class "numbered")
 
         , Rte.fontSelector model.rte
                 { styling = [ class "select" ]
@@ -165,6 +223,10 @@ toolbar model =
                         |> List.map (\a -> 2*a)
                             |> List.map toFloat
                 }
+
+        , icon2 "Save.png" DownloadContentStart
+
+        , icon2 "Open.svg" FileSelect
 
         , Rte.emojiBox model.rte
                 { styling = 
@@ -193,6 +255,7 @@ toolbar model =
                     }
                 }
         ]
+
 
 
 --=== PORTS

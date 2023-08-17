@@ -4,7 +4,11 @@ module MiniRte.Styled exposing
     , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
     , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
     , onOffSwitch, SwitchParams
-    , encodedContent, isActive, textContent
+    , isActive, textContent
+    , decodeContentString
+    , decodeContentGZip
+    , encodeContentString
+    , encodeContentGZip
     )
 
 {-| Same as `MiniRte` except it uses [Html.Styled](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled).
@@ -27,13 +31,19 @@ module MiniRte.Styled exposing
 @docs onOffSwitch, SwitchParams
 
 
+# Serialize/deserialize content
+
+@docs encodeContentString, encodeContentGZip, decodeContentString, decodeContentGZip
+
+
 # Info
 
-@docs encodedContent, isActive, textContent
+@docs isActive, textContent
 
 -}
 
 import Browser.Dom as Dom
+import Bytes exposing (Bytes)
 import Css exposing (..)
 import Css.Transitions exposing (transition)
 import Html exposing (Html)
@@ -42,10 +52,10 @@ import Html.Styled exposing (div, text)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events
 import Json.Decode as Decode exposing (Decoder)
+import MiniRte.Common as Common
 import MiniRte.Core
-import MiniRte.CoreTypes
-import MiniRte.StyledHelp as StyledHelp
-import MiniRte.Types exposing (InputBox(..), Msg(..))
+import MiniRte.Types exposing (Content, InputBox(..), Msg(..))
+import MiniRte.TypesThatAreNotPublic exposing (..)
 import Task
 
 
@@ -149,10 +159,12 @@ type alias InputBoxParams msg =
 -}
 type alias Parameters msg =
     { id : String
-    , content : Maybe String
+    , content : MiniRte.Types.Content
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
     , indentUnit : Maybe ( Float, String )
+    , pasteImageLinksAsImages : Bool
+    , pasteLinksAsLinks : Bool
     , selectionStyle : List ( String, String )
     , styling :
         { active : List (Html.Styled.Attribute msg)
@@ -177,23 +189,48 @@ type alias SwitchParams =
 {-| -}
 init : Parameters msg -> ( Rte msg, Cmd msg )
 init =
-    StyledHelp.initFrame
+    Common.init
 
 
 {-| -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =
-    StyledHelp.subscriptionsFrame
+    Common.subscriptions
 
 
 {-| -}
 update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
-    StyledHelp.updateFrame
+    Common.update
 
 
 
 --== Helpers in ABC order ==--
+
+{-| Convert serialized content string back into content.
+-}
+decodeContentString : String -> Result String Content
+decodeContentString =
+    MiniRte.Core.decodeContentString
+
+{-| Convert gzipped serialized content back into content.
+-}
+decodeContentGZip : Bytes -> Result String Content
+decodeContentGZip =
+    MiniRte.Core.decodeContentGZip
+
+{-| Serialize the edited text as string.
+-}
+encodeContentString : Rte msg -> String
+encodeContentString =
+    MiniRte.Core.encodeContentString
+
+{-| Serialize the edited text as a gzip file.
+-}
+encodeContentGZip : Rte msg -> Bytes
+encodeContentGZip =
+    MiniRte.Core.encodeContentGZip
+
 
 
 {-| Display formatted text, without an editor.
@@ -203,7 +240,7 @@ If you want to preserve the option of editing it, create an editor with [init](#
 -}
 display : (Msg -> msg) -> DisplayParams msg -> Html.Styled.Html msg
 display tagger p =
-    MiniRte.Core.showContentInactive p.id p.styling p.fontSizeUnit p.highlighter p.indentUnit (tagger << Core) p.content
+    MiniRte.Core.showContentInactive p.id p.styling p.fontSizeUnit p.highlighter p.indentUnit tagger p.content
 
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
@@ -229,14 +266,6 @@ emojiBox rte params =
     div
         styling
         (List.map toDiv params.emojis)
-
-
-{-| Serialize the content of the textarea, including formatting, links, and images.
-You can write the result into a database and use it later with [init](#init) or [display](#display).
--}
-encodedContent : Rte msg -> String
-encodedContent rte =
-    MiniRte.Core.encode rte.textarea
 
 
 {-| A `Html.select` element that triggers `update Font` events.
@@ -348,7 +377,7 @@ inputBox rte params =
                         [ value
                         , Html.Styled.Attributes.type_ "text"
                         , Html.Styled.Events.onInput behaviour.inputMsg
-                        , Html.Styled.Attributes.id (StyledHelp.inputBoxId rte)
+                        , Html.Styled.Attributes.id (Common.inputBoxId rte)
                         ]
                         []
                     , Html.Styled.button
@@ -374,15 +403,15 @@ inputBoxBehaviour x =
     case x of
         ImageInputBox str ->
             { content = str
-            , inputMsg = ImageInput
-            , okMsg = ImageAdd
+            , inputMsg = ImageSourceInput
+            , okMsg = AddImage
             , placeholder = "Image url"
             }
 
         LinkInputBox str ->
             { content = str
-            , inputMsg = LinkInput
-            , okMsg = LinkAdd
+            , inputMsg = LinkHrefInput
+            , okMsg = AddLink
             , placeholder = "Link url"
             }
 
@@ -391,7 +420,7 @@ inputBoxBehaviour x =
 -}
 isActive : Rte msg -> Bool
 isActive rte =
-    rte.textarea.state == MiniRte.CoreTypes.Edit
+    rte.textarea.state == Edit
 
 
 {-| A switch that turns editing on/off. The `params.width` field controls its width in px.
@@ -407,7 +436,7 @@ onOffSwitch rte params =
             ]
 
         checked =
-            rte.textarea.state /= MiniRte.CoreTypes.Display
+            rte.textarea.state /= Display
 
         sliderColor =
             if checked then
@@ -486,10 +515,9 @@ textarea : Rte msg -> Html.Styled.Html msg
 textarea rte =
     let
         styling =
-            if rte.textarea.state == MiniRte.CoreTypes.Display then
+            if rte.textarea.state == Display then
                 rte.styling.inactive
-
             else
                 rte.styling.active
     in
-    MiniRte.Core.view (rte.tagger << Core) styling rte.textarea
+    MiniRte.Core.view rte.tagger styling rte.textarea

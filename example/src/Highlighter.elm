@@ -1,4 +1,4 @@
-module App.Highlight exposing (code)
+module Highlighter exposing (highlighter)
 
 import MiniRte.Types exposing (Character, Content, Element(..))
 
@@ -18,8 +18,8 @@ type Scope =
     | WithinOpeningTag
 
 
-code : Content -> Content
-code content =
+highlighter : Content -> Content
+highlighter content =
     let
         init : Accumulator
         init =
@@ -140,7 +140,7 @@ markCode content =
                 Break br ->
                     let
                         isCodeNow =
-                            List.member "Code" br.classes                           
+                            List.member "code" br.classes                           
                     in
                     ( isCodeNow
                     , (isCodeNow, elem) :: xs

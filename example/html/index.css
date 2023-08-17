@@ -3,7 +3,8 @@
 }
 
 body { 
-    user-select:none;
+    user-select:none;  
+    counter-reset: myCounter;  
 }
 
 .blogpost {
@@ -21,12 +22,24 @@ body {
     justify-content:center;  
 }
 
-.Code {
+.bullets {        
+    margin: 15px 60px;       
+    position: relative;
+}
+
+.bullets::before {
+    content: '•';
+    margin-right: 30px;
+    position: absolute;
+    left: -30px;
+}
+
+.code {
     font-family:'Ubuntu Mono',monospace;
     background:rgba(0,0,0,0.1);
     margin: 0 30px;
     padding: 2px 15px;    
-    font-size:20px;
+    font-size:20px;    
 }
 
 .emoji-box {
@@ -92,6 +105,18 @@ body {
 .input-box input {
     height:100%;
     font-size:17px;    
+}
+
+.numbered {        
+    margin: 15px 60px;
+    position: relative;
+}
+
+.numbered::before {
+    counter-increment: myCounter;
+    content: counter(myCounter);    
+    position: absolute;
+    left: -30px;
 }
 
 .rte-wrap {

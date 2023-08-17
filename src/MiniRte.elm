@@ -4,7 +4,11 @@ module MiniRte exposing
     , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
     , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
     , onOffSwitch, SwitchParams
-    , encodedContent, isActive, textContent
+    , isActive, textContent
+    , decodeContentString
+    , decodeContentGZip
+    , encodeContentString
+    , encodeContentGZip
     )
 
 {-|
@@ -27,13 +31,19 @@ module MiniRte exposing
 @docs onOffSwitch, SwitchParams
 
 
+# Serialize/deserialize content
+
+@docs encodeContentString, encodeContentGZip, decodeContentString, decodeContentGZip
+
+
 # Info
 
-@docs encodedContent, isActive, textContent
+@docs isActive, textContent
 
 -}
 
 import Browser.Dom as Dom
+import Bytes exposing (Bytes)
 import Css exposing (..)
 import Css.Transitions exposing (transition)
 import Html exposing (Html)
@@ -42,11 +52,11 @@ import Html.Styled exposing (div, text)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events
 import Json.Decode as Decode exposing (Decoder)
+import MiniRte.Common as Common
 import MiniRte.Core
-import MiniRte.CoreTypes
 import MiniRte.Styled as Styled
-import MiniRte.StyledHelp as StyledHelp
-import MiniRte.Types as Types exposing (InputBox(..))
+import MiniRte.Types as Types exposing (Child(..), Content, InputBox(..))
+import MiniRte.TypesThatAreNotPublic as HiddenTypes
 import Task
 
 
@@ -150,10 +160,12 @@ type alias InputBoxParams msg =
 -}
 type alias Parameters msg =
     { id : String
-    , content : Maybe String
+    , content : Types.Content
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (Types.Content -> Types.Content)
     , indentUnit : Maybe ( Float, String )
+    , pasteImageLinksAsImages : Bool
+    , pasteLinksAsLinks : Bool
     , selectionStyle : List ( String, String )
     , styling :
         { active : List (Html.Attribute msg)
@@ -178,23 +190,35 @@ type alias SwitchParams =
 {-| -}
 init : Parameters msg -> ( Rte msg, Cmd msg )
 init =
-    StyledHelp.initFrame
+    Common.init
 
 
 {-| -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =
-    StyledHelp.subscriptionsFrame
+    Common.subscriptions
 
 
 {-| -}
 update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
-    StyledHelp.updateFrame
+    Common.update
 
 
 
 --== Helpers in ABC order ==--
+
+{-| Convert serialized content string back into content.
+-}
+decodeContentString : String -> Result String Content
+decodeContentString =
+    MiniRte.Core.decodeContentString
+
+{-| Convert gzipped serialized content back into content.
+-}
+decodeContentGZip : Bytes -> Result String Content
+decodeContentGZip =
+    MiniRte.Core.decodeContentGZip
 
 
 {-| Display formatted text, without an editor.
@@ -217,6 +241,18 @@ display tagger p =
     Html.Styled.toUnstyled <|
         Styled.display tagger styledParams
 
+{-| Serialize the edited text as string.
+-}
+encodeContentString : Rte msg -> String
+encodeContentString =
+    MiniRte.Core.encodeContentString
+
+{-| Serialize the edited text as a gzip file.
+-}
+encodeContentGZip : Rte msg -> Bytes
+encodeContentGZip =
+    MiniRte.Core.encodeContentGZip
+
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
 Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events.
@@ -232,13 +268,6 @@ emojiBox rte params =
     Html.Styled.toUnstyled <|
         Styled.emojiBox (tostyled2 rte) styledParams
 
-
-{-| Serialize the content of the textarea, including formatting, links, and images.
-You can write the result into a database and use it later with [init](#init) or [display](#display).
--}
-encodedContent : Rte msg -> String
-encodedContent rte =
-    MiniRte.Core.encode rte.textarea
 
 
 {-| A `Html.select` element that triggers `update Font` events.
@@ -285,14 +314,15 @@ inputBox rte params =
 -}
 isActive : Rte msg -> Bool
 isActive rte =
-    rte.textarea.state == MiniRte.CoreTypes.Edit
+    rte.textarea.state == HiddenTypes.Edit
 
 
 {-| A switch that turns editing on/off. The `params.width` field controls its width in px.
 -}
 onOffSwitch : Rte msg -> SwitchParams -> Html msg
 onOffSwitch rte params =
-    Html.Styled.toUnstyled <| Styled.onOffSwitch (tostyled2 rte) params
+    Styled.onOffSwitch (tostyled2 rte) params
+    |> Html.Styled.toUnstyled
 
 
 {-| The plain text content of the textarea.
@@ -341,3 +371,5 @@ tostyled3 a =
     { active = tostyled a.active
     , inactive = tostyled a.inactive
     }
+
+

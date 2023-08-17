@@ -1,9 +1,9 @@
-module MiniRte.StyledHelp exposing
+module MiniRte.Common exposing
     ( RteFrame
-    , initFrame
+    , init
     , inputBoxId
-    , subscriptionsFrame
-    , updateFrame
+    , subscriptions
+    , update
     )
 
 import Browser.Dom as Dom
@@ -16,8 +16,8 @@ import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events
 import Json.Decode as Decode exposing (Decoder)
 import MiniRte.Core
-import MiniRte.CoreTypes
-import MiniRte.Types exposing (InputBox(..), Msg(..))
+import MiniRte.Types exposing (Content, InputBox(..), Msg(..))
+import MiniRte.TypesThatAreNotPublic exposing (..)
 import Task
 
 
@@ -35,10 +35,12 @@ type alias RteFrame a msg =
 
 type alias ParametersFrame a msg =
     { id : String
-    , content : Maybe String
+    , content : Content
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
     , indentUnit : Maybe ( Float, String )
+    , pasteImageLinksAsImages : Bool
+    , pasteLinksAsLinks : Bool
     , selectionStyle : List ( String, String )
     , styling :
         { active : List a
@@ -48,21 +50,11 @@ type alias ParametersFrame a msg =
     }
 
 
-initFrame : ParametersFrame a msg -> ( RteFrame a msg, Cmd msg )
-initFrame parameters =
+init : ParametersFrame a msg -> ( RteFrame a msg, Cmd msg )
+init params =
     let
         ( editor, cmd ) =
-            case parameters.content of
-                Nothing ->
-                    MiniRte.Core.init parameters.id
-
-                Just txt ->
-                    case MiniRte.Core.decode txt of
-                        Just content ->
-                            MiniRte.Core.initWithContent content parameters.id
-
-                        Nothing ->
-                            MiniRte.Core.initWithText txt parameters.id
+            MiniRte.Core.initWithContent params.content params.id            
 
         style ( x, y ) =
             Html.Styled.Attributes.style x y
@@ -70,57 +62,47 @@ initFrame parameters =
     ( { emojiBox = False
       , inputBox = Nothing
       , styling =
-            { active = parameters.styling.active
-            , inactive = parameters.styling.inactive
+            { active = params.styling.active
+            , inactive = params.styling.inactive
             }
       , textarea =
             { editor
-                | fontSizeUnit = parameters.fontSizeUnit
-                , highlighter = parameters.highlighter
+                | fontSizeUnit = params.fontSizeUnit
+                , highlighter = params.highlighter
+                , pasteImageLinksAsImages = params.pasteImageLinksAsImages
+                , pasteLinksAsLinks = params.pasteLinksAsLinks
                 , selectionStyle =
-                    if parameters.selectionStyle == [] then
+                    if params.selectionStyle == [] then
                         editor.selectionStyle
 
                     else
-                        List.map style parameters.selectionStyle
+                        List.map style params.selectionStyle
             }
-      , tagger = parameters.tagger
+      , tagger = params.tagger
       }
-    , Cmd.map (parameters.tagger << Core) cmd
+    , Cmd.map params.tagger cmd
     )
 
 
-subscriptionsFrame : RteFrame a msg -> Sub msg
-subscriptionsFrame model =
-    Sub.map (model.tagger << Core) (MiniRte.Core.subscriptions model.textarea)
+subscriptions : RteFrame a msg -> Sub msg
+subscriptions model =
+    Sub.map model.tagger (MiniRte.Core.subscriptions model.textarea)
 
 
-apply : (MiniRte.Core.Editor -> ( MiniRte.Core.Editor, Cmd MiniRte.CoreTypes.Msg )) -> RteFrame a msg -> ( RteFrame a msg, Cmd msg )
+apply : (MiniRte.Core.Editor -> ( MiniRte.Core.Editor, Cmd Msg )) -> RteFrame a msg -> ( RteFrame a msg, Cmd msg )
 apply f model =
     let
         ( editor, cmd ) =
             f model.textarea
     in
     ( { model | textarea = editor }
-    , Cmd.map (model.tagger << Core) cmd
+    , Cmd.map model.tagger cmd
     )
 
 
-updateFrame : Msg -> RteFrame a msg -> ( RteFrame a msg, Cmd msg )
-updateFrame msg model =
-    let
-        coreOrActiveMsg =
-            case msg of
-                Active True ->
-                    True
-
-                Core _ ->
-                    True
-
-                _ ->
-                    False
-    in
-    if model.textarea.state == MiniRte.CoreTypes.Display && not coreOrActiveMsg then
+update : Msg -> RteFrame a msg -> ( RteFrame a msg, Cmd msg )
+update msg model =
+    if model.textarea.state == Display && not (relevantInDisplayMode msg) then
         ( model, Cmd.none )
 
     else
@@ -129,12 +111,51 @@ updateFrame msg model =
                 let
                     state =
                         if bool then
-                            MiniRte.CoreTypes.Edit
+                            Edit
 
                         else
-                            MiniRte.CoreTypes.Display
+                            Display
                 in
                 apply (MiniRte.Core.state state) { model | inputBox = Nothing }
+
+            AddContent xs ->
+                apply (MiniRte.Core.addContent xs) model
+
+            AddCustomHtml html ->
+                apply (MiniRte.Core.embed html) model
+
+            AddImage str ->
+                if str == "" then
+                    ( { model | inputBox = Nothing }, Cmd.none )
+
+                else
+                    let
+                        ( editor1, cmd1 ) =
+                            MiniRte.Core.addImage str model.textarea
+
+                        ( editor2, cmd2 ) =
+                            MiniRte.Core.state Edit editor1
+                    in
+                    ( { model
+                        | inputBox = Nothing
+                        , textarea = editor2
+                      }
+
+                    , Cmd.batch [ cmd1, cmd2 ]
+                      |> Cmd.map model.tagger  
+                    )
+
+            AddLink href ->
+                if href == "" then
+                    ( { model | inputBox = Nothing }, Cmd.none )
+
+                else
+                    apply
+                        (MiniRte.Core.state Edit)
+                        { model
+                            | inputBox = Nothing
+                            , textarea = MiniRte.Core.link href model.textarea
+                        }
 
             AddText str ->
                 apply (MiniRte.Core.addText str) model
@@ -146,18 +167,10 @@ updateFrame msg model =
                 apply (MiniRte.Core.toggleParaClass x) model
 
             Copy ->
-                apply (MiniRte.Core.update MiniRte.CoreTypes.Copy) model
-
-            Core rteMsg ->
-                case rteMsg of
-                    MiniRte.CoreTypes.ToBrowserClipboard txt ->
-                        ( model, Task.perform model.tagger <| Task.succeed (ToBrowserClipboard txt) )
-
-                    _ ->
-                        apply (MiniRte.Core.update rteMsg) model
+                apply MiniRte.Core.copy model
 
             Cut ->
-                apply (MiniRte.Core.update MiniRte.CoreTypes.Cut) model
+                apply MiniRte.Core.cut model
 
             Font family ->
                 apply (MiniRte.Core.fontFamily family) model
@@ -166,34 +179,12 @@ updateFrame msg model =
                 apply (MiniRte.Core.fontSize float) model
 
             FromBrowserClipboard txt ->
-                apply (MiniRte.Core.update (MiniRte.CoreTypes.Paste txt)) model
+                apply (MiniRte.Core.update (Paste txt)) model
 
             Heading ->
                 apply (MiniRte.Core.toggleNodeType "h1") model
 
-            ImageAdd str ->
-                if str == "" then
-                    ( { model | inputBox = Nothing }, Cmd.none )
-
-                else
-                    let
-                        ( editor1, cmd1 ) =
-                            MiniRte.Core.addImage str model.textarea
-
-                        ( editor2, cmd2 ) =
-                            MiniRte.Core.state MiniRte.CoreTypes.Edit editor1
-
-                        f =
-                            Cmd.map (model.tagger << Core)
-                    in
-                    ( { model
-                        | inputBox = Nothing
-                        , textarea = editor2
-                      }
-                    , Cmd.batch (List.map f [ cmd1, cmd2 ])
-                    )
-
-            ImageInput str ->
+            ImageSourceInput str ->
                 ( { model | inputBox = Just (ImageInputBox str) }
                 , Cmd.none
                 )
@@ -201,28 +192,25 @@ updateFrame msg model =
             Indent ->
                 apply (MiniRte.Core.changeIndent 1) model
 
+            Internal subMsg ->
+                apply (MiniRte.Core.update subMsg) model
+
             Italic ->
                 apply MiniRte.Core.toggleItalic model
 
-            LinkAdd href ->
-                if href == "" then
-                    ( { model | inputBox = Nothing }, Cmd.none )
+            LoadContent content ->
+                apply (\x -> ( MiniRte.Core.loadContent content x, Cmd.none )) model
 
-                else
-                    apply
-                        (MiniRte.Core.state MiniRte.CoreTypes.Edit)
-                        { model
-                            | inputBox = Nothing
-                            , textarea = MiniRte.Core.link href model.textarea
-                        }
+            LoadText txt ->
+                apply (\x -> ( MiniRte.Core.loadText txt x, Cmd.none )) model
 
-            LinkInput str ->
+            LinkHrefInput str ->
                 ( { model | inputBox = Just (LinkInputBox str) }
                 , Cmd.none
                 )
 
-            NoOp ->
-                ( model, Cmd.none )
+            NodeType str ->                
+                apply (MiniRte.Core.toggleNodeType str) model
 
             StrikeThrough ->
                 apply MiniRte.Core.toggleStrikeThrough model
@@ -239,32 +227,32 @@ updateFrame msg model =
             ToggleImageBox ->
                 case model.inputBox of
                     Just (ImageInputBox _) ->
-                        apply (MiniRte.Core.state MiniRte.CoreTypes.Edit) { model | inputBox = Nothing }
+                        apply (MiniRte.Core.state Edit) { model | inputBox = Nothing }
 
                     _ ->
                         let
                             ( newmodel, cmd ) =
-                                apply (MiniRte.Core.state MiniRte.CoreTypes.Freeze) model
+                                apply (MiniRte.Core.state Freeze) model
                         in
                         ( { newmodel | inputBox = Just (ImageInputBox "") }
-                        , Task.attempt (\_ -> model.tagger NoOp) (Dom.focus (inputBoxId model))
+                        , Task.attempt (\_ -> model.tagger (Internal NoOp)) (Dom.focus (inputBoxId model))
                         )
 
             ToggleLinkBox ->
                 case model.inputBox of
                     Just (LinkInputBox _) ->
-                        apply (MiniRte.Core.state MiniRte.CoreTypes.Edit) { model | inputBox = Nothing }
+                        apply (MiniRte.Core.state Edit) { model | inputBox = Nothing }
 
                     _ ->
                         let
                             ( newmodel, cmd ) =
-                                apply (MiniRte.Core.state MiniRte.CoreTypes.Freeze) model
+                                apply (MiniRte.Core.state Freeze) model
 
                             currentLink =
                                 Maybe.withDefault "" (MiniRte.Core.currentLink model.textarea)
                         in
                         ( { newmodel | inputBox = Just (LinkInputBox currentLink) }
-                        , Task.attempt (\_ -> model.tagger NoOp) (Dom.focus (inputBoxId model))
+                        , Task.attempt (\_ -> model.tagger (Internal NoOp)) (Dom.focus (inputBoxId model))
                         )
 
             Underline ->
@@ -285,3 +273,16 @@ updateFrame msg model =
 inputBoxId : RteFrame a msg -> String
 inputBoxId rte =
     rte.textarea.editorID ++ "InputBox"
+
+
+relevantInDisplayMode : Msg -> Bool
+relevantInDisplayMode msg =
+    case msg of
+        Active _ ->
+            True
+
+        Internal _ ->
+            True
+
+        _ ->
+            False

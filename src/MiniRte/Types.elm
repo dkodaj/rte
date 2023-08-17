@@ -1,6 +1,7 @@
 module MiniRte.Types exposing
     ( Msg(..), InputBox(..), TextAlignType(..)
-    , Content, Element(..), Character, EmbeddedHtml, LineBreak, Child(..), FontStyle, StyleTags
+    , Content, Element(..), Character, EmbeddedHtml, LineBreak, Child(..), FontStyle
+    , emptyEmbeddedHtml
     )
 
 {-|
@@ -16,11 +17,13 @@ Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
 Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
 Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
 
-@docs Content, Element, Character, EmbeddedHtml, LineBreak, Child, FontStyle, StyleTags
+@docs Content, Element, Character, EmbeddedHtml, emptyEmbeddedHtml, LineBreak, Child, FontStyle
 
 -}
 
-import MiniRte.CoreTypes
+import Array exposing (Array)
+import Html.Styled exposing (Html)
+import MiniRte.TypesThatAreNotPublic exposing (..)
 
 
 {-| For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
@@ -46,7 +49,6 @@ import MiniRte.CoreTypes
     | Italic            -- make text italic
     | LinkAdd String    -- add link to current selection
     | LinkInput String  -- modify content of link input box
-    | NoOp              -- normally, you won't need this
     | StrikeThrough     -- cross out text
     | TextAlign TextAlignType
                         -- change alignment of current para
@@ -63,29 +65,33 @@ import MiniRte.CoreTypes
 -}
 type Msg
     = Active Bool
+    | AddContent Content
+    | AddCustomHtml EmbeddedHtml
+    | AddImage String
+    | AddLink String
     | AddText String
     | Bold
     | Class String
-    | Core MiniRte.CoreTypes.Msg
+    | Copy    
     | Cut
-    | Copy
     | Font (List String)
     | FontSize Float
     | FromBrowserClipboard String
     | Heading
-    | ImageAdd String
-    | ImageInput String
+    | ImageSourceInput String
     | Indent
+    | Internal InternalMsg
     | Italic
-    | LinkAdd String
-    | LinkInput String
-    | NoOp
-    | StrikeThrough
+    | LinkHrefInput String
+    | LoadContent Content
+    | LoadText String
+    | NodeType String
+    | StrikeThrough    
     | TextAlign TextAlignType
     | ToBrowserClipboard String
     | ToggleEmojiBox
     | ToggleImageBox
-    | ToggleLinkBox
+    | ToggleLinkBox    
     | Underline
     | Undo
     | Unindent
@@ -103,7 +109,7 @@ type alias Character =
     { char : Char
     , fontStyle : FontStyle
     , highlightClasses : List String
-    , highlightStyling : StyleTags
+    , highlightStyling : List (String,String)
     , id : Int
     , link : Maybe String
     }
@@ -126,17 +132,32 @@ type Element
     | Embedded EmbeddedHtml
 
 
-{-| -}
+{-| `id` is set internally by the module; it doesn't matter what value you enter. -}
 type alias EmbeddedHtml =
-    { attributes : List ( String, String )
+    { attributes : List (String, String)
     , classes : List String
-    , children : List Child
+    , children : List Child    
     , highlightClasses : List String
-    , highlightStyling : StyleTags
+    , highlightStyling : List (String, String)
     , id : Int
     , nodeType : Maybe String
-    , styling : StyleTags
+    , styling : List (String, String)
     , text : Maybe String
+    }
+
+{-| An empty div.
+-}
+emptyEmbeddedHtml : EmbeddedHtml
+emptyEmbeddedHtml =
+    { attributes = []
+    , classes = []
+    , children = []
+    , highlightClasses = []
+    , highlightStyling = []
+    , id = -1
+    , nodeType = Nothing
+    , styling = []
+    , text = Nothing
     }
 
 
@@ -145,26 +166,21 @@ type alias FontStyle =
     { classes : List String
     , fontFamily : List String
     , fontSize : Maybe Float
-    , styling : StyleTags
+    , styling : List (String, String)
     }
-
+    
 
 {-| -}
 type alias LineBreak =
     { classes : List String
     , highlightClasses : List String
     , highlightIndent : Int
-    , highlightStyling : StyleTags
+    , highlightStyling : List (String, String)
     , id : Int
     , indent : Int
     , nodeType : Maybe String
-    , styling : StyleTags
+    , styling : List (String, String)
     }
-
-
-{-| -}
-type alias StyleTags =
-    List ( String, String )
 
 
 {-| -}

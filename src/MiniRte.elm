@@ -65,13 +65,13 @@ import Task
 --== Main types ==--
 
 
-{-| You normally shouldn't mess with these variables; use [update](#update) and [Msg](MiniRte-Types#Msg) to modify the editor.
+{-| Normally, you don't have to do anything with these variables; use [update](#update) and [Msg](MiniRte-Types#Msg) to modify the editor's state.
 
 If `emojiBox` is `True`, then the [emojiBox](#emojiBox) is visible.
 
 If `inputBox` is `Nothing`, then the [inputBox](#inputBox) is not visible.
 
-`styling.active` styles the textarea div in active mode (when editing), `styling.passive` in [display](#display) or inactive mode. Use [init](#init) to set it.
+`styling.active` styles the div containing the editor in active mode (when editing), `styling.passive` does the same in [display](#display) mode or inactive mode. Use [init](#init) to set it.
 
 `tagger` connects RTE [Msg](MiniRte-Types#Msg)'s with your app's own Msg type. Use [init](#init) to set it.
 

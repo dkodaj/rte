@@ -24,7 +24,7 @@ port fromBrowserClipboard : (String -> msg) -> Sub msg
 port toBrowserClipboard : String -> Cmd msg
 ```
 
-These ports belong in your `subscriptions` and `update` functions. See the [example](https://github.com/dkodaj/rte/tree/master/example).
+These ports belong in your `subscriptions` and `update` functions. See the example's [Main.elm](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm).
 
 You will also need a bit of JS:
 
@@ -40,4 +40,7 @@ app.ports.toBrowserClipboard.subscribe(txt => {
 window.addEventListener('paste', (event) => {            
     app.ports.fromBrowserClipboard.send(event.clipboardData.getData('text'))                        
 })
+
 ```
+
+You can use a more complicated callback to allow copy/pasting images into the RTE. See the example's [index.html](https://github.com/dkodaj/rte/blob/master/example/html/index.html).

@@ -4,11 +4,11 @@ module MiniRte.Styled exposing
     , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
     , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
     , onOffSwitch, SwitchParams
-    , isActive, textContent
+    , isActive, textContent, textToContent
     , decodeContentString
     , decodeContentGZip
     , encodeContentString
-    , encodeContentGZip
+    , encodeContentGZip    
     )
 
 {-| Same as `MiniRte` except it uses [Html.Styled](https://package.elm-lang.org/packages/rtfeldman/elm-css/latest/Html-Styled).
@@ -16,7 +16,7 @@ module MiniRte.Styled exposing
 
 # Init and update
 
-@docs init, Rte, Parameters, subscriptions, update
+@docs init, Rte, Parameters, subscriptions, update, textToContent
 
 
 # View
@@ -203,6 +203,10 @@ update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
     Common.update
 
+{-| -}
+textToContent : String -> Content
+textToContent =
+    MiniRte.Core.textToContent
 
 
 --== Helpers in ABC order ==--

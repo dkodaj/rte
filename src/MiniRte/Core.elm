@@ -35,6 +35,7 @@ module MiniRte.Core exposing
     , subscriptions
     , textAlign
     , textContent
+    , textToContent
     , toText
     , toggleBold
     , toggleItalic

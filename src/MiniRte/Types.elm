@@ -31,11 +31,11 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
       Active Bool       -- turn editing on/off
     | AddText String    -- insert text
     | Bold              -- make text bold
-    | Class String      -- put a class on current paragraph
+    | Class String      -- toggle class on current paragraph
     | Core MiniRte.CoreTypes.Msg
-                        -- normally, you won't need this
-    | Cut
-    | Copy
+                        -- don't mess with this
+    | Cut               -- cut current selection
+    | Copy              -- copy current selection
     | Font (List String)
                         -- set current font families
                         -- e.g. ["Oswald", "sans-serif"]
@@ -45,13 +45,13 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
     | Heading           -- toggles between h1 and plain div
     | ImageAdd String   -- embed image (the String is a link)
     | ImageInput String -- modify content of image input box
-    | Indent            -- increase indent of current para
+    | Indent            -- increase indent of current paragraph
     | Italic            -- make text italic
     | LinkAdd String    -- add link to current selection
     | LinkInput String  -- modify content of link input box
     | StrikeThrough     -- cross out text
     | TextAlign TextAlignType
-                        -- change alignment of current para
+                        -- change alignment of current paragraph
     | ToBrowserClipboard String
                         -- see package description
     | ToggleEmojiBox    -- turn emoji input box on/off
@@ -59,7 +59,7 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
     | ToggleLinkBox     -- turn link input box on/off
     | Underline         -- underline text
     | Undo              -- undo last action
-    | Unindent          -- decrease indent of current para
+    | Unindent          -- decrease indent of current paragraph
     | Unlink            -- remove the link the cursor is touching
 
 -}

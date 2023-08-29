@@ -3,7 +3,7 @@
     "name": "dkodaj/rte",
     "summary": "Pure Elm rich text editor for blogpost-sized texts",
     "license": "MIT",
-    "version": "4.0.1",
+    "version": "4.1.0",
     "exposed-modules": [
         "MiniRte",
         "MiniRte.Styled",
@@ -20,7 +20,7 @@
         "elm/time": "1.0.0 <= v < 2.0.0",
         "elm-community/intdict": "3.0.0 <= v < 4.0.0",
         "folkertdev/elm-flate": "2.0.5 <= v < 3.0.0",
-        "rtfeldman/elm-css": "16.0.0 <= v < 17.0.0"
+        "rtfeldman/elm-css": "18.0.0 <= v < 19.0.0"
     },
     "test-dependencies": {}
 }

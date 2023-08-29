@@ -6,7 +6,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "dkodaj/rte": "4.0.1",
+            "dkodaj/rte": "4.1.0",
             "elm/browser": "1.0.2",
             "elm/bytes": "1.0.8",
             "elm/core": "1.0.5",
@@ -22,7 +22,8 @@
             "elm-community/intdict": "3.0.0",
             "elm-community/list-extra": "8.7.0",
             "folkertdev/elm-flate": "2.0.5",
-            "rtfeldman/elm-css": "16.1.1",
+            "robinheghan/murmur3": "1.0.0",
+            "rtfeldman/elm-css": "18.0.0",
             "rtfeldman/elm-hex": "1.0.0"
         }
     },

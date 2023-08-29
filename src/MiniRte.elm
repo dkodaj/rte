@@ -167,9 +167,9 @@ type alias InputBoxParams msg =
 
 `indentUnit` defaults to `(50,"px")`.
 
-If `pasteImageLinksAsImages` is `True`, then pasting an image link into the RTE will insert the linked image into the text.
+If `pasteImageLinksAsImages` is `True`, then pasting an image link or an image (data url) into the RTE will insert the image into the text.
 
-if `pasteLinksAsLinks` is `True`, then pasting an image link will create a clickable link.
+if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/65308588421a7000e27bb7165538999e59b8fceb/src/MiniRte/Core.elm#L1596) `"http://"` or `"https://"`) will create a clickable link.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 

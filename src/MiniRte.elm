@@ -13,7 +13,7 @@ module MiniRte exposing
 
 {-|
 
-Don't forget to hook [subscription](#subscription) and [update](#update) into your app's own `subscription` and `update` function. Without that, the editor won't do anything.
+Don't forget to hook [subscriptions](#subscriptions) and [update](#update) into your app's own `subscriptions` and `update` function. Without that, the editor won't do anything.
 
 # Init and update
 
@@ -101,7 +101,7 @@ type alias Msg =
 --== Subsidiary types ==--
 
 
-{-| `content` can be plain text (in which case it is turned into [Content](MiniRte-Types#Content) by [textToContent](#textToContent)), or it can be a json string created with [encodedContentString](#encodedContentString).
+{-| `content` can be plain text (in which case it is turned into [Content](MiniRte-Types#Content) by [textToContent](#textToContent)), or it can be a json string created with [encodeContentString](#encodeContentString).
 
 `fontSizeUnit` defaults to `"px"`.
 

@@ -4124,14 +4124,10 @@ decodeLineBreak =
     Decode.map8
         LineBreak
         (Decode.field "classes" (Decode.list Decode.string))
-        (Decode.succeed [])
-        --highlightClasses
-        (Decode.succeed 0)
-        --highlightIndent
-        (Decode.succeed [])
-        --highlightStyling
-        (Decode.succeed -1)
-        --id
+        (Decode.succeed [])--highlightClasses
+        (Decode.succeed 0)--highlightIndent
+        (Decode.succeed [])--highlightStyling
+        (Decode.succeed -1)--id
         (Decode.field "indent" Decode.int)
         (Decode.field "nodeType" (Decode.maybe Decode.string))
         (Decode.field "styling" decodeStyleTags)

@@ -4,7 +4,7 @@ module MiniRte exposing
     , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
     , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
     , onOffSwitch, SwitchParams
-    , isActive, textContent, textToContent
+    , isActive, textContent, textToContent, contentToText
     , decodeContentString
     , decodeContentGZip
     , encodeContentString
@@ -17,7 +17,7 @@ Don't forget to hook [subscriptions](#subscriptions) and [update](#update) into 
 
 # Init and update
 
-@docs init, Rte, Parameters, subscriptions, update, textToContent
+@docs init, Rte, Parameters, subscriptions, update, textToContent, contentToText
 
 
 # View
@@ -233,6 +233,10 @@ textToContent : String -> Content
 textToContent =
     MiniRte.Core.textToContent
 
+{-| Ignores [EmbeddedHtml](MiniRte-Types#EmbeddedHtml) elements (replaces them with `""`).-}
+contentToText : Content -> String
+contentToText =
+    MiniRte.Core.toText 
 
 --== Helpers in ABC order ==--
 

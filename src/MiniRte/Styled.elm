@@ -4,7 +4,7 @@ module MiniRte.Styled exposing
     , emojiBox, EmojiBoxParams, fontSelector, FontSelectorParams
     , fontSizeSelector, FontSizeSelectorParams, inputBox, InputBoxParams
     , onOffSwitch, SwitchParams
-    , isActive, textContent, textToContent
+    , isActive, textContent, textToContent, contentToText
     , decodeContentString
     , decodeContentGZip
     , encodeContentString
@@ -16,7 +16,7 @@ module MiniRte.Styled exposing
 
 # Init and update
 
-@docs init, Rte, Parameters, subscriptions, update, textToContent
+@docs init, Rte, Parameters, subscriptions, update, textToContent, contentToText
 
 
 # View
@@ -207,6 +207,11 @@ update =
 textToContent : String -> Content
 textToContent =
     MiniRte.Core.textToContent
+
+{-| -}
+contentToText : Content -> String
+contentToText =
+    MiniRte.Core.toText 
 
 
 --== Helpers in ABC order ==--

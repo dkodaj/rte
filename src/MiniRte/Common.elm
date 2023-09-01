@@ -95,7 +95,7 @@ apply f model =
         ( editor, cmd ) =
             f model.textarea
     in
-    ( { model | textarea = editor }
+    ( { model | textarea = editor }    
     , Cmd.map model.tagger cmd
     )
 
@@ -104,7 +104,6 @@ update : Msg -> RteFrame a msg -> ( RteFrame a msg, Cmd msg )
 update msg model =
     if model.textarea.state == Display && not (relevantInDisplayMode msg) then
         ( model, Cmd.none )
-
     else
         case msg of
             Active bool ->
@@ -116,7 +115,9 @@ update msg model =
                         else
                             Display
                 in
-                apply (MiniRte.Core.state state) { model | inputBox = Nothing }
+                ( { model | inputBox = Nothing, textarea = MiniRte.Core.state state model.textarea }
+                , Cmd.none 
+                )
 
             AddContent xs ->
                 apply (MiniRte.Core.addContent xs) model
@@ -127,35 +128,31 @@ update msg model =
             AddImage str ->
                 if str == "" then
                     ( { model | inputBox = Nothing }, Cmd.none )
-
                 else
                     let
-                        ( editor1, cmd1 ) =
+                        ( textarea, cmd ) =
                             MiniRte.Core.addImage str model.textarea
-
-                        ( editor2, cmd2 ) =
-                            MiniRte.Core.state Edit editor1
                     in
                     ( { model
                         | inputBox = Nothing
-                        , textarea = editor2
+                        , textarea = MiniRte.Core.state Edit textarea
                       }
 
-                    , Cmd.batch [ cmd1, cmd2 ]
-                      |> Cmd.map model.tagger  
+                    , Cmd.map model.tagger cmd
                     )
 
             AddLink href ->
                 if href == "" then
                     ( { model | inputBox = Nothing }, Cmd.none )
-
-                else
-                    apply
-                        (MiniRte.Core.state Edit)
-                        { model
-                            | inputBox = Nothing
-                            , textarea = MiniRte.Core.link href model.textarea
-                        }
+                else                    
+                    ( { model
+                        | inputBox = Nothing
+                        , textarea =
+                            MiniRte.Core.link href model.textarea
+                            |> MiniRte.Core.state Edit
+                      }
+                    , Cmd.none
+                    )
 
             AddText str ->
                 apply (MiniRte.Core.addText str) model
@@ -173,10 +170,12 @@ update msg model =
                 apply MiniRte.Core.cut model
 
             Font family ->
-                apply (MiniRte.Core.fontFamily family) model
+                { model | textarea = MiniRte.Core.state Edit model.textarea }
+                |> apply (MiniRte.Core.fontFamily family) 
 
             FontSize float ->
-                apply (MiniRte.Core.fontSize float) model
+                { model | textarea = MiniRte.Core.state Edit model.textarea }
+                |> apply (MiniRte.Core.fontSize float)
 
             FromBrowserClipboard txt ->
                 apply (MiniRte.Core.update (Paste txt)) model
@@ -227,31 +226,42 @@ update msg model =
             ToggleImageBox ->
                 case model.inputBox of
                     Just (ImageInputBox _) ->
-                        apply (MiniRte.Core.state Edit) { model | inputBox = Nothing }
+                        ( { model 
+                            | inputBox = Nothing 
+                            , textarea = MiniRte.Core.state Edit model.textarea
+                          }
+                        , Cmd.none
+                        )
 
                     _ ->
-                        let
-                            ( newmodel, cmd ) =
-                                apply (MiniRte.Core.state Freeze) model
-                        in
-                        ( { newmodel | inputBox = Just (ImageInputBox "") }
+                        ( { model
+                            | inputBox = Just (ImageInputBox "") 
+                            , textarea = MiniRte.Core.state Freeze model.textarea
+                          }                          
+
                         , Task.attempt (\_ -> model.tagger (Internal NoOp)) (Dom.focus (inputBoxId model))
                         )
 
             ToggleLinkBox ->
                 case model.inputBox of
                     Just (LinkInputBox _) ->
-                        apply (MiniRte.Core.state Edit) { model | inputBox = Nothing }
+                        ( { model 
+                            | inputBox = Nothing 
+                            , textarea = MiniRte.Core.state Edit model.textarea
+                          }
+                        , Cmd.none
+                        )
 
                     _ ->
                         let
-                            ( newmodel, cmd ) =
-                                apply (MiniRte.Core.state Freeze) model
-
                             currentLink =
                                 Maybe.withDefault "" (MiniRte.Core.currentLink model.textarea)
                         in
-                        ( { newmodel | inputBox = Just (LinkInputBox currentLink) }
+                        ( { model
+                            | inputBox = Just (LinkInputBox currentLink) 
+                            , textarea = MiniRte.Core.state Freeze model.textarea
+                          }
+
                         , Task.attempt (\_ -> model.tagger (Internal NoOp)) (Dom.focus (inputBoxId model))
                         )
 

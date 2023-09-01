@@ -321,7 +321,10 @@ fontSelector rte params =
                     Nothing
     in
     Html.Styled.select
-        (Html.Styled.Events.on "change" (selectDecode msg) :: params.styling)
+        ( Html.Styled.Events.on "change" (selectDecode msg)
+        :: Html.Styled.Events.onMouseDown (rte.tagger <| Internal FreezeEditor)
+        :: params.styling
+        )
         (placeholder :: List.map o params.fonts)
 
 
@@ -359,8 +362,11 @@ fontSizeSelector rte params =
                 [ text "size" ]
     in
     Html.Styled.select
-        (Html.Styled.Events.on "change" (selectDecode msg) :: params.styling)
-        (placeholder :: List.map o params.sizes)
+        ( Html.Styled.Events.on "change" (selectDecode msg) 
+        :: Html.Styled.Events.onMouseDown (rte.tagger <| Internal FreezeEditor)
+        :: params.styling
+        )
+        ( placeholder :: List.map o params.sizes )
 
 
 {-| Input box for adding hyperlinks and image links.
@@ -375,7 +381,6 @@ inputBox rte params =
                 value =
                     if behaviour.content == "" then
                         Html.Styled.Attributes.placeholder behaviour.placeholder
-
                     else
                         Html.Styled.Attributes.value behaviour.content
             in

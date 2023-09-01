@@ -110,7 +110,6 @@ type alias Character =
     , fontStyle : FontStyle
     , highlightClasses : List String
     , highlightStyling : List (String,String)
-    , id : Int
     , link : Maybe String
     }
 
@@ -122,7 +121,7 @@ type Child
 
 {-| -}
 type alias Content =
-    List Element
+    Array Element
 
 
 {-| -}
@@ -139,7 +138,6 @@ type alias EmbeddedHtml =
     , children : List Child    
     , highlightClasses : List String
     , highlightStyling : List (String, String)
-    , id : Int
     , nodeType : Maybe String
     , styling : List (String, String)
     , text : Maybe String
@@ -154,7 +152,6 @@ emptyEmbeddedHtml =
     , children = []
     , highlightClasses = []
     , highlightStyling = []
-    , id = -1
     , nodeType = Nothing
     , styling = []
     , text = Nothing
@@ -176,7 +173,6 @@ type alias LineBreak =
     , highlightClasses : List String
     , highlightIndent : Int
     , highlightStyling : List (String, String)
-    , id : Int
     , indent : Int
     , nodeType : Maybe String
     , styling : List (String, String)

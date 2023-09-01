@@ -159,7 +159,7 @@ type alias InputBoxParams msg =
 
 {-| `id` must be unique.
 
-`content` is the initial content of the textarea. Use `[]` to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L43)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
+`content` is the initial content of the textarea. Use Array.empty to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L43)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
 
 `fontSizeUnit` defaults to `"px"`.
 
@@ -267,8 +267,9 @@ display tagger p =
             , styling = tostyled p.styling
             }
     in
-    Html.Styled.toUnstyled <|
-        Styled.display tagger styledParams
+    Styled.display tagger styledParams
+    |> Html.Styled.toUnstyled
+        
 
 {-| Serialize the edited text as string.
 -}
@@ -323,8 +324,9 @@ fontSizeSelector rte params =
             , styling = tostyled params.styling
             }
     in
-    Html.Styled.toUnstyled <|
-        Styled.fontSizeSelector (tostyled2 rte) styledParams
+    Styled.fontSizeSelector (tostyled2 rte) styledParams
+    |> Html.Styled.toUnstyled
+        
 
 
 {-| Input box for adding hyperlinks and image links.
@@ -333,10 +335,10 @@ It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`. [E
 -}
 inputBox : Rte msg -> InputBoxParams msg -> Html msg
 inputBox rte params =
-    Html.Styled.toUnstyled <|
-        Styled.inputBox
-            (tostyled2 rte)
-            { styling = tostyled3 params.styling }
+    Styled.inputBox
+        (tostyled2 rte)
+        { styling = tostyled3 params.styling }
+    |> Html.Styled.toUnstyled
 
 
 {-| Checks if the editor is active.
@@ -365,7 +367,8 @@ textContent rte =
 -}
 textarea : Rte msg -> Html msg
 textarea rte =
-    Html.Styled.toUnstyled <| Styled.textarea (tostyled2 rte)
+    Styled.textarea (tostyled2 rte)
+    |> Html.Styled.toUnstyled
 
 
 tostyled : List (Html.Attribute msg) -> List (Html.Styled.Attribute msg)

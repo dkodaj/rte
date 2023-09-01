@@ -1,6 +1,3 @@
--- image input bad
--- select elements suck
-
 module MiniRte.Core exposing
     ( Editor
     , addContent    

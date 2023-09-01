@@ -75,7 +75,7 @@ If `inputBox` is `Nothing`, then the [inputBox](#inputBox) is not visible.
 
 `tagger` connects RTE [Msg](MiniRte-Types#Msg)'s with your app's own Msg type. Use [init](#init) to set it.
 
-`textarea` is a [complicated object](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/src/MiniRte/Core.elm#L76) that you shouldn't mess with.
+`textarea` is a [complicated object](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/src/MiniRte/Core.elm#L76) that you shouldn't mess with.
 -}
 type alias Rte msg =
     { emojiBox : Bool
@@ -169,7 +169,7 @@ type alias InputBoxParams msg =
 
 If `pasteImageLinksAsImages` is `True`, then pasting an image link or an image (data url) into the RTE will insert the image into the text.
 
-if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/65308588421a7000e27bb7165538999e59b8fceb/src/MiniRte/Core.elm#L1596) `"http://"` or `"https://"`) will create a clickable link.
+if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/src/MiniRte/Core.elm#L1398) `"http://"` or `"https://"`) will create a clickable link.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 
@@ -213,14 +213,14 @@ init =
     Common.init
 
 
-{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/src/MiniRte/Core.elm#L258)). The RTE won't do anything unless you build this into your app's own subscriptions ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L71)).
+{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/src/MiniRte/Core.elm#L258)). The RTE won't do anything unless you build this into your app's own subscriptions ([example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L68)).
 -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =
     Common.subscriptions
 
 
-{-| Use this to handle the RTE's own [Msg](MiniRte-Types#Msg) updates ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L79)). You can also use it to alter the RTE's state on your own (e.g. to apply a CSS class to the current paragraph via a button; [example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L196)).
+{-| Use this to handle the RTE's own [Msg](MiniRte-Types#Msg) updates ([example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L114)).
 -}
 update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
@@ -246,7 +246,7 @@ decodeContentString : String -> Result String Content
 decodeContentString =
     MiniRte.Core.decodeContentString
 
-{-| Convert gzipped serialized content back into content ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L96)).
+{-| Convert gzipped serialized content back into content ([example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L94)).
 -}
 decodeContentGZip : Bytes -> Result String Content
 decodeContentGZip =
@@ -277,7 +277,7 @@ encodeContentString : Rte msg -> String
 encodeContentString =
     MiniRte.Core.encodeContentString
 
-{-| Serialize the edited text as a gzip file ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L82)).
+{-| Serialize the edited text as a gzip file ([example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L81)).
 -}
 encodeContentGZip : Rte msg -> Bytes
 encodeContentGZip =
@@ -285,7 +285,7 @@ encodeContentGZip =
 
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
-Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L231)
+Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L228)
 -}
 emojiBox : Rte msg -> EmojiBoxParams msg -> Html msg
 emojiBox rte params =
@@ -300,7 +300,7 @@ emojiBox rte params =
 
 
 
-{-| A `Html.select` element that triggers `update Font` events. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L210)
+{-| A `Html.select` element that triggers `update Font` events. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L207)
 -}
 fontSelector : Rte msg -> FontSelectorParams msg -> Html msg
 fontSelector rte params =
@@ -314,7 +314,7 @@ fontSelector rte params =
         Styled.fontSelector (tostyled2 rte) styledParams
 
 
-{-| A `Html.select` element that triggers `update FontSize` events. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L219)
+{-| A `Html.select` element that triggers `update FontSize` events. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L216)
 -}
 fontSizeSelector : Rte msg -> FontSizeSelectorParams msg -> Html msg
 fontSizeSelector rte params =
@@ -331,7 +331,7 @@ fontSizeSelector rte params =
 
 {-| Input box for adding hyperlinks and image links.
 Make it appear/disappear with `update ToggleImageBox` or `update ToggleLinkBox`.
-It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L248)
+It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L245)
 -}
 inputBox : Rte msg -> InputBoxParams msg -> Html msg
 inputBox rte params =
@@ -348,7 +348,7 @@ isActive rte =
     rte.textarea.state == HiddenTypes.Edit
 
 
-{-| A switch that turns editing on/off. The `params.width` field controls its width in px. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L168)
+{-| A switch that turns editing on/off. The `params.width` field controls its width in px. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L165)
 -}
 onOffSwitch : Rte msg -> SwitchParams -> Html msg
 onOffSwitch rte params =
@@ -363,7 +363,7 @@ textContent rte =
     MiniRte.Core.toText rte.textarea.content
 
 
-{-| Display the edited text plus the cursor. [Example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L132)
+{-| Display the edited text plus the cursor. [Example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L129)
 -}
 textarea : Rte msg -> Html msg
 textarea rte =

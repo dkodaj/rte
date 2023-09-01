@@ -15,6 +15,8 @@ module MiniRte exposing
 
 Don't forget to hook [subscriptions](#subscriptions) and [update](#update) into your app's own `subscriptions` and `update` function. Without that, the editor won't do anything.
 
+**Note**: While the editor is active, it keeps taking away the focus from every other element ([source](https://github.com/dkodaj/rte/blob/da70dd29f0cec19851d1347f8b55ca1313d2dba9/src/MiniRte/Core.elm#L259)). This may interfere with Html.select and such. Use `update FreezeEditor` to take away the focus and `update (Active True)` to give it back.
+
 # Init and update
 
 @docs init, Rte, Parameters, subscriptions, update, textToContent, contentToText

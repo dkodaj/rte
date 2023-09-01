@@ -9,7 +9,6 @@ type InternalMsg =
     | CompositionStart
     | CompositionUpdate String
     | FocusOnEditor
-    | FreezeEditor
     | Input Float String
     | InputTimeStamp Float
     | KeyDown String

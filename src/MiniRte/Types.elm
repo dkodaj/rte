@@ -40,6 +40,7 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
                         -- set current font families
                         -- e.g. ["Oswald", "sans-serif"]
     | FontSize Float    -- set current font size
+    | FreezeEditor      -- turn off cursor, take away focus
     | FromBrowserClipboard String
                         -- see package description
     | Heading           -- toggles between h1 and plain div
@@ -76,6 +77,7 @@ type Msg
     | Cut
     | Font (List String)
     | FontSize Float
+    | FreezeEditor
     | FromBrowserClipboard String
     | Heading
     | ImageSourceInput String

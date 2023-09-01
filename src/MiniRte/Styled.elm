@@ -322,7 +322,7 @@ fontSelector rte params =
     in
     Html.Styled.select
         ( Html.Styled.Events.on "change" (selectDecode msg)
-        :: Html.Styled.Events.onMouseDown (rte.tagger <| Internal FreezeEditor)
+        :: Html.Styled.Events.onMouseDown (rte.tagger FreezeEditor)
         :: params.styling
         )
         (placeholder :: List.map o params.fonts)
@@ -363,7 +363,7 @@ fontSizeSelector rte params =
     in
     Html.Styled.select
         ( Html.Styled.Events.on "change" (selectDecode msg) 
-        :: Html.Styled.Events.onMouseDown (rte.tagger <| Internal FreezeEditor)
+        :: Html.Styled.Events.onMouseDown (rte.tagger FreezeEditor)
         :: params.styling
         )
         ( placeholder :: List.map o params.sizes )

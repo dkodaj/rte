@@ -177,6 +177,11 @@ update msg model =
                 { model | textarea = MiniRte.Core.state Edit model.textarea }
                 |> apply (MiniRte.Core.fontSize float)
 
+            FreezeEditor ->
+                ( { model | textarea = MiniRte.Core.state Freeze model.textarea }
+                , Cmd.none
+                )
+
             FromBrowserClipboard txt ->
                 apply (MiniRte.Core.update (Paste txt)) model
 

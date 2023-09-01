@@ -328,9 +328,6 @@ update msg e0 =
             , newMsg
             )
 
-        FreezeEditor ->
-            ( { e | state = Freeze }, Cmd.none )            
-
         FocusOnEditor ->
             ( e, focusOnEditor e )
 

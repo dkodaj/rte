@@ -3,7 +3,7 @@
     "name": "dkodaj/rte",
     "summary": "Pure Elm rich text editor for blogpost-sized texts",
     "license": "MIT",
-    "version": "5.0.2",
+    "version": "6.0.0",
     "exposed-modules": [
         "MiniRte",
         "MiniRte.Styled",

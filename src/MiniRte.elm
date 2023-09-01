@@ -159,7 +159,7 @@ type alias InputBoxParams msg =
 
 {-| `id` must be unique.
 
-`content` is the initial content of the textarea. Use Array.empty to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L43)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
+`content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/example/src/Main.elm#L43)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
 
 `fontSizeUnit` defaults to `"px"`.
 

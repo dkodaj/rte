@@ -3,7 +3,6 @@ port module Main exposing (main)
 import Array
 import Browser
 import Bytes exposing (Bytes)
-import Content
 import File exposing (File)
 import File.Download
 import File.Select
@@ -13,6 +12,7 @@ import Html.Attributes as Attr exposing (class)
 import Html.Events as Events
 import MiniRte as Rte
 import MiniRte.Types as Rtypes
+import SavedContent
 import Task
 
 
@@ -41,9 +41,17 @@ type Msg =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
+        content =            
+            case Rte.decodeContentString SavedContent.json of
+                Ok x ->
+                    x
+
+                Err err ->
+                    Array.empty
+
         parameters =
             { id = "MyRTE"
-            , content = Array.empty
+            , content = content
             , fontSizeUnit = Nothing
             , highlighter = Just highlighter
             , indentUnit = Nothing

@@ -75,7 +75,7 @@ If `inputBox` is `Nothing`, then the [inputBox](#inputBox) is not visible.
 
 `tagger` connects RTE [Msg](MiniRte-Types#Msg)'s with your app's own Msg type. Use [init](#init) to set it.
 
-`textarea` is a [complicated object](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/src/MiniRte/Core.elm#L76) that you shouldn't mess with.
+`textarea` is a [complicated object](https://github.com/dkodaj/rte/blob/4996b24b13f4919611728f058568ead6f9186006/src/MiniRte/Core.elm#L76) that you shouldn't mess with.
 -}
 type alias Rte msg =
     { emojiBox : Bool
@@ -169,7 +169,7 @@ type alias InputBoxParams msg =
 
 If `pasteImageLinksAsImages` is `True`, then pasting an image link or an image (data url) into the RTE will insert the image into the text.
 
-if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/src/MiniRte/Core.elm#L1398) `"http://"` or `"https://"`) will create a clickable link.
+if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/4996b24b13f4919611728f058568ead6f9186006/src/MiniRte/Core.elm#L1398) `"http://"` or `"https://"`) will create a clickable link.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 
@@ -213,7 +213,7 @@ init =
     Common.init
 
 
-{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/0b3d980d61ccf20ce09f9e82fd7039c5ae477582/src/MiniRte/Core.elm#L258)). The RTE won't do anything unless you build this into your app's own subscriptions ([example](https://github.com/dkodaj/rte/blob/b521f463f4cefced9dc8b057a7498150a9a2cec6/example/src/Main.elm#L68)).
+{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/4996b24b13f4919611728f058568ead6f9186006/src/MiniRte/Core.elm#L248)).
 -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =

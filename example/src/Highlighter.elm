@@ -37,7 +37,7 @@ highlight : (Bool, Element) -> Accumulator -> Accumulator
 highlight (isCode, elem) a =
     let
         indent x br =
-            Break { br | indent = x }
+            Break { br | highlightIndent = x }
 
         red ch =
             Char { ch | highlightStyling = [("color","red")] }

@@ -1,5 +1,6 @@
 port module Main exposing (main)
 
+import Array
 import Browser
 import Bytes exposing (Bytes)
 import Content
@@ -40,13 +41,9 @@ type Msg =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        content =
-            Rte.decodeContentString Content.json
-            |> Result.withDefault []
-
         parameters =
             { id = "MyRTE"
-            , content = content
+            , content = Array.empty
             , fontSizeUnit = Nothing
             , highlighter = Just highlighter
             , indentUnit = Nothing
@@ -98,7 +95,7 @@ update msg model =
                 Ok content ->
                     update (Rte (Rtypes.LoadContent content)) model
 
-                Err err ->
+                Err err ->                    
                     update (Rte (Rtypes.LoadText ("File open error: " ++ err))) model
 
         FileSelected file ->

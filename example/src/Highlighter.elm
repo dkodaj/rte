@@ -1,5 +1,6 @@
 module Highlighter exposing (highlighter)
 
+import Array
 import MiniRte.Types exposing (Character, Content, Element(..))
 
 
@@ -23,14 +24,13 @@ highlighter content =
     let
         init : Accumulator
         init =
-            { content = []
+            { content = Array.empty
             , indent = 0
             , scope = NeutralZone
             }
     in
-    List.reverse
-        <| .content
-            <| List.foldl highlight init (markCode content)
+    List.foldl highlight init (markCode content)
+    |> .content
 
 
 highlight : (Bool, Element) -> Accumulator -> Accumulator
@@ -44,7 +44,7 @@ highlight (isCode, elem) a =
     in
     if not isCode then
         { a |
-            content = elem :: a.content 
+            content = Array.push elem a.content
           , indent = 0
         }
     else
@@ -53,82 +53,82 @@ highlight (isCode, elem) a =
                 case a.scope of
                     OpeningTagEnded ->
                         { a |
-                            content = indent (a.indent) br :: a.content
+                            content = Array.push (indent (a.indent) br) a.content
                           , indent = a.indent + 1
                           , scope = NeutralZone
                         }
 
                     _ ->
-                        { a | content = indent (a.indent) br :: a.content }
+                        { a | content = Array.push (indent (a.indent) br) a.content }
 
             Char ch ->
                 case ch.char of
                     '<' ->
                         { a |
-                            content = red ch :: a.content
+                            content = Array.push (red ch) a.content
                           , scope = TagOpened
                         }
 
                     '>' ->
                         case a.scope of
                             NeutralZone ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             OpeningTagEnded ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             TagOpened ->
                                 { a |
-                                    content = red ch :: a.content 
+                                    content = Array.push (red ch) a.content 
                                   , scope = OpeningTagEnded
                                 }
 
                             WithinClosingTag ->
                                 { a |
-                                    content = red ch :: a.content 
+                                    content = Array.push (red ch) a.content 
                                   , scope = NeutralZone
                                 }
 
                             WithinOpeningTag ->
                                 { a |
-                                    content = red ch :: a.content 
+                                    content = Array.push (red ch) a.content 
                                   , scope = OpeningTagEnded
                                 }
 
                     '/' ->
                         case a.scope of
                             NeutralZone ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             OpeningTagEnded ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             TagOpened ->
                                 { a |
-                                    content = red ch :: a.content 
+                                    content = Array.push (red ch) a.content 
                                   , indent = a.indent - 1
                                   , scope = WithinClosingTag
                                 }
 
                             WithinClosingTag ->
-                                { a | content = red ch :: a.content }
+                                { a | content = Array.push (red ch) a.content }
 
                             WithinOpeningTag ->
-                                { a | content = red ch :: a.content }                                
+                                { a | content = Array.push (red ch) a.content }                                
 
                     _ ->
                         case a.scope of
                             NeutralZone ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             OpeningTagEnded ->
-                                { a | content = elem :: a.content }
+                                { a | content = Array.push elem a.content }
 
                             _ ->
-                                { a | content = red ch :: a.content }
+                                { a | content = Array.push (red ch) a.content }
 
             Embedded _ ->
-                { a | content = elem :: a.content }
+                { a | content = Array.push elem a.content }
 
 
 markCode : Content -> List (Bool, Element)
@@ -151,7 +151,7 @@ markCode content =
                     , (isCode, elem) :: xs
                     )
     in
-    Tuple.second
-        <| List.foldr f (False, []) content
+    Array.foldr f (False, []) content
+    |> Tuple.second
 
 

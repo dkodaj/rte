@@ -12,7 +12,7 @@ module MiniRte.Types exposing
 # Writing highlighters
 
 When writing a highlighter, pass in a `Content -> Content` function on init.
-The function should modify the `highlightClasses` or `highlightStyling` fields of the elements.
+The function should modify the `highlightClasses`, `highlightIndent`, or `highlightStyling` fields of the elements.
 Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
 Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
 Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
@@ -133,7 +133,7 @@ type Element
     | Embedded EmbeddedHtml
 
 
-{-| `id` is set internally by the module; it doesn't matter what value you enter. -}
+{-|-}
 type alias EmbeddedHtml =
     { attributes : List (String, String)
     , classes : List String

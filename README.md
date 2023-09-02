@@ -7,9 +7,9 @@ It supports non-Western keyboard input via [CompositionEvent](https://developer.
 
 ## Limitations
 
-It cannot justify text.
-
 It gets sluggish for longer texts ([discussion on Elm-Discourse](https://discourse.elm-lang.org/t/pure-elm-rich-text-editor/7111)). If you need better performance, use [mweiss/elm-rte-toolkit](https://package.elm-lang.org/packages/mweiss/elm-rte-toolkit/latest/).
+
+It cannot justify text.
 
 ## Javascript
 To communicate with the browser's clipboard (to be able to copy text from the RTE to other apps and paste text from other apps into the RTE), you'll need to add two ports to your app:

@@ -216,6 +216,9 @@ update msg model =
             NodeType str ->                
                 apply (MiniRte.Core.toggleNodeType str) model
 
+            Selection x ->
+                apply (MiniRte.Core.selectRange x) model
+
             StrikeThrough ->
                 apply MiniRte.Core.toggleStrikeThrough model
 

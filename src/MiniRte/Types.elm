@@ -28,14 +28,16 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
 
 {-| For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
 
-      Active Bool       -- turn editing on/off
-    | AddText String    -- insert text
+      Active Bool       -- turn editing mode on/off
+    | AddContent Content -- insert content at cursor
+    | AddCustomHtml EmbeddedHtml -- insert html at cursor
+    | AddImage src      -- Html.img element with src = src
+    | AddLink String    -- attach link to current selection
+    | AddText String    -- insert text at cursor
     | Bold              -- make text bold
     | Class String      -- toggle class on current paragraph
-    | Core MiniRte.CoreTypes.Msg
-                        -- don't mess with this
-    | Cut               -- cut current selection
     | Copy              -- copy current selection
+    | Cut               -- cut current selection
     | Font (List String)
                         -- set current font families
                         -- e.g. ["Oswald", "sans-serif"]
@@ -43,13 +45,16 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
     | FreezeEditor      -- turn off cursor, take away focus
     | FromBrowserClipboard String
                         -- see package description
-    | Heading           -- toggles between h1 and plain div
-    | ImageAdd String   -- embed image (the String is a link)
-    | ImageInput String -- modify content of image input box
-    | Indent            -- increase indent of current paragraph
+    | Heading           -- toggles between h1 and plain div    
+    | ImageSourceInput  -- you won't need this
+    | Indent            -- increase indent of current paragraph by 1
+    | Internal msg      -- not part of the API
     | Italic            -- make text italic
-    | LinkAdd String    -- add link to current selection
-    | LinkInput String  -- modify content of link input box
+    | LinkHrefInput     -- you won't need this
+    | LoadContent Content -- replace current content
+    | LoadText String    -- replace current content
+    | NodeType String   -- set Html.node type of current paragraph (e.g. `"h1"`)
+    | Selection (x,y)   -- select characters no. x to y (inclusive)
     | StrikeThrough     -- cross out text
     | TextAlign TextAlignType
                         -- change alignment of current paragraph
@@ -61,7 +66,7 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
     | Underline         -- underline text
     | Undo              -- undo last action
     | Unindent          -- decrease indent of current paragraph
-    | Unlink            -- remove the link the cursor is touching
+    | Unlink            -- remove the link that the cursor is touching
 
 -}
 type Msg
@@ -88,6 +93,7 @@ type Msg
     | LoadContent Content
     | LoadText String
     | NodeType String
+    | Selection (Int,Int)
     | StrikeThrough    
     | TextAlign TextAlignType
     | ToBrowserClipboard String

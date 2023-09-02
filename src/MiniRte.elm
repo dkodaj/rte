@@ -161,7 +161,7 @@ type alias InputBoxParams msg =
 
 {-| `id` must be unique.
 
-`content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](hhttps://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
+`content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
 
 `fontSizeUnit` defaults to `"px"`.
 
@@ -215,7 +215,7 @@ init =
     Common.init
 
 
-{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L260)).
+{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L249)).
 -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =

@@ -798,9 +798,9 @@ attributes elem =
         g ( x, y ) =
             Attr.style x y
         
-        h x =            
+        h x =          
             List.map f (x.classes ++ x.highlightClasses)
-                ++ List.map g (x.styling ++ x.highlightStyling)
+            ++ List.map g (x.styling ++ x.highlightStyling)
     in
     case elem of
         Break b ->
@@ -808,7 +808,7 @@ attributes elem =
 
         Char c ->
             List.map f (c.fontStyle.classes ++ c.highlightClasses)
-                ++ List.map g (c.fontStyle.styling ++ c.highlightStyling)
+            ++ List.map g (c.fontStyle.styling ++ c.highlightStyling)
 
         Embedded html ->
             h html
@@ -1137,7 +1137,8 @@ cut e =
         Just ( beg, end ) ->
             let
                 content =
-                    Array.slice beg end e.content
+                    Array.slice (end+1) (Array.length e.content) e.content
+                    |> Array.append (Array.slice 0 beg e.content)
                     |> addBreakToEnd
             in
             placeCursor2 ScrollIfNeeded
@@ -3113,9 +3114,8 @@ showContent params c =
             }
 
         paragraphs =
-            List.map
-                (showPara paraParams)
-                (breakIntoParas (highlight c.content))
+            breakIntoParas (highlight c.content)
+            |> List.map (showPara paraParams)
     in
     Html.div
         attrs

@@ -161,6 +161,8 @@ type alias InputBoxParams msg =
 
 {-| `id` must be unique.
 
+`characterLimit` puts a limit on how much text can be entered (see the note on [performance issues](https://package.elm-lang.org/packages/dkodaj/rte/latest/)). (Linebreaks and embedded images count as 1 character each.) Get notified of reaching the limit by capturing the `CharacterLimitReached` [Msg](MiniRte-Types#Msg).
+
 `content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
 
 `fontSizeUnit` defaults to `"px"`.
@@ -182,6 +184,7 @@ if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts wi
 -}
 type alias Parameters msg =
     { id : String
+    , characterLimit : Maybe Int
     , content : Types.Content
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (Types.Content -> Types.Content)

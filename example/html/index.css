@@ -2,6 +2,10 @@
     --rteWidth:min(80vw,1000px);
 }
 
+h1 {
+    font-size:50px;
+}
+
 body { 
     user-select:none;  
     counter-reset: myCounter;  
@@ -105,6 +109,12 @@ body {
 .input-box input {
     height:100%;
     font-size:17px;    
+}
+
+.notification {        
+    height: 30px;
+    font-weight: 700;
+    color:red;
 }
 
 .numbered {        

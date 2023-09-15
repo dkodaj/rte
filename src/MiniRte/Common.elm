@@ -35,6 +35,7 @@ type alias RteFrame a msg =
 
 type alias ParametersFrame a msg =
     { id : String
+    , characterLimit : Maybe Int
     , content : Content
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (MiniRte.Types.Content -> MiniRte.Types.Content)
@@ -67,7 +68,8 @@ init params =
             }
       , textarea =
             { editor
-                | fontSizeUnit = params.fontSizeUnit
+                | characterLimit = params.characterLimit
+                , fontSizeUnit = params.fontSizeUnit
                 , highlighter = params.highlighter
                 , pasteImageLinksAsImages = params.pasteImageLinksAsImages
                 , pasteLinksAsLinks = params.pasteLinksAsLinks
@@ -159,6 +161,9 @@ update msg model =
 
             Bold ->
                 apply MiniRte.Core.toggleBold model
+
+            CharacterLimitReached _ ->
+                ( model, Cmd.none )
 
             Class x ->
                 apply (MiniRte.Core.toggleParaClass x) model

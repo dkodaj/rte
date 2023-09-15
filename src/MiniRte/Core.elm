@@ -75,7 +75,8 @@ import Time
 
 
 type alias Editor =
-    { clipboard : Maybe Content
+    { characterLimit : Maybe Int
+    , clipboard : Maybe Content
     , compositionStart : Content
     , compositionUpdate : String
     , content : Content
@@ -175,7 +176,8 @@ init editorID =
 
 init1 : String -> Editor
 init1 editorID =
-    { clipboard = Nothing
+    { characterLimit = Nothing
+    , clipboard = Nothing
     , compositionStart = Array.empty
     , compositionUpdate = ""
     , content = Array.push (Break defaultLineBreak) Array.empty
@@ -629,29 +631,43 @@ view : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
 view tagger userDefinedStyles e =
     let
         dummy =
-            Html.input
-                [ Attr.type_ "text"
-                , Attr.id (dummyID e.editorID)
-                , Attr.autocomplete False
-                , Events.on "focus" (Decode.succeed (SwitchTo Edit))
-                , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
-                , Events.on "compositionstart" (Decode.succeed CompositionStart)
-                , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
-                , Events.on "input" (decodeInputAndTime Input)
-                , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
-                , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
-                , Events.preventDefaultOn "paste" (Decode.succeed (NoOp, True))
-                , css
-                    [ position fixed
-                    , left (px 0)
-                    , top (px 0)
-                    , width (vw 99)
-                    , height (vh 99)
-                    , zIndex (int -75500)
-                    , opacity (int 0)                        
-                    ]
-                ]
+            Html.div
                 []
+                [ Html.textarea
+                    [ Attr.id (dummyID e.editorID)
+                    , Attr.autocomplete False
+                    , Events.on "focus" (Decode.succeed (SwitchTo Edit))
+                    , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
+                    , Events.on "compositionstart" (Decode.succeed CompositionStart)
+                    , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
+                    , Events.on "input" (decodeInputAndTime Input)
+                    , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
+                    , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
+                    , Events.preventDefaultOn "paste" (Decode.succeed (NoOp, True))
+                    , css
+                        [ position absolute
+                        , left (px 50)
+                        , top (px 50)
+                        , width (vw 50)
+                        , height (vh 50)
+                        , zIndex (int -75500)                    
+                        ]
+                    ]
+                    []
+
+                , Html.div
+                    [ css
+                        [ position absolute
+                        , left (px 0)
+                        , top (px 0)
+                        , width (vw 60)
+                        , height (vh 60)
+                        , zIndex (int -75499)
+                        , backgroundColor (hex "#FFFFFF")
+                        ]
+                    ]
+                    []
+                ]
             |> Html.map Internal
             |> Html.map tagger
 
@@ -983,7 +999,7 @@ copy e =
         Just ( beg, end ) ->
             let
                 clipboard =
-                    Array.slice beg end e.content                    
+                    Array.slice beg (end + 1) e.content                    
             in
             ( { e | clipboard = Just clipboard }
             
@@ -995,7 +1011,8 @@ copy e =
 
 copyMsg : Cmd Msg
 copyMsg =
-    Task.perform identity (Task.succeed Copy)
+    Task.succeed Copy
+    |> Task.perform identity
 
 
 currentLink : Editor -> Maybe String
@@ -1153,7 +1170,8 @@ cut e =
 
 cutMsg : Cmd Msg
 cutMsg =
-    Task.perform identity (Task.succeed Cut)
+    Task.succeed Cut
+    |> Task.perform identity
 
 
 decodeClipboardData : (Value -> InternalMsg) -> Decoder InternalMsg
@@ -1300,7 +1318,8 @@ dummyID x =
 
 focusOnEditor : Editor -> Cmd Msg
 focusOnEditor e =
-    Task.attempt (\_ -> Internal NoOp) (Dom.focus (dummyID e.editorID))
+    Dom.focus (dummyID e.editorID)
+    |> Task.attempt (\_ -> Internal NoOp)
 
 
 fontFamily : List String -> Editor -> ( Editor, Cmd Msg )
@@ -2027,7 +2046,8 @@ loadText txt editor =
 
 locateCmd : Int -> String -> Cmd Msg
 locateCmd idx id =
-    Task.attempt (Internal << LocatedChar idx) (Dom.getElement id)
+    Dom.getElement id
+    |> Task.attempt (Internal << LocatedChar idx)
 
 
 locateChars : Editor -> Maybe ( Int, Vertical ) -> (( Int, Int ) -> Locating) -> ( Editor, Cmd Msg )
@@ -2501,7 +2521,8 @@ onInput : Float -> String -> Editor -> ( Editor, Cmd Msg )
 onInput timeStamp str e =
     let
         timeStampCmd =
-            Process.sleep tickPeriod |> Task.perform (\_ -> Internal (InputTimeStamp timeStamp))
+            Process.sleep tickPeriod
+            |> Task.perform (\_ -> Internal (InputTimeStamp timeStamp))
 
         f ( x, y ) =
             ( { x
@@ -2660,7 +2681,8 @@ placeCursor2 scroll ( e, cmd ) =
 
 placeCursorCmd : ScrollMode -> String -> Cmd Msg
 placeCursorCmd scroll editorID =
-    Task.attempt (Internal << PlaceCursor1_EditorViewport scroll) (Dom.getViewportOf editorID)
+    Dom.getViewportOf editorID
+    |> Task.attempt (Internal << PlaceCursor1_EditorViewport scroll)
 
 
 previous : (Int -> Content -> Bool) -> Int -> Content -> Maybe Int
@@ -3457,7 +3479,23 @@ toText content =
 
 typed : String -> Editor -> Maybe Float -> Bool -> ( Editor, Cmd Msg )
 typed txt e maybeTimeStamp modifyClipboard =
+    let
+        checkCharLimit (x,y) =
+            case x.characterLimit of
+                Nothing ->
+                    (x,y)
+
+                Just int ->
+                    if Array.length x.content > int then
+                        ( e
+                        , Task.succeed (CharacterLimitReached int)
+                          |> Task.perform identity
+                        )
+                    else
+                        (x,y)
+    in
     typed_ (currentLink e) txt e maybeTimeStamp modifyClipboard
+    |> checkCharLimit
 
 
 typed_ : Maybe String -> String -> Editor -> Maybe Float -> Bool -> ( Editor, Cmd Msg )
@@ -3489,7 +3527,7 @@ typed_ activeLink txt e maybeTimeStamp modifyClipboard =
             placeCursor ScrollIfNeeded
                 { e
                     | clipboard = newClipboard
-                    , cursor = e.cursor + String.length txt
+                    , cursor = e.cursor + List.length (String.toList txt)
                     , content =
                         Array.slice e.cursor (Array.length e.content) e.content
                         |> Array.append newContent
@@ -3511,7 +3549,7 @@ typed_ activeLink txt e maybeTimeStamp modifyClipboard =
             placeCursor ScrollIfNeeded
                 { e
                     | clipboard = newClipboard
-                    , cursor = beg + String.length txt
+                    , cursor = beg + List.length (String.toList txt)
                     , selection = Nothing
                     , content =
                         Array.slice (end+1) (Array.length e.content) e.content

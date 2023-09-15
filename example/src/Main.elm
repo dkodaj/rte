@@ -11,7 +11,8 @@ import Html exposing (div, Html, text)
 import Html.Attributes as Attr exposing (class)
 import Html.Events as Events
 import MiniRte as Rte
-import MiniRte.Types as Rtypes
+import MiniRte.Types as RteTypes
+import Process
 import SavedContent
 import Task
 
@@ -26,16 +27,19 @@ main =
 
 
 type alias Model =
-    { rte : Rte.Rte Msg }
+    { rte : Rte.Rte Msg 
+    , notification : Maybe String
+    }
 
 
 type Msg =
-      DownloadContentStart
+      ClearNotification
+    | DownloadContentStart
     | DownloadContentEnd Bytes  
     | FileDecoded Bytes
     | FileSelected File
     | FileSelect
-    | Rte Rtypes.Msg
+    | Rte RteTypes.Msg
 
 
 init : () -> ( Model, Cmd Msg )
@@ -51,6 +55,7 @@ init _ =
 
         parameters =
             { id = "MyRTE"
+            , characterLimit = Just 10000
             , content = content
             , fontSizeUnit = Nothing
             , highlighter = Just highlighter
@@ -68,7 +73,9 @@ init _ =
         ( rte, cmd ) =
             Rte.init parameters
     in
-    ( { rte = rte }
+    ( { rte = rte 
+      , notification = Nothing
+      }
     , cmd
     )
 
@@ -77,13 +84,18 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Rte.subscriptions model.rte
-        , fromBrowserClipboard ( Rte << Rtypes.FromBrowserClipboard )        
+        , fromBrowserClipboard ( Rte << RteTypes.FromBrowserClipboard )        
         ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ClearNotification ->
+            ( { model | notification = Nothing }
+            , Cmd.none
+            )
+
         DownloadContentStart ->
             let
                 bytes =
@@ -101,10 +113,10 @@ update msg model =
         FileDecoded bytes ->
             case Rte.decodeContentGZip bytes of
                 Ok content ->
-                    update (Rte (Rtypes.LoadContent content)) model
+                    update (Rte (RteTypes.LoadContent content)) model
 
                 Err err ->                    
-                    update (Rte (Rtypes.LoadText ("File open error: " ++ err))) model
+                    update (Rte (RteTypes.LoadText ("File open error: " ++ err))) model
 
         FileSelected file ->
             ( model
@@ -116,7 +128,13 @@ update msg model =
             , File.Select.file ["application/gz"] FileSelected
             )
 
-        Rte (Rtypes.ToBrowserClipboard txt) ->
+        Rte (RteTypes.CharacterLimitReached int) ->
+            ( { model | notification = Just ("Max " ++ String.fromInt int ++ " characters (incl. line breaks)") }
+            , Process.sleep 3000
+              |> Task.perform (\_ -> ClearNotification)
+            )
+
+        Rte (RteTypes.ToBrowserClipboard txt) ->
             ( model, toBrowserClipboard txt )
 
         Rte rteMsg ->
@@ -136,6 +154,8 @@ view model =
             [ toolbar model
             , Rte.textarea model.rte
 
+            , notification model
+
             , Html.a
                 [ Attr.href "https://github.com/dkodaj/rte/tree/master/example" 
                 , class "source"
@@ -153,6 +173,20 @@ view model =
 
 
 ---== Helpers
+
+
+notification : Model -> Html Msg
+notification model =
+    case model.notification of
+        Nothing ->
+            div
+                [ class "notification" ]
+                []
+
+        Just txt ->
+            div
+                [ class "notification" ]
+                [ text txt ]
 
 
 toolbar : Model -> Html Msg
@@ -176,41 +210,41 @@ toolbar model =
             , width = 60
             }
 
-        , icon "Bold.svg" Rtypes.Bold
+        , icon "Bold.svg" RteTypes.Bold
 
-        , icon "Italic.svg" Rtypes.Italic
+        , icon "Italic.svg" RteTypes.Italic
 
-        , icon "Underline.svg" Rtypes.Underline
+        , icon "Underline.svg" RteTypes.Underline
 
-        , icon "Strikethrough.svg" Rtypes.StrikeThrough
+        , icon "Strikethrough.svg" RteTypes.StrikeThrough
 
-        , icon "Undo.svg" Rtypes.Undo
+        , icon "Undo.svg" RteTypes.Undo
         
-        , icon "Left.svg" (Rtypes.TextAlign Rtypes.Left)
+        , icon "Left.svg" (RteTypes.TextAlign RteTypes.Left)
 
-        , icon "Center.svg" (Rtypes.TextAlign Rtypes.Center)
+        , icon "Center.svg" (RteTypes.TextAlign RteTypes.Center)
         
-        , icon "Right.svg" (Rtypes.TextAlign Rtypes.Right)
+        , icon "Right.svg" (RteTypes.TextAlign RteTypes.Right)
 
-        , icon "Unindent.svg"  Rtypes.Unindent
+        , icon "Unindent.svg"  RteTypes.Unindent
 
-        , icon "Indent.svg" Rtypes.Indent
+        , icon "Indent.svg" RteTypes.Indent
 
-        , icon "Heading.svg"  Rtypes.Heading
+        , icon "Heading.svg"  RteTypes.Heading
 
-        , icon "Coding.svg" (Rtypes.Class "code")
+        , icon "Coding.svg" (RteTypes.Class "code")
 
-        , icon "Emoji.svg" Rtypes.ToggleEmojiBox
+        , icon "Emoji.svg" RteTypes.ToggleEmojiBox
 
-        , icon "Link.svg"  Rtypes.ToggleLinkBox
+        , icon "Link.svg"  RteTypes.ToggleLinkBox
 
-        , icon "Unlink.svg" Rtypes.Unlink
+        , icon "Unlink.svg" RteTypes.Unlink
 
-        , icon "Picture.svg" Rtypes.ToggleImageBox
+        , icon "Picture.svg" RteTypes.ToggleImageBox
 
-        , icon "ListBullets.png" (Rtypes.Class "bullets")
+        , icon "ListBullets.png" (RteTypes.Class "bullets")
 
-        , icon "ListNumbered.png" (Rtypes.Class "numbered")
+        , icon "ListNumbered.png" (RteTypes.Class "numbered")
 
         , Rte.fontSelector model.rte
                 { styling = [ class "select" ]

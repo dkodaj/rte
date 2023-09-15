@@ -35,6 +35,7 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
     | AddLink String    -- attach link to current selection
     | AddText String    -- insert text at cursor
     | Bold              -- make text bold
+    | CharacterLimitReached int -- get notified if too much text is entered
     | Class String      -- toggle class on current paragraph
     | Copy              -- copy current selection
     | Cut               -- cut current selection
@@ -77,6 +78,7 @@ type Msg
     | AddLink String
     | AddText String
     | Bold
+    | CharacterLimitReached Int
     | Class String
     | Copy    
     | Cut

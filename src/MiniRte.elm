@@ -15,7 +15,7 @@ module MiniRte exposing
 
 Don't forget to hook [subscriptions](#subscriptions) and [update](#update) into your app's own `subscriptions` and `update` function. Without that, the editor won't do anything.
 
-**Note**: While the editor is active, it keeps taking away the focus from every other element ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L260)). This may interfere with Html.select and such. Use the `FreezeEditor` [Msg](MiniRte-Types#Msg) to take away the focus ([example](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Styled.elm?plain=1#L325)) and `Active True` to give it back.
+**Note**: While the editor is active, it keeps taking away the focus from every other element ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L262)). This may interfere with Html.select and such. Use the `FreezeEditor` [Msg](MiniRte-Types#Msg) to take away the focus ([example](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Styled.elm?plain=1#L328)) and `Active True` to give it back.
 
 # Init and update
 
@@ -163,7 +163,7 @@ type alias InputBoxParams msg =
 
 `characterLimit` puts a limit on how much text can be entered (see the note on [performance issues](https://package.elm-lang.org/packages/dkodaj/rte/latest/)). (Linebreaks and embedded images count as 1 character each.) Get notified of reaching the limit by capturing the `CharacterLimitReached` [Msg](MiniRte-Types#Msg).
 
-`content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
+`content` is the initial content of the textarea. Use [Array.empty](https://package.elm-lang.org/packages/elm/core/latest/Array#empty) to initialize with empty content. To initialize with saved content, use [decodeContentString](#decodeContentString) or [decodeContentGZip](#decodeContentGZip) ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L114)). To convert plain text into [Content](MiniRte-Types#Content), use [textToContent](#textToContent).
 
 `fontSizeUnit` defaults to `"px"`.
 
@@ -173,7 +173,7 @@ type alias InputBoxParams msg =
 
 If `pasteImageLinksAsImages` is `True`, then pasting an image link or an image (data url) into the RTE will insert the image into the text.
 
-if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L1399) `"http://"` or `"https://"`) will create a clickable link.
+if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L1419) `"http://"` or `"https://"`) will create a clickable link.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 
@@ -218,14 +218,14 @@ init =
     Common.init
 
 
-{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L249)).
+{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L251)).
 -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =
     Common.subscriptions
 
 
-{-| Use this to handle the RTE's own [Msg](MiniRte-Types#Msg) updates ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L125)).
+{-| Use this to handle the RTE's own [Msg](MiniRte-Types#Msg) updates ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L143)).
 -}
 update : Msg -> Rte msg -> ( Rte msg, Cmd msg )
 update =
@@ -251,7 +251,7 @@ decodeContentString : String -> Result String Content
 decodeContentString =
     MiniRte.Core.decodeContentString
 
-{-| Convert gzipped serialized content back into content ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)).
+{-| Convert gzipped serialized content back into content ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L114)).
 -}
 decodeContentGZip : Bytes -> Result String Content
 decodeContentGZip =
@@ -282,7 +282,7 @@ encodeContentString : Rte msg -> String
 encodeContentString =
     MiniRte.Core.encodeContentString
 
-{-| Serialize the edited text as a gzip file ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L90)).
+{-| Serialize the edited text as a gzip file ([example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L102)).
 -}
 encodeContentGZip : Rte msg -> Bytes
 encodeContentGZip =
@@ -290,7 +290,7 @@ encodeContentGZip =
 
 
 {-| Make it appear/disappear with `update ToggleEmojiBox`.
-Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L236)
+Each `x` in `params.emojis` turns into a clickable div that triggers `update AddText` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L270)
 -}
 emojiBox : Rte msg -> EmojiBoxParams msg -> Html msg
 emojiBox rte params =
@@ -305,7 +305,7 @@ emojiBox rte params =
 
 
 
-{-| A `Html.select` element that triggers `update Font` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L215)
+{-| A `Html.select` element that triggers `update Font` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L249)
 -}
 fontSelector : Rte msg -> FontSelectorParams msg -> Html msg
 fontSelector rte params =
@@ -319,7 +319,7 @@ fontSelector rte params =
         Styled.fontSelector (tostyled2 rte) styledParams
 
 
-{-| A `Html.select` element that triggers `update FontSize` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L224)
+{-| A `Html.select` element that triggers `update FontSize` events. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L258)
 -}
 fontSizeSelector : Rte msg -> FontSizeSelectorParams msg -> Html msg
 fontSizeSelector rte params =
@@ -336,7 +336,7 @@ fontSizeSelector rte params =
 
 {-| Input box for adding hyperlinks and image links.
 Make it appear/disappear with `update ToggleImageBox` or `update ToggleLinkBox`.
-It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L253)
+It contains an OK button that triggers `update ImageAdd` or `update LinkAdd`. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L287)
 -}
 inputBox : Rte msg -> InputBoxParams msg -> Html msg
 inputBox rte params =
@@ -353,7 +353,7 @@ isActive rte =
     rte.textarea.state == HiddenTypes.Edit
 
 
-{-| A switch that turns editing on/off. The `params.width` field controls its width in px. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L173)
+{-| A switch that turns editing on/off. The `params.width` field controls its width in px. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L207)
 -}
 onOffSwitch : Rte msg -> SwitchParams -> Html msg
 onOffSwitch rte params =
@@ -368,7 +368,7 @@ textContent rte =
     MiniRte.Core.toText rte.textarea.content
 
 
-{-| Display the edited text plus the cursor. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L137)
+{-| Display the edited text plus the cursor. [Example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L155)
 -}
 textarea : Rte msg -> Html msg
 textarea rte =

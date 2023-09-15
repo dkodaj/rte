@@ -24,7 +24,7 @@ port fromBrowserClipboard : (String -> msg) -> Sub msg
 port toBrowserClipboard : String -> Cmd msg
 ```
 
-These ports belong in your `subscriptions` and `update` functions. See the example's [Main.elm](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L76).
+These ports belong in your `subscriptions` and `update` functions. See the example's [Main.elm](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L87).
 
 You will also need a bit of JS:
 

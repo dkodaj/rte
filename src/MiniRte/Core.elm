@@ -631,43 +631,29 @@ view : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
 view tagger userDefinedStyles e =
     let
         dummy =
-            Html.div
-                []
-                [ Html.textarea
-                    [ Attr.id (dummyID e.editorID)
-                    , Attr.autocomplete False
-                    , Events.on "focus" (Decode.succeed (SwitchTo Edit))
-                    , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
-                    , Events.on "compositionstart" (Decode.succeed CompositionStart)
-                    , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
-                    , Events.on "input" (decodeInputAndTime Input)
-                    , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
-                    , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
-                    , Events.preventDefaultOn "paste" (Decode.succeed (NoOp, True))
-                    , css
-                        [ position absolute
-                        , left (px 50)
-                        , top (px 50)
-                        , width (vw 50)
-                        , height (vh 50)
-                        , zIndex (int -75500)                    
-                        ]
+            Html.input
+                [ Attr.type_ "text"
+                , Attr.id (dummyID e.editorID)
+                , Attr.autocomplete False
+                , Events.on "focus" (Decode.succeed (SwitchTo Edit))
+                , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
+                , Events.on "compositionstart" (Decode.succeed CompositionStart)
+                , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
+                , Events.on "input" (decodeInputAndTime Input)
+                , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
+                , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
+                , Events.preventDefaultOn "paste" (Decode.succeed (NoOp, True))
+                , css
+                    [ position fixed
+                    , left (px 0)
+                    , top (px 0)
+                    , width (vw 99)
+                    , height (vh 99)
+                    , zIndex (int -75500)
+                    , opacity (int 0)                        
                     ]
-                    []
-
-                , Html.div
-                    [ css
-                        [ position absolute
-                        , left (px 0)
-                        , top (px 0)
-                        , width (vw 60)
-                        , height (vh 60)
-                        , zIndex (int -75499)
-                        , backgroundColor (hex "#FFFFFF")
-                        ]
-                    ]
-                    []
                 ]
+                []
             |> Html.map Internal
             |> Html.map tagger
 

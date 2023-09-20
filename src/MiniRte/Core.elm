@@ -77,8 +77,6 @@ import Time
 type alias Editor =
     { characterLimit : Maybe Int
     , clipboard : Maybe Content
-    , compositionStart : Content
-    , compositionUpdate : String
     , content : Content
     , ctrlDown : Bool
     , cursor : Int
@@ -178,8 +176,6 @@ init1 : String -> Editor
 init1 editorID =
     { characterLimit = Nothing
     , clipboard = Nothing
-    , compositionStart = Array.empty
-    , compositionUpdate = ""
     , content = Array.push (Break defaultLineBreak) Array.empty
     , ctrlDown = False
     , cursor = 0
@@ -256,9 +252,9 @@ subscriptions e =
 
         Edit ->            
             List.map (Sub.map Internal)
-                [ Browser.Events.onKeyDown (decodeKey KeyDown)
+                [ Browser.Events.onMouseUp (Decode.succeed MouseUp)
+                , Browser.Events.onKeyDown (decodeKey KeyDown)
                 , Browser.Events.onKeyUp (decodeKey KeyUp)
-                , Browser.Events.onMouseUp (Decode.succeed MouseUp)
                 , Time.every 200 (\_ -> FocusOnEditor)
                 ]
             |> Sub.batch
@@ -277,60 +273,6 @@ update msg e0 =
             updateUndo msg e0
     in    
     case msg of
-        CompositionEnd txt ->
-            if txt == "" then
-                addContent e.compositionStart e
-            else
-                let
-                    newLength =
-                        List.length (String.toList txt)
-
-                    ( new, newMsg ) =
-                        update (CompositionUpdate txt) e
-                in
-                ( { new | cursor = new.cursor + newLength }
-                , newMsg
-                )
-
-        CompositionStart ->
-            case e.selection of
-                Nothing ->
-                    ( { e
-                        | compositionStart = Array.empty
-                        , compositionUpdate = ""
-                      }
-                    , Cmd.none
-                    )
-
-                Just ( beg, end ) ->
-                    placeCursor ScrollIfNeeded
-                        { e
-                            | compositionUpdate = ""
-                            , content = delete beg (end + 1) e
-                            , cursor = beg
-                            , selection = Nothing
-                            , compositionStart =                                
-                                Array.slice beg (end+1) e.content
-                        }
-
-        CompositionUpdate txt ->
-            let
-                oldEnd =
-                    e.cursor + List.length (String.toList e.compositionUpdate)
-
-                newLength =
-                    List.length (String.toList txt)
-
-                ( new, newMsg ) =
-                    typed txt { e | content = delete e.cursor oldEnd e } Nothing False
-            in
-            ( { new
-                | compositionUpdate = txt
-                , cursor = e.cursor
-              }
-            , newMsg
-            )
-
         FocusOnEditor ->
             ( e, focusOnEditor e )
 
@@ -345,10 +287,10 @@ update msg e0 =
             else
                 ( e, Cmd.none )
 
-        KeyDown key ->
-            keyDown key e
+        KeyDown key timeStamp altKey ->
+            keyDown key timeStamp altKey e
 
-        KeyUp str ->
+        KeyUp str _ _ ->
             case str of
                 "Control" ->
                     ( { e | ctrlDown = False }, Cmd.none )
@@ -563,7 +505,7 @@ updateUndo msg e =
             else
                 contentMod
 
-        KeyDown str ->
+        KeyDown str timeStamp altKey ->
             case str of
                 "Backspace" ->
                     case e.selection of
@@ -608,7 +550,7 @@ updateUndo msg e =
                                     e
 
                             "X" ->
-                                updateUndo (KeyDown "x") e
+                                updateUndo (KeyDown "x" timeStamp altKey) e
 
                             "v" ->
                                 if e.clipboard /= Nothing then
@@ -618,7 +560,7 @@ updateUndo msg e =
                                     e
 
                             "V" ->
-                                updateUndo (KeyDown "v") e
+                                updateUndo (KeyDown "v" timeStamp altKey) e
 
                             _ ->
                                 e
@@ -636,10 +578,6 @@ view tagger userDefinedStyles e =
                 , Attr.id (dummyID e.editorID)
                 , Attr.autocomplete False
                 , Events.on "focus" (Decode.succeed (SwitchTo Edit))
-                , Events.on "compositionend" (Decode.map CompositionEnd (Decode.field "data" Decode.string))
-                , Events.on "compositionstart" (Decode.succeed CompositionStart)
-                , Events.on "compositionupdate" (Decode.map CompositionUpdate (Decode.field "data" Decode.string))
-                , Events.on "input" (decodeInputAndTime Input)
                 , Events.preventDefaultOn "copy" (Decode.succeed (NoOp, True))
                 , Events.preventDefaultOn "cut" (Decode.succeed (NoOp, True))
                 , Events.preventDefaultOn "paste" (Decode.succeed (NoOp, True))
@@ -907,7 +845,7 @@ contentChanged msg e =
             else
                 not e.ctrlDown
 
-        Internal (KeyDown str) ->            
+        Internal (KeyDown str _ _) ->            
             case str of
                 "Backspace" ->
                     case e.selection of
@@ -1173,10 +1111,12 @@ decodeInputAndTime f =
         (Decode.field "data" Decode.string)
 
 
-decodeKey : (String -> InternalMsg) -> Decoder InternalMsg
+decodeKey : (String -> Float -> Bool -> InternalMsg) -> Decoder InternalMsg
 decodeKey f =
-    Decode.map f
+    Decode.map3 f
         (Decode.field "key" Decode.string)
+        (Decode.field "timeStamp" Decode.float)
+        (Decode.field "altKey" Decode.bool)
 
 
 decodeMouse : (( Float, Float ) -> Float -> msg) -> Decoder msg
@@ -1604,8 +1544,8 @@ jumpHelp isRelevant direction ( beg, end ) e =
                         ( Just ( beg + 1, Up ), Nothing )
 
 
-keyDown : String -> Editor -> ( Editor, Cmd Msg )
-keyDown str e =
+keyDown : String -> Float -> Bool ->  Editor -> ( Editor, Cmd Msg )
+keyDown str timeStamp altKey e =
     let
         maxIdx =
             Array.length e.content - 1
@@ -1773,7 +1713,7 @@ keyDown str e =
 
         "Enter" ->
             if e.shiftDown then
-                update (KeyDown "\n") e
+                update (KeyDown "\n" timeStamp altKey) e
             else
                 insertBreak (currentParaStyle e) Nothing e
                 |> placeCursor ScrollIfNeeded
@@ -1823,11 +1763,14 @@ keyDown str e =
 
         _ ->
             if not e.ctrlDown then
-                ( e, Cmd.none )
+                if not altKey && String.length str == 1 then
+                    typed str e (Just timeStamp) False
+                else
+                    ( e, Cmd.none )
             else
                 let
                     like x =
-                        keyDown x e
+                        keyDown x timeStamp altKey e
                 in
                 case str of
                     "0" ->

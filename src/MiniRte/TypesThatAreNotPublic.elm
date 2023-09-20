@@ -5,14 +5,11 @@ import Browser.Dom as Dom exposing (Error, Viewport)
 
 
 type InternalMsg =
-      CompositionEnd String
-    | CompositionStart
-    | CompositionUpdate String
-    | FocusOnEditor
+      FocusOnEditor
     | Input Float String
     | InputTimeStamp Float
-    | KeyDown String
-    | KeyUp String
+    | KeyDown String Float Bool
+    | KeyUp String Float Bool
     | LocatedChar Int (Result Error Dom.Element)
     | MouseHit Int Float
     | MouseDown ( Float, Float ) Float

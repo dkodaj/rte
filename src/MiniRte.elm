@@ -15,7 +15,7 @@ module MiniRte exposing
 
 Don't forget to hook [subscriptions](#subscriptions) and [update](#update) into your app's own `subscriptions` and `update` function. Without that, the editor won't do anything.
 
-**Note**: While the editor is active, it keeps taking away the focus from every other element ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L262)). This may interfere with Html.select and such. Use the `FreezeEditor` [Msg](MiniRte-Types#Msg) to take away the focus ([example](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Styled.elm?plain=1#L328)) and `Active True` to give it back.
+**Note**: While the editor is active, it keeps taking away the focus from every other element ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L247)). This may interfere with Html.select and such. Use the `FreezeEditor` [Msg](MiniRte-Types#Msg) to take away the focus ([example](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Styled.elm?plain=1#L328)) and `Active True` to give it back.
 
 # Init and update
 
@@ -173,7 +173,7 @@ type alias InputBoxParams msg =
 
 If `pasteImageLinksAsImages` is `True`, then pasting an image link or an image (data url) into the RTE will insert the image into the text.
 
-if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L1419) `"http://"` or `"https://"`) will create a clickable link.
+if `pasteLinksAsLinks` is `True`, then pasting a link ([something that starts with](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L1345) `"http://"` or `"https://"`) will create a clickable link.
 
 `selectionStyle` controls the appearance of selected text. It defaults to `[("background", "hsl(217,71%,53%)"), ("color", "white")]`.
 
@@ -218,7 +218,7 @@ init =
     Common.init
 
 
-{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L251)).
+{-| Handles keydown/keyup and mouse events and it keeps the RTE in focus ([source](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L247)).
 -}
 subscriptions : Rte msg -> Sub msg
 subscriptions =

@@ -118,7 +118,7 @@ import MiniRte.Types exposing (..)
 import MiniRte.TypesThatAreNotPublic exposing (..)
 
 
-{-| The rich text editor. --([Under the hood](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L71)), it is a record type that tracks cursor position, selection, formatting etc.
+{-| The rich text editor. [Under the hood](https://github.com/dkodaj/rte/blob/master/src/MiniRte/Core.elm?plain=1#L71), it is a record type that tracks cursor position, selection, formatting etc.
 -}
 type Rte =
     Opaque MiniRte.Core.Editor
@@ -535,19 +535,19 @@ contentToText =
     MiniRte.Core.toText 
 
 
-{-| Convert serialized content string into edited content.
+{-| Convert content json string into edited content.
 -}
 decodeContentString : String -> Result String Content
 decodeContentString =
     MiniRte.Core.decodeContentString
 
-{-| Convert gzipped serialized content into edited content.
+{-| Convert gzipped content json into edited content.
 -}
 decodeContentGZip : Bytes -> Result String Content
 decodeContentGZip =
     MiniRte.Core.decodeContentGZip
 
-{-| Serialize the edited content as string.
+{-| Encode the edited content in a json string.
 -}
 encodeContentString : Rte -> String
 encodeContentString model =
@@ -555,7 +555,7 @@ encodeContentString model =
         Opaque rte ->
             MiniRte.Core.encodeContentString rte
 
-{-| Serialize the edited content as a gzip file.
+{-| Encode the edited content in a gzipped json string.
 -}
 encodeContentGZip : Rte -> Bytes
 encodeContentGZip model =

@@ -19,7 +19,7 @@ body {
 }
 
 .body-wrap {
-    margin-top:30px;
+    margin-top:80px;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -81,19 +81,19 @@ body {
 }
 
 .input-box {
-    width:calc(0.6*var(--rteWidth));
-    height: 40px;
-    display:grid;
+    width:450px;
+    height: 40px;    
+    display:flex;
     align-items:center;
     justify-content:center;
-    grid-template-columns: 8fr 2fr;
+    grid-template-columns: 50px auto 50px;
     margin:7px 0; 
 }
 
 .input-box button {
     all:unset;
     height: 100%;
-    margin-left:5px;
+    margin:0px 3px;
     border-radius:10px;
     display:flex;
     align-items:center;
@@ -104,6 +104,10 @@ body {
     cursor:pointer;
     text-transform:uppercase;    
     font-family:'Oswald',sans-serif;    
+}
+
+.input-box .cancel {
+    background:hsl(0, 60%, 50%);
 }
 
 .input-box input {
@@ -144,23 +148,110 @@ body {
 
 .select {
   text-transform:uppercase;    
-  margin: 0 5px;
+  margin: 0px 14px;
   padding: 3px 5px;
   font-family:'Ubuntu Mono',monospace;
   cursor:pointer;
   font-size:15px;
+  display:flex;
+  flex-direction:column;
+  align-items:start;
+  justify-content:start;
+  width:120px;
+}
 
+.select div {
+    padding: 4px 8px;
+}
+
+.selectHeading {
+    width: 100%;
+    border: 1px solid black;
+    background: lightgray;
+}
+
+.selectOption {
+    width: 100%;
+    border: 1px dotted gray;  
+    background:white;  
+}
+
+.selected {
+    background: lightgray;
+}
+
+.selectOption:hover {
+    background: lightgray;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: #ccc;
+    transition: background-color 0.4s;
+    border-radius: 34px;
+}
+
+.sliderRight {
+    background: #2196F3;
+}
+
+.sliderCircle {
+    background: #FFFFFF;  
+    position: absolute;
+    content: '';
+    height: 26px;
+    width: 26px;
+    bottom: 4px;
+    left: 4px;        
+    border-radius: 50%;
+    transition: transform 0.4s;
+}
+
+.sliderCircleRight {    
+    transform: translateX(26px);
+}
+
+.switch {
+    position:relative;
+    display:inline-block;
+    height:35px;
+    width:60px;
 }
 
 .toolbar {
     position:relative;
     width:var(--rteWidth);   
     display:flex;
-    align-items:center;
-    align-content:space-between;
+    align-items:center;    
     justify-content:center;
     flex-wrap:wrap;   
-    margin-bottom:5px; 
+    margin-bottom:5px;    
+}
+
+.toolbar-top {
+    position:absolute;
+    top:30px;
+    left:0px;
+    width:99%;    
+    display:flex;
+    align-items:start;
+    justify-content:center;
+    z-index:100;
+}
+
+.toolbar-inactive {
+    position:relative;
+    width:var(--rteWidth);   
+    display:flex;
+    align-items:start;    
+    justify-content:start;
+    flex-wrap:wrap;   
+    margin-bottom:5px;     
 }
 
 .source {

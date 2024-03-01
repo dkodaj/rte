@@ -246,13 +246,7 @@ update msg model =
             ( model, toBrowserClipboard txt )
 
         Internal rteMsg ->
-            let
-                ( rte, cmd ) =
-                    Rte.update rteMsg model.rte
-            in
-            ( { model | rte = rte }
-            , Cmd.map Internal cmd 
-            )
+            apply (Rte.update rteMsg) model
 
         Italic ->
             apply Rte.toggleItalic model

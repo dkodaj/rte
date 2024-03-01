@@ -103,7 +103,10 @@ You can build a rich text editor toolbar from these (see the [example](https://g
 
 - `Ctrl-0`: en dash (–)
 - `Ctrl-1`: em dash (—)
+- `Ctrl-C`: copy
+- `Ctrl-X`: cut
 - `Ctrl-Z`: undo
+- `Ctrl-V`: paste (but to paste stuff copied outside the RTE, you need to add a port; see the [example](https://github.com/dkodaj/rte/blob/master/example/html/index.html))
 
 -}
 
@@ -402,7 +405,7 @@ addText : String -> Rte -> ( Rte, Cmd Msg )
 addText txt rte =
     apply (MiniRte.Core.addText txt) rte
 
-{-| Copy current selection. Results in a `ToBrowserClipboard` Msg which must be captured in `update`. See the example in the repo.
+{-| Copy current selection. Results in a `ToBrowserClipboard` Msg which must be captured in `update`. See the [example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm).
 -}
 copy : Rte -> ( Rte, Cmd Msg )
 copy rte =

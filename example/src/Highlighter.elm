@@ -1,7 +1,7 @@
 module Highlighter exposing (highlighter)
 
 import Array
-import MiniRte.Types exposing (Character, Content, Element(..))
+import MiniRte.Types exposing (CharacterRecord, Content, Element(..))
 
 
 type alias Accumulator =
@@ -37,10 +37,10 @@ highlight : (Bool, Element) -> Accumulator -> Accumulator
 highlight (isCode, elem) a =
     let
         indent x br =
-            Break { br | highlightIndent = x }
+            LineBreak { br | highlightIndent = x }
 
         red ch =
-            Char { ch | highlightStyling = [("color","red")] }
+            Character { ch | highlightStyling = [("color","red")] }
     in
     if not isCode then
         { a |
@@ -49,7 +49,7 @@ highlight (isCode, elem) a =
         }
     else
         case elem of
-            Break br ->
+            LineBreak br ->
                 case a.scope of
                     OpeningTagEnded ->
                         { a |
@@ -61,7 +61,7 @@ highlight (isCode, elem) a =
                     _ ->
                         { a | content = Array.push (indent (a.indent) br) a.content }
 
-            Char ch ->
+            Character ch ->
                 case ch.char of
                     '<' ->
                         { a |
@@ -127,7 +127,7 @@ highlight (isCode, elem) a =
                             _ ->
                                 { a | content = Array.push (red ch) a.content }
 
-            Embedded _ ->
+            EmbeddedHtml _ ->
                 { a | content = Array.push elem a.content }
 
 
@@ -137,7 +137,7 @@ markCode content =
         f : Element -> (Bool, List (Bool, Element)) -> (Bool, List (Bool, Element))
         f elem (isCode, xs) =
             case elem of
-                Break br ->
+                LineBreak br ->
                     let
                         isCodeNow =
                             List.member "code" br.classes                           

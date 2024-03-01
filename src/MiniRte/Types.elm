@@ -1,23 +1,23 @@
 module MiniRte.Types exposing
-    ( Msg(..), InputBox(..), TextAlignType(..)
-    , Content, Element(..), Character, EmbeddedHtml, LineBreak, Child(..), FontStyle
+    ( Msg(..), TextAlignType(..)
+    , Content, Element(..), CharacterRecord, EmbeddedHtmlRecord, LineBreakRecord, Child(..), FontStyle
     , emptyEmbeddedHtml
     )
 
 {-|
 
-@docs Msg, InputBox, TextAlignType
+@docs Msg, TextAlignType
 
 
 # Writing highlighters
 
-When writing a highlighter, pass in a `Content -> Content` function on init.
+A highlighter is a `Content -> Content` function that you can inject into the model using `setHighlighter`.
 The function should modify the `highlightClasses`, `highlightIndent`, or `highlightStyling` fields of the elements.
-Each string `x` in `highlightClasses` turns into `Html.Attribute.class x`.
-Each `(x,y)` in `highlightStyling` turns into `Html.Attribute.style x y`.
-Attributes of `LineBreak`s apply to the preceding paragraph as a whole.
+Each string `x` in `highlightClasses` turns into `Html.(Styled.)Attribute.class x`.
+Each `(x,y)` in `highlightStyling` turns into `Html.(Styled.)Attribute.style x y`.
+Attributes of `LineBreak`s apply to the paragraph (the previous non-linebreak elements) as a whole.
 
-@docs Content, Element, Character, EmbeddedHtml, emptyEmbeddedHtml, LineBreak, Child, FontStyle
+@docs Content, Element, CharacterRecord, EmbeddedHtmlRecord, emptyEmbeddedHtml, LineBreakRecord, Child, FontStyle
 
 -}
 
@@ -26,96 +26,21 @@ import Html.Styled exposing (Html)
 import MiniRte.TypesThatAreNotPublic exposing (..)
 
 
-{-| For toolbar icons or shortcut keys. See the [example](https://github.com/dkodaj/rte/tree/master/example) for tips.
-
-      Active Bool       -- turn editing mode on/off
-    | AddContent Content -- insert content at cursor
-    | AddCustomHtml EmbeddedHtml -- insert html at cursor
-    | AddImage src      -- Html.img element with src = src
-    | AddLink String    -- attach link to current selection
-    | AddText String    -- insert text at cursor
-    | Bold              -- make text bold
-    | CharacterLimitReached int -- get notified if too much text is entered
-    | Class String      -- toggle class on current paragraph
-    | Copy              -- copy current selection
-    | Cut               -- cut current selection
-    | Font (List String)
-                        -- set current font families
-                        -- e.g. ["Oswald", "sans-serif"]
-    | FontSize Float    -- set current font size
-    | FreezeEditor      -- turn off cursor, take away focus
+{-|   CharacterLimitReached int -- get notified if too much text is entered
     | FromBrowserClipboard String
                         -- see package description
-    | Heading           -- toggles between h1 and plain div    
-    | ImageSourceInput  -- you won't need this
-    | Indent            -- increase indent of current paragraph by 1
     | Internal msg      -- not part of the API
-    | Italic            -- make text italic
-    | LinkHrefInput     -- you won't need this
-    | LoadContent Content -- replace current content
-    | LoadText String    -- replace current content
-    | NodeType String   -- set Html.node type of current paragraph (e.g. `"h1"`)
-    | Selection (x,y)   -- select characters no. x to y (inclusive)
-    | StrikeThrough     -- cross out text
-    | TextAlign TextAlignType
-                        -- change alignment of current paragraph
     | ToBrowserClipboard String
-                        -- see package description
-    | ToggleEmojiBox    -- turn emoji input box on/off
-    | ToggleImageBox    -- turn image link input box on/off
-    | ToggleLinkBox     -- turn link input box on/off
-    | Underline         -- underline text
-    | Undo              -- undo last action
-    | Unindent          -- decrease indent of current paragraph
-    | Unlink            -- remove the link that the cursor is touching
-
 -}
 type Msg
-    = Active Bool
-    | AddContent Content
-    | AddCustomHtml EmbeddedHtml
-    | AddImage String
-    | AddLink String
-    | AddText String
-    | Bold
-    | CharacterLimitReached Int
-    | Class String
-    | Copy    
-    | Cut
-    | Font (List String)
-    | FontSize Float
-    | FreezeEditor
+    = CharacterLimitReached Int
     | FromBrowserClipboard String
-    | Heading
-    | ImageSourceInput String
-    | Indent
     | Internal InternalMsg
-    | Italic
-    | LinkHrefInput String
-    | LoadContent Content
-    | LoadText String
-    | NodeType String
-    | Selection (Int,Int)
-    | StrikeThrough    
-    | TextAlign TextAlignType
     | ToBrowserClipboard String
-    | ToggleEmojiBox
-    | ToggleImageBox
-    | ToggleLinkBox    
-    | Underline
-    | Undo
-    | Unindent
-    | Unlink
 
 
 {-| -}
-type InputBox
-    = ImageInputBox String
-    | LinkInputBox String
-
-
-{-| -}
-type alias Character =
+type alias CharacterRecord =
     { char : Char
     , fontStyle : FontStyle
     , highlightClasses : List String
@@ -126,7 +51,7 @@ type alias Character =
 
 {-| -}
 type Child
-    = Child EmbeddedHtml
+    = Child EmbeddedHtmlRecord
 
 
 {-| -}
@@ -136,13 +61,14 @@ type alias Content =
 
 {-| -}
 type Element
-    = Break LineBreak
-    | Char Character
-    | Embedded EmbeddedHtml
+    = Character CharacterRecord
+    | EmbeddedHtml EmbeddedHtmlRecord
+    | LineBreak LineBreakRecord
 
 
-{-|-}
-type alias EmbeddedHtml =
+{-|  You can embed any html node using this type. The RTE will only be able to delete or copy/paste these elements.
+-}
+type alias EmbeddedHtmlRecord =
     { attributes : List (String, String)
     , classes : List String
     , children : List Child    
@@ -155,7 +81,7 @@ type alias EmbeddedHtml =
 
 {-| An empty div.
 -}
-emptyEmbeddedHtml : EmbeddedHtml
+emptyEmbeddedHtml : EmbeddedHtmlRecord
 emptyEmbeddedHtml =
     { attributes = []
     , classes = []
@@ -178,7 +104,7 @@ type alias FontStyle =
     
 
 {-| -}
-type alias LineBreak =
+type alias LineBreakRecord =
     { classes : List String
     , highlightClasses : List String
     , highlightIndent : Int

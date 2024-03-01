@@ -12,7 +12,7 @@ It cannot justify text.
 
 ## Non-Western Keyboard Input
 
-This is currently not supported, because it is hard to channel [CompositionEvent](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent)s to the Elm RTE object (which is not an `input` or `textarea` node).
+This is currently not supported out of the box, because it is hard to channel [CompositionEvent](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent)s to the Elm RTE object (which is not an `input` or `textarea` node).
 
 ## Javascript
 To communicate with the browser's clipboard (to be able to copy text from the RTE to other apps and paste text from other apps into the RTE), you'll need to add two ports to your app:
@@ -27,7 +27,7 @@ port fromBrowserClipboard : (String -> msg) -> Sub msg
 port toBrowserClipboard : String -> Cmd msg
 ```
 
-These ports belong in your `subscriptions` and `update` functions. See the example's [Main.elm](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm?plain=1#L87).
+These ports belong in your `subscriptions` and `update` functions. See the example's [Main.elm](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm).
 
 You will also need a bit of JS:
 
@@ -46,4 +46,4 @@ window.addEventListener('paste', (event) => {
 
 ```
 
-You can use a more complicated callback to allow copy/pasting images into the RTE. See the example's [index.html](https://github.com/dkodaj/rte/blob/master/example/html/index.html?plain=1#L24).
+You can use a more complicated callback to allow copy/pasting images into the RTE. See the example's [index.html](https://github.com/dkodaj/rte/blob/master/example/html/index.html).

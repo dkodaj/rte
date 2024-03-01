@@ -3,10 +3,9 @@
     "name": "dkodaj/rte",
     "summary": "Pure Elm rich text editor for blogpost-sized texts",
     "license": "MIT",
-    "version": "8.0.3",
+    "version": "9.0.0",
     "exposed-modules": [
         "MiniRte",
-        "MiniRte.Styled",
         "MiniRte.Types"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",

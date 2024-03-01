@@ -11,8 +11,6 @@ module MiniRte.Core exposing
     , cut
     , decodeContentString
     , decodeContentGZip
-    , defaultFont    
-    , defaultFontSize
     , embed
     , encodeContentString
     , encodeContentGZip
@@ -20,11 +18,6 @@ module MiniRte.Core exposing
     , fontFamily
     , fontSize
     , init
-    , init1
-    , initCmd
-    , initWith
-    , initWithContent
-    , initWithText
     , link
     , loadContent
     , loadText
@@ -32,6 +25,7 @@ module MiniRte.Core exposing
     , selectRange
     , setSelection
     , showContentInactive
+    , showEncodedContentInactive
     , showEmbedded
     , state
     , subscriptions
@@ -130,7 +124,7 @@ type alias MouseLocator =
 type alias Paragraph =
     { idx : Int
     , children : List ( Int, Element )
-    , lineBreak : LineBreak
+    , lineBreak : LineBreakRecord
     }
 
 
@@ -167,16 +161,11 @@ type Vertical
 -- == Main functions == --
 
 
-init : String -> ( Editor, Cmd Msg )
+init : String -> Editor
 init editorID =
-    ( init1 editorID, initCmd editorID )
-
-
-init1 : String -> Editor
-init1 editorID =
     { characterLimit = Nothing
     , clipboard = Nothing
-    , content = Array.push (Break defaultLineBreak) Array.empty
+    , content = Array.push (LineBreak defaultLineBreakRecord) Array.empty
     , ctrlDown = False
     , cursor = 0
     , cursorElement = nullElement
@@ -209,39 +198,12 @@ init3 : String -> Maybe (Content -> Content) -> List (Attribute Msg) -> Editor
 init3 editorID highlighter selectionStyle =
     let
         i =
-            init1 editorID
+            init editorID
     in
     { i
         | highlighter = highlighter
         , selectionStyle = selectionStyle
     }
-
-
-initCmd : String -> Cmd Msg
-initCmd editorID =
-    Cmd.batch
-        [ placeCursorCmd ScrollIfNeeded editorID
-        ]
-
-
-initWith : String -> String -> ( Editor, Cmd Msg )
-initWith encodedContent id =
-    case decode encodedContent of
-        Just content ->
-            initWithContent content id
-
-        Nothing ->
-            init id
-
-
-initWithContent : Content -> String -> ( Editor, Cmd Msg )
-initWithContent content id =
-    ( loadContent content (init1 id), initCmd id )
-
-
-initWithText : String -> String -> ( Editor, Cmd Msg )
-initWithText content id =
-    ( loadText content (init1 id), initCmd id )
 
 
 subscriptions : Editor -> Sub Msg
@@ -569,8 +531,8 @@ updateUndo msg e =
             e
 
 
-view : (Msg -> msg) -> List (Attribute msg) -> Editor -> Html msg
-view tagger userDefinedStyles e =
+view : List (Attribute Msg) -> Editor -> Html Msg
+view userDefinedStyles e =
     let
         dummy =
             Html.input
@@ -592,8 +554,7 @@ view tagger userDefinedStyles e =
                     ]
                 ]
                 []
-            |> Html.map Internal
-            |> Html.map tagger
+            |> Html.map Internal            
 
         viewTextareaContent =
             { content = e.content
@@ -610,7 +571,6 @@ view tagger userDefinedStyles e =
             , selectionStyle = e.selectionStyle
             , state = e.state
             , userDefinedStyles = userDefinedStyles
-            , tagger = tagger
             }
     in
     case e.state of
@@ -639,15 +599,14 @@ type alias ViewTextareaContent =
     }
 
 
-type alias ViewTextareaParams msg =
+type alias ViewTextareaParams =
     { editorID : String
     , fontSizeUnit : Maybe String
     , highlighter : Maybe (Content -> Content)
     , indentUnit : Maybe ( Float, String )
     , selectionStyle : List (Attribute Msg)
     , state : State
-    , userDefinedStyles : List (Attribute msg)
-    , tagger : Msg -> msg
+    , userDefinedStyles : List (Attribute Msg)
     }
 
 
@@ -657,16 +616,16 @@ type alias ViewTextareaParams msg =
 
 addBreakToEnd : Content -> Content
 addBreakToEnd x =
--- prevent last Break from being deleted
+-- prevent last LineBreak from being deleted
     case Array.get (Array.length x - 1) x of
         Nothing ->
-            Array.push (Break defaultLineBreak) Array.empty
+            Array.push (LineBreak defaultLineBreakRecord) Array.empty
 
-        Just (Break _) ->
+        Just (LineBreak _) ->
             x
 
         Just _ ->
-            Array.push (Break defaultLineBreak) x
+            Array.push (LineBreak defaultLineBreakRecord) x
 
 
 addContent : Content -> Editor -> ( Editor, Cmd Msg )
@@ -720,7 +679,7 @@ addText str e =
 alphaNumAt : Int -> Content -> Bool
 alphaNumAt idx content =
     case Array.get idx content of
-        Just (Char ch) ->
+        Just (Character ch) ->
             Char.isAlphaNum ch.char || diacritical ch.char
 
         _ ->
@@ -743,14 +702,14 @@ attributes elem =
             ++ List.map g (x.styling ++ x.highlightStyling)
     in
     case elem of
-        Break b ->
+        LineBreak b ->
             h b
 
-        Char c ->
+        Character c ->
             List.map f (c.fontStyle.classes ++ c.highlightClasses)
             ++ List.map g (c.fontStyle.styling ++ c.highlightStyling)
 
-        Embedded html ->
+        EmbeddedHtml html ->
             h html
 
 
@@ -770,7 +729,7 @@ breakIntoParas content =
         f : Element -> ( Int, Paragraphs ) -> ( Int, Paragraphs )
         f elem ( idx, ys ) =
             case elem of
-                Break br ->
+                LineBreak br ->
                     ( idx - 1, Paragraph idx [] br :: ys )
 
                 _ ->
@@ -778,7 +737,7 @@ breakIntoParas content =
                         [] ->
                             ( idx - 1, [] )
 
-                        -- trouble if content doesn't end with a Break element
+                        -- trouble if content doesn't end with a LineBreak element
                         x :: rest ->
                             ( idx - 1, { x | children = ( idx, elem ) :: x.children } :: rest )
 
@@ -822,7 +781,7 @@ changeElementWithId idx mod e =
 changeIndent : Int -> Editor -> ( Editor, Cmd Msg )
 changeIndent amount editor =
     let
-        f : LineBreak -> LineBreak
+        f : LineBreakRecord -> LineBreakRecord
         f x =
             { x | indent = amount + x.indent }
     in
@@ -836,9 +795,6 @@ contentChanged msg e =
             Array.length e.content - 1
     in
     case msg of
-        AddText txt ->
-            txt /= ""
-
         Internal (Input timeStamp str) ->
             if String.length str /= 1 then
                 False
@@ -907,7 +863,7 @@ contentChanged msg e =
         Internal (Paste str) ->
             str /= "" || Maybe.map toText e.clipboard /= Just ""
 
-        Internal (UndoAction) ->
+        Internal UndoAction ->
             True
 
         _ ->
@@ -931,12 +887,6 @@ copy e =
               |> Task.succeed
               |> Task.perform identity
             )
-
-
-copyMsg : Cmd Msg
-copyMsg =
-    Task.succeed Copy
-    |> Task.perform identity
 
 
 currentLink : Editor -> Maybe String
@@ -987,10 +937,10 @@ currentLinkPos e =
             Nothing
 
 
-currentParaStyle : Editor -> LineBreak
+currentParaStyle : Editor -> LineBreakRecord
 currentParaStyle editor =
     lineBreakAt editor.cursor editor.content
-    |> Maybe.withDefault defaultLineBreak
+    |> Maybe.withDefault defaultLineBreakRecord
 
 
 currentSelection : Editor -> Maybe String
@@ -1092,12 +1042,6 @@ cut e =
                 )
 
 
-cutMsg : Cmd Msg
-cutMsg =
-    Task.succeed Cut
-    |> Task.perform identity
-
-
 decodeClipboardData : (Value -> InternalMsg) -> Decoder InternalMsg
 decodeClipboardData f =
     Decode.map f
@@ -1119,13 +1063,13 @@ decodeKey f =
         (Decode.field "altKey" Decode.bool)
 
 
-decodeMouse : (( Float, Float ) -> Float -> msg) -> Decoder msg
-decodeMouse msg =
+decodeMouse : Decoder InternalMsg
+decodeMouse =
     let
-        tagger x y z =
-            msg ( x, y ) z
+        tag x y z =
+            MouseDown ( x, y ) z
     in
-    Decode.map3 tagger
+    Decode.map3 tag
         (Decode.field "clientX" Decode.float)
         (Decode.field "clientY" Decode.float)
         (Decode.field "timeStamp" Decode.float)                    
@@ -1142,26 +1086,8 @@ decodeTargetIdAndTime f =
         (Decode.field "timeStamp" Decode.float)
 
 
-defaultFont : List String -> Editor -> Editor
-defaultFont xs e =
-    let
-        f x =
-            { x | fontFamily = xs }
-    in
-    { e | fontStyle = f e.fontStyle }
-
-
-defaultFontSize : Float -> Editor -> Editor
-defaultFontSize float e =
-    let
-        f x =
-            { x | fontSize = Just float }
-    in
-    { e | fontStyle = f e.fontStyle }
-
-
-defaultLineBreak : LineBreak
-defaultLineBreak =
+defaultLineBreakRecord : LineBreakRecord
+defaultLineBreakRecord =
     { classes = []
     , highlightClasses = []
     , highlightIndent = 0
@@ -1188,16 +1114,6 @@ delete beg end e =
     |> addBreakToEnd
 
 
-detectFontStyle : Int -> Editor -> Editor
-detectFontStyle idx e =
-    case Array.get (idx - 1) e.content of
-        Just (Char c) ->
-            { e | fontStyle = c.fontStyle }
-
-        _ ->
-            e
-
-
 diacritical : Char -> Bool
 diacritical char =
     List.member char
@@ -1214,13 +1130,13 @@ diacritical char =
         ]
 
 
-embed : EmbeddedHtml -> Editor -> ( Editor, Cmd Msg )
+embed : EmbeddedHtmlRecord -> Editor -> ( Editor, Cmd Msg )
 embed html e =    
     placeCursor NoScroll
         { e
             | content =
                 Array.slice 0 e.cursor e.content
-                |> Array.push (Embedded html)
+                |> Array.push (EmbeddedHtml html)
                 |> \x -> Array.append x (Array.slice e.cursor (Array.length e.content) e.content)
                 |> addBreakToEnd
 
@@ -1268,8 +1184,7 @@ fontSize float e =
     setFontStyle mod e
 
 
-
-insertBreak : LineBreak -> Maybe Float -> Editor -> Editor
+insertBreak : LineBreakRecord -> Maybe Float -> Editor -> Editor
 insertBreak br maybeTimeStamp editor0 =
     let
         e =
@@ -1286,7 +1201,7 @@ insertBreak br maybeTimeStamp editor0 =
                 | cursor = e.cursor + 1
                 , content =                    
                     Array.slice 0 e.cursor e.content
-                    |> Array.push (Break br)
+                    |> Array.push (LineBreak br)
                     |> \x -> Array.append x (Array.slice e.cursor (Array.length e.content) e.content)
             }
 
@@ -1296,20 +1211,21 @@ insertBreak br maybeTimeStamp editor0 =
                 , selection = Nothing
                 , content =
                     Array.slice 0 beg e.content
-                    |> Array.push (Break br)
+                    |> Array.push (LineBreak br)
                     |> \x -> Array.append x (Array.slice (end+1) (Array.length e.content) e.content)
             }
 
 
 is : ( String, String ) -> Editor -> Bool
-is attr editor =
-    List.member attr editor.fontStyle.styling
+is attr e =
+    isAt attr e (e.cursor - 1)
+    |> Maybe.withDefault False
 
 
 isAt : ( String, String ) -> Editor -> Int -> Maybe Bool
 isAt attr e idx =
     case Array.get idx e.content of
-        Just (Char c) ->
+        Just (Character c) ->
             Just (List.member attr c.fontStyle.styling)
 
         _ ->
@@ -1319,7 +1235,7 @@ isAt attr e idx =
 isBreak : Int -> Content -> Bool
 isBreak idx content =
     case Array.get idx content of
-        Just (Break _) ->
+        Just (LineBreak _) ->
             True
 
         _ ->
@@ -1440,7 +1356,6 @@ jump direction ( beg, end ) e =
                 , locating = Idle
             }
             |> selectionMod e.cursor
-            |> detectFontStyle idx
             |> placeCursor ScrollIfNeeded
 
         fail x =
@@ -1576,7 +1491,6 @@ keyDown str timeStamp altKey e =
                 in
                 { e | cursor = newCursor }
                 |> selectionMod e.cursor 
-                |> detectFontStyle newCursor
                 |> placeCursor ScrollIfNeeded
 
             else
@@ -1597,7 +1511,6 @@ keyDown str timeStamp altKey e =
                 in
                 { e | cursor = newCursor }
                 |> selectionMod e.cursor 
-                |> detectFontStyle newCursor
                 |> placeCursor ScrollIfNeeded
 
         "ArrowRight" ->
@@ -1609,7 +1522,6 @@ keyDown str timeStamp altKey e =
                     | cursor = maxIdx
                     , selection = Nothing
                 }
-                |> detectFontStyle maxIdx
                 |> placeCursor ScrollIfNeeded
 
             else if e.ctrlDown then
@@ -1619,7 +1531,6 @@ keyDown str timeStamp altKey e =
                 in
                 { e | cursor = newCursor }
                 |> selectionMod e.cursor
-                |> detectFontStyle newCursor
                 |> placeCursor ScrollIfNeeded
 
             else
@@ -1640,7 +1551,6 @@ keyDown str timeStamp altKey e =
                 in
                 { e | cursor = newCursor }
                 |> selectionMod e.cursor 
-                |> detectFontStyle newCursor
                 |> placeCursor ScrollIfNeeded
 
         "ArrowUp" ->
@@ -1660,7 +1570,6 @@ keyDown str timeStamp altKey e =
                                 |> Array.append (Array.slice 0 (e.cursor - 1) e.content)
                                 |> addBreakToEnd
                         }
-                        |> detectFontStyle (e.cursor - 1)
                         |> placeCursor ScrollIfNeeded
                     else
                         ( e, Cmd.none )
@@ -1674,7 +1583,6 @@ keyDown str timeStamp altKey e =
                             |> Array.append (Array.slice 0 beg e.content)
                             |> addBreakToEnd
                     }
-                    |> detectFontStyle beg
                     |> placeCursor ScrollIfNeeded
 
         "Control" ->
@@ -1695,14 +1603,12 @@ keyDown str timeStamp altKey e =
                         , cursor = beg
                         , selection = Nothing
                     }
-                    |> detectFontStyle beg
                     |> placeCursor ScrollIfNeeded
 
         "End" ->
             if e.ctrlDown then
                 { e | cursor = maxIdx }
                 |> selectionMod e.cursor 
-                |> detectFontStyle maxIdx
                 |> placeCursor ScrollIfNeeded
 
             else if e.shiftDown then
@@ -1722,7 +1628,6 @@ keyDown str timeStamp altKey e =
             if e.ctrlDown then
                 { e | cursor = 0 }
                 |> selectionMod e.cursor 
-                |> detectFontStyle 0
                 |> placeCursor ScrollIfNeeded
 
             else if e.shiftDown then
@@ -1869,7 +1774,6 @@ lineBoundary maybeIdx direction ( beg, end ) e =
                 , locating = Idle
             }
             |> selectionMod e.cursor
-            |> detectFontStyle a.idx
             |> placeCursor ScrollIfNeeded
 
         ( Just _, _ ) ->
@@ -1889,7 +1793,7 @@ lineBoundary maybeIdx direction ( beg, end ) e =
             )
 
 
-lineBreakAt : Int -> Content -> Maybe LineBreak
+lineBreakAt : Int -> Content -> Maybe LineBreakRecord
 lineBreakAt idx content =
     case nextBreakFrom idx content of
         Just ( _, lineBreak ) ->
@@ -1905,8 +1809,8 @@ link href e =
         f : Element -> Element
         f elem =
             case elem of
-                Char ch ->
-                    Char { ch | link = Just href }
+                Character ch ->
+                    Character { ch | link = Just href }
 
                 _ ->
                     elem
@@ -1930,7 +1834,7 @@ link href e =
 linkAt : Int -> Content -> Maybe String
 linkAt idx content =
     case Array.get idx content of
-        Just (Char ch) ->
+        Just (Character ch) ->
             ch.link
 
         _ ->
@@ -2296,7 +2200,6 @@ locateMouse s ( mouseX, mouseY ) ( beg, end ) e =
                             else
                                 e.drag
                     }
-                    |> detectFontStyle closest.idx
                     |> placeCursor NoScroll
                     |> maybeSelectWord 
 
@@ -2361,18 +2264,18 @@ next f idx content =
     |> Tuple.second
 
 
-nextBreak : Editor -> Maybe ( Int, LineBreak )
+nextBreak : Editor -> Maybe ( Int, LineBreakRecord )
 nextBreak editor =
     nextBreakFrom editor.cursor editor.content
 
 
-nextBreakFrom : Int -> Content -> Maybe ( Int, LineBreak )
+nextBreakFrom : Int -> Content -> Maybe ( Int, LineBreakRecord )
 nextBreakFrom begIdx content =
     let
         maxIdx =
             Array.length content - 1
 
-        f : Int -> Maybe ( Int, LineBreak ) -> Maybe ( Int, LineBreak )
+        f : Int -> Maybe ( Int, LineBreakRecord ) -> Maybe ( Int, LineBreakRecord )
         f idx result =
             case result of
                 Just _ ->
@@ -2380,7 +2283,7 @@ nextBreakFrom begIdx content =
 
                 Nothing ->
                     case Array.get idx content of
-                        Just (Break br) ->
+                        Just (LineBreak br) ->
                             Just ( idx, br )
 
                         _ ->
@@ -2496,7 +2399,7 @@ onSameLine a b =
         b.y + b.height >= a.y + a.height
 
 
-paraClassAdd : String -> LineBreak -> LineBreak
+paraClassAdd : String -> LineBreakRecord -> LineBreakRecord
 paraClassAdd className br =
     let
         filtered : List String -> List String
@@ -2506,7 +2409,7 @@ paraClassAdd className br =
     { br | classes = className :: filtered br.classes }
 
 
-paraClassRemove : String -> LineBreak -> LineBreak
+paraClassRemove : String -> LineBreakRecord -> LineBreakRecord
 paraClassRemove className br =
     let
         filtered : List String -> List String
@@ -2519,19 +2422,19 @@ paraClassRemove className br =
     }
 
 
-parasInSelection : Editor -> List ( Int, LineBreak )
+parasInSelection : Editor -> List ( Int, LineBreakRecord )
 parasInSelection e =
     let
-        f : Element -> ( Int, List ( Int, LineBreak ) ) -> ( Int, List ( Int, LineBreak ) )
+        f : Element -> ( Int, List ( Int, LineBreakRecord ) ) -> ( Int, List ( Int, LineBreakRecord ) )
         f x ( y, zs ) =
             case x of
-                Break br ->
+                LineBreak br ->
                     ( y + 1, ( y, br ) :: zs )
 
                 _ ->
                     ( y + 1, zs )
 
-        g : ( Int, Int ) -> Content -> List ( Int, LineBreak )
+        g : ( Int, Int ) -> Content -> List ( Int, LineBreakRecord )
         g ( beg, end ) x =            
             Array.slice beg (end+1) e.content
             |> Array.foldl f ( beg, [] )
@@ -2669,8 +2572,8 @@ replaceLink href editor =
         f : Element -> Element
         f elem =
             case elem of
-                Char ch ->
-                    Char { ch | link = Just href }
+                Character ch ->
+                    Character { ch | link = Just href }
 
                 _ ->
                     elem
@@ -2796,8 +2699,8 @@ setFontStyle mod e =
         f : Element -> Element
         f elem =
             case elem of
-                Char c ->
-                    Char { c | fontStyle = mod c.fontStyle }
+                Character c ->
+                    Character { c | fontStyle = mod c.fontStyle }
 
                 _ ->
                     elem
@@ -2856,14 +2759,14 @@ setFontStyleTag attr bool e =
             ( { e | fontStyle = mod e.fontStyle }, Cmd.none )
 
 
-setPara : (LineBreak -> LineBreak) -> Editor -> ( Editor, Cmd Msg )
+setPara : (LineBreakRecord -> LineBreakRecord) -> Editor -> ( Editor, Cmd Msg )
 setPara f e =
     let
-        g : ( Int, LineBreak ) -> Editor -> Editor
+        g : ( Int, LineBreakRecord ) -> Editor -> Editor
         g ( idx, lineBreak ) x =
-            set2 idx (Break (f lineBreak)) x
+            set2 idx (LineBreak (f lineBreak)) x
 
-        h : List ( Int, LineBreak ) -> Editor -> Editor
+        h : List ( Int, LineBreakRecord ) -> Editor -> Editor
         h xs y =
             List.foldr g y xs
     in
@@ -2901,7 +2804,7 @@ type alias ShowCharParams =
     }
 
 
-showChar : ShowCharParams -> Int -> Character -> Html Msg
+showChar : ShowCharParams -> Int -> CharacterRecord -> Html Msg
 showChar params idx ch =
     let
         eState =
@@ -3014,7 +2917,7 @@ showChar params idx ch =
     in
     Html.span
         ( Attr.id id
-            :: attributes (Char ch)
+            :: attributes (Character ch)
             ++ fontFamilyAttr
             ++ listeners
             ++ pos
@@ -3024,16 +2927,16 @@ showChar params idx ch =
         child
 
 
-showContent : ViewTextareaParams msg -> ViewTextareaContent -> Html msg
+showContent : ViewTextareaParams -> ViewTextareaContent -> Html Msg
 showContent params c =
     let
         listeners =
             case params.state of
                 Edit ->
-                    [ Events.on "mousedown" (decodeMouse (\x y -> params.tagger <| Internal <| MouseDown x y)) ]
+                    [ Events.on "mousedown" (Decode.map Internal decodeMouse) ]
 
                 Freeze ->
-                    [ Events.onClick (params.tagger <| Active True) ]
+                    []
 
                 Display ->
                     []
@@ -3055,7 +2958,6 @@ showContent params c =
         paraParams =
             { editorID = params.editorID 
             , eState = params.state
-            , tagger = params.tagger
             , cursor = c.cursor
             , maybeIndentUnit = params.indentUnit
             , selection = c.selection
@@ -3073,8 +2975,8 @@ showContent params c =
         paragraphs
 
 
-showContentInactive : String -> List (Attribute msg) -> Maybe String -> Maybe (Content -> Content) -> Maybe ( Float, String ) -> (Msg -> msg) -> String -> Html msg
-showContentInactive editorID userDefinedStyles fontSizeUnit maybeHighlighter indentUnit tagger txt =
+showContentInactive : { fontSizeUnit : Maybe String, indentUnit : Maybe (Float, String), highlighter : Maybe (Content -> Content) } -> List (Attribute Msg) -> Content -> Html Msg
+showContentInactive myParams userDefinedStyles myContent =
     let
         attrs =
             userDefinedStyles
@@ -3085,40 +2987,44 @@ showContentInactive editorID userDefinedStyles fontSizeUnit maybeHighlighter ind
                 , ("word-break", "break-word")                
                 ]
 
-        highlighter =
-            Maybe.withDefault identity maybeHighlighter
-
         paraParams =
-            { editorID = editorID
+            { editorID = dummyID "uneditable"
             , eState = Display
-            , tagger = tagger
             , cursor = -1
-            , maybeIndentUnit = indentUnit
+            , maybeIndentUnit = myParams.indentUnit
             , selection = Nothing
             , selectionStyle = []
             , typing = False
-            , fontSizeUnit = fontSizeUnit
+            , fontSizeUnit = myParams.fontSizeUnit
             }
+
+        highlight =
+            Maybe.withDefault identity myParams.highlighter
 
         paragraphs x =
             List.map
                 (showPara paraParams)
-                (breakIntoParas (highlighter x))
+                (breakIntoParas x)
 
         render x =
             Html.div
                 attrs
                 (paragraphs x)
     in
-    case decode txt of
-        Just content ->
-            render content
-
-        Nothing ->
-            render (textToContent txt)
+    render (highlight myContent)
 
 
-showEmbedded : EmbeddedHtml -> Html Msg
+showEncodedContentInactive : { fontSizeUnit : Maybe String, indentUnit : Maybe (Float, String), highlighter : Maybe (Content -> Content) } -> List (Attribute Msg) -> String -> Html Msg
+showEncodedContentInactive myParams userDefinedStyles json =
+    let
+        myContent =
+            decode json
+            |> Maybe.withDefault (textToContent json)
+    in            
+    showContentInactive myParams userDefinedStyles myContent
+
+
+showEmbedded : EmbeddedHtmlRecord -> Html Msg
 showEmbedded html =
     let
         textChild =
@@ -3140,7 +3046,7 @@ showEmbedded html =
             Attr.attribute x y
 
         attrs =            
-            attributes (Embedded html) ++ List.map g html.attributes            
+            attributes (EmbeddedHtml html) ++ List.map g html.attributes            
     in
     case html.nodeType of
         Nothing ->
@@ -3155,10 +3061,9 @@ showEmbedded html =
             Html.node x attrs (Maybe.withDefault [] (Maybe.map (\y -> [y]) textChild) ++ List.map f html.children)
 
 
-type alias ShowParaParams msg =
+type alias ShowParaParams =
     { editorID : String
     , eState : State
-    , tagger : Msg -> msg
     , cursor : Int
     , maybeIndentUnit : Maybe ( Float, String )
     , selection :  Maybe ( Int, Int )
@@ -3168,7 +3073,7 @@ type alias ShowParaParams msg =
     }
 
 
-showPara : ShowParaParams msg -> Paragraph -> Html msg
+showPara : ShowParaParams -> Paragraph -> Html Msg
 showPara params p =
     let
         charParams =
@@ -3182,34 +3087,29 @@ showPara params p =
             }
 
         zeroSpace idx =
-            showChar charParams idx zeroWidthCharacter
+            showChar charParams idx zeroWidthCharacterRecord
 
         indentUnit =
-            Maybe.withDefault (50,"px") params.maybeIndentUnit
-
-        tag : Html Msg -> Html msg
-        tag x =
-            Html.map params.tagger x
+            Maybe.withDefault (50, "px") params.maybeIndentUnit
 
         g : ( Int, Element ) -> List (Html Msg) -> List (Html Msg)
         g ( idx, elem ) ys =
             case elem of
                 --never occurs because of breakIntoParas
-                Break br ->
+                LineBreak br ->
                     ys
 
-                Char ch ->
+                Character ch ->
                     showChar charParams idx ch :: ys
 
-                Embedded html ->
+                EmbeddedHtml html ->
                     zeroSpace idx
                     :: showEmbedded html
                     :: ys
     in
     List.foldr g [ zeroSpace p.idx ] p.children
     |> wrap params.editorID indentUnit p.lineBreak
-    |> tag
-
+    
 
 snapshot : Editor -> Undo
 snapshot editor =
@@ -3223,13 +3123,13 @@ snapshot editor =
 spaceOrLineBreakAt : Int -> Content -> Bool
 spaceOrLineBreakAt idx content =
     case Array.get idx content of
-        Just (Break _) ->
+        Just (LineBreak _) ->
             True
 
-        Just (Char ch) ->
+        Just (Character ch) ->
             ch.char == ' '
 
-        Just (Embedded _) ->
+        Just (EmbeddedHtml _) ->
             False
 
         Nothing ->
@@ -3288,11 +3188,11 @@ textToContent txt =
         f x ys =
             case x of
                 '\n' ->
-                    Array.push (Break defaultLineBreak) ys
+                    Array.push (LineBreak defaultLineBreakRecord) ys
 
                 _ ->
                     Array.push
-                    ( Char
+                    ( Character
                         { char = x
                         , fontStyle = emptyFontStyle
                         , highlightClasses = []
@@ -3302,9 +3202,9 @@ textToContent txt =
                     ) ys
     in
     if txt == "" then
-        Array.push (Break defaultLineBreak) Array.empty
+        Array.push (LineBreak defaultLineBreakRecord) Array.empty
     else
-        String.foldr f Array.empty txt
+        String.foldl f Array.empty txt
         |> addBreakToEnd
 
 
@@ -3361,7 +3261,7 @@ toggleUnderline e =
 toggleNodeType : String -> Editor -> ( Editor, Cmd Msg )
 toggleNodeType nodeType e =
     let
-        f : LineBreak -> LineBreak
+        f : LineBreakRecord -> LineBreakRecord
         f x =
             if x.nodeType == Just nodeType then
                 { x | nodeType = Nothing }
@@ -3374,7 +3274,7 @@ toggleNodeType nodeType e =
 toggleParaClass : String -> Editor -> ( Editor, Cmd Msg )
 toggleParaClass className e =
     let
-        f : LineBreak -> LineBreak
+        f : LineBreakRecord -> LineBreakRecord
         f x =
             if List.member className x.classes then
                 paraClassRemove className x
@@ -3390,13 +3290,13 @@ toText content =
         f : Element -> String
         f x =
             case x of
-                Break _ ->
+                LineBreak _ ->
                     "\n"
 
-                Char ch ->
+                Character ch ->
                     String.fromChar ch.char
 
-                Embedded html ->
+                EmbeddedHtml html ->
                     ""
 
         g : Element -> String -> String
@@ -3432,7 +3332,7 @@ typed_ activeLink txt e maybeTimeStamp modifyClipboard =
     let   
         f : Char -> Element
         f char =
-            Char
+            Character
                 { char = char
                 , fontStyle = e.fontStyle
                 , highlightClasses = []
@@ -3555,8 +3455,8 @@ unlink editor =
         f : Element -> Element
         f elem =
             case elem of
-                Char ch ->
-                    Char { ch | link = Nothing }
+                Character ch ->
+                    Character { ch | link = Nothing }
 
                 _ ->
                     elem
@@ -3569,7 +3469,7 @@ wordAt idx content =
     not (spaceOrLineBreakAt idx content)
 
 
-wrap : String -> ( Float, String ) -> LineBreak -> (List (Html Msg) -> Html Msg)
+wrap : String -> ( Float, String ) -> LineBreakRecord -> (List (Html Msg) -> Html Msg)
 wrap editorID ( amount, unit ) l =
     let
         indentation =
@@ -3588,11 +3488,11 @@ wrap editorID ( amount, unit ) l =
     in
     case l.nodeType of
         Nothing ->
-            indentAttr ++ attributes (Break l)
+            indentAttr ++ attributes (LineBreak l)
             |> Html.div
 
         Just nodeType ->
-            indentAttr ++ attributes (Break l)
+            indentAttr ++ attributes (LineBreak l)
             |> Html.node nodeType
 
 
@@ -3600,8 +3500,8 @@ zeroWidthChar =
     Char.fromCode 8203
 
 
-zeroWidthCharacter : Character
-zeroWidthCharacter =
+zeroWidthCharacterRecord : CharacterRecord
+zeroWidthCharacterRecord =
     { char = zeroWidthChar
     , fontStyle = emptyFontStyle
     , highlightClasses = []
@@ -3629,8 +3529,8 @@ decode x =
             Nothing
 
 
-decodeCharacter : Decode.Decoder Character
-decodeCharacter =
+decodeCharacterRecord : Decode.Decoder CharacterRecord
+decodeCharacterRecord =
     let
         toChar x =
             case String.uncons x of
@@ -3641,7 +3541,7 @@ decodeCharacter =
                     Decode.fail ("Not convertible into a Char: " ++ x)
     in
     Decode.map5
-        Character
+        CharacterRecord
         (Decode.field "char" (Decode.string |> Decode.andThen toChar))
         (Decode.field "fontStyle" decodeFontStyle)
         (Decode.succeed [])
@@ -3695,26 +3595,26 @@ decodeElement =
 
 decodeElementHelp constructor =
     case constructor of
-        "Break" ->
+        "LineBreak" ->
             Decode.map
-                Break
-                (Decode.field "A1" decodeLineBreak)
+                LineBreak
+                (Decode.field "A1" decodeLineBreakRecord)
 
-        "Char" ->
+        "Character" ->
             Decode.map
-                Char
-                (Decode.field "A1" decodeCharacter)
+                Character
+                (Decode.field "A1" decodeCharacterRecord)
 
-        "Embedded" ->
+        "EmbeddedHtml" ->
             Decode.map
-                Embedded
+                EmbeddedHtml
                 (Decode.field "A1" decodeEmbeddedHtml)
 
         other ->
             Decode.fail <| "Unknown constructor for type Element: " ++ other
 
 
-decodeEmbeddedHtml : Decode.Decoder EmbeddedHtml
+decodeEmbeddedHtml : Decode.Decoder EmbeddedHtmlRecord
 decodeEmbeddedHtml =
     let
         decodeListener =
@@ -3723,9 +3623,9 @@ decodeEmbeddedHtml =
                 (Decode.field "tag" Decode.string)
                 (Decode.field "at" (Decode.list Decode.string))
 
-        f : Decoder EmbeddedHtml
+        f : Decoder EmbeddedHtmlRecord
         f =
-            Decode.succeed EmbeddedHtml
+            Decode.succeed EmbeddedHtmlRecord
                 |> Pipeline.required "attributes" (Decode.list decodeTuple_String_String_)
                 |> Pipeline.required "classes" (Decode.list Decode.string)
                 |> Pipeline.hardcoded []
@@ -3738,11 +3638,11 @@ decodeEmbeddedHtml =
                 |> Pipeline.required "styling" decodeStyleTags
                 |> Pipeline.required "text" (Decode.maybe Decode.string)
 
-        g : Decoder ( EmbeddedHtml, List String )
+        g : Decoder ( EmbeddedHtmlRecord, List String )
         g =
             Decode.map2 Tuple.pair f (Decode.field "children" (Decode.list Decode.string))
 
-        h : Result Decode.Error (List EmbeddedHtml) -> List String -> Result Decode.Error (List EmbeddedHtml)
+        h : Result Decode.Error (List EmbeddedHtmlRecord) -> List String -> Result Decode.Error (List EmbeddedHtmlRecord)
         h x ys =
             case x of
                 Err err ->
@@ -3761,7 +3661,7 @@ decodeEmbeddedHtml =
                                 Err err ->
                                     Err err
 
-        i : ( EmbeddedHtml, List String ) -> Decode.Decoder EmbeddedHtml
+        i : ( EmbeddedHtmlRecord, List String ) -> Decode.Decoder EmbeddedHtmlRecord
         i ( x, ys ) =
             case h (Ok []) ys of
                 Ok children ->
@@ -3783,10 +3683,10 @@ decodeFontStyle =
         (Decode.field "styling" decodeStyleTags)
 
 
-decodeLineBreak : Decode.Decoder LineBreak
-decodeLineBreak =
+decodeLineBreakRecord : Decode.Decoder LineBreakRecord
+decodeLineBreakRecord =
     Decode.map7
-        LineBreak
+        LineBreakRecord
         (Decode.field "classes" (Decode.list Decode.string))
         (Decode.succeed [])--highlightClasses
         (Decode.succeed 0)--highlightIndent
@@ -3815,8 +3715,8 @@ encode e =
     |> Encode.encode 0
 
 
-encodeCharacter : Character -> Decode.Value
-encodeCharacter a =
+encodeCharacterRecord : CharacterRecord -> Decode.Value
+encodeCharacterRecord a =
     Encode.object
         [ ( "char", Encode.string (String.fromChar a.char) )
         , ( "fontStyle", encodeFontStyle a.fontStyle )
@@ -3834,12 +3734,12 @@ encodeContent a =
     Encode.array encodeElement a
 
 
-encodeContentString : { a | textarea : Editor } -> String
+encodeContentString : Editor -> String
 encodeContentString a =
-    encode a.textarea
+    encode a
 
 
-encodeContentGZip : { a | textarea : Editor } -> Bytes
+encodeContentGZip : Editor -> Bytes
 encodeContentGZip a =
     encodeContentString a
         |> Bytes.Encode.string
@@ -3850,26 +3750,26 @@ encodeContentGZip a =
 encodeElement : Element -> Decode.Value
 encodeElement a =
     case a of
-        Break a1 ->
+        LineBreak a1 ->
             Encode.object
-                [ ( "Constructor", Encode.string "Break" )
-                , ( "A1", encodeLineBreak a1 )
+                [ ( "Constructor", Encode.string "LineBreak" )
+                , ( "A1", encodeLineBreakRecord a1 )
                 ]
 
-        Char a1 ->
+        Character a1 ->
             Encode.object
-                [ ( "Constructor", Encode.string "Char" )
-                , ( "A1", encodeCharacter a1 )
+                [ ( "Constructor", Encode.string "Character" )
+                , ( "A1", encodeCharacterRecord a1 )
                 ]
 
-        Embedded a1 ->
+        EmbeddedHtml a1 ->
             Encode.object
-                [ ( "Constructor", Encode.string "Embedded" )
+                [ ( "Constructor", Encode.string "EmbeddedHtml" )
                 , ( "A1", encodeEmbeddedHtml a1 )
                 ]
 
 
-encodeEmbeddedHtml : EmbeddedHtml -> Decode.Value
+encodeEmbeddedHtml : EmbeddedHtmlRecord -> Decode.Value
 encodeEmbeddedHtml a =
     let
         encodeListener b =
@@ -3899,8 +3799,8 @@ encodeFontStyle a =
         ]
 
 
-encodeLineBreak : LineBreak -> Decode.Value
-encodeLineBreak a =
+encodeLineBreakRecord : LineBreakRecord -> Decode.Value
+encodeLineBreakRecord a =
     Encode.object
         [ ( "classes", Encode.list Encode.string a.classes )
         , ( "indent", Encode.int a.indent )

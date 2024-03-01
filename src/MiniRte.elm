@@ -126,7 +126,8 @@ type Rte =
 
 --== Main functions ==--
 
-{-|-}
+{-| The string you pass in is an `id`, which must be unique.
+-}
 init : String -> Rte
 init id =
     MiniRte.Core.init id

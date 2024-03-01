@@ -509,22 +509,27 @@ toolbar model =
 
 toolbarTop : Model -> Html Msg
 toolbarTop model =
-    div
-        [ class "toolbar-top" ]        
-        [ fontSelector
-                model                        
-                [ ["Oswald","sans-serif"]
-                , ["Playfair Display", "serif"]
-                , ["Ubuntu Mono","monospace"]
-                ]
+    case model.readingMode of
+        True ->
+            div [] []
 
-        , fontSizeSelector
-                model
-                ( List.range 1 10
-                  |> List.map (\a -> 10*a)
-                  |> List.map toFloat
-                )
-        ]
+        False ->
+            div
+                [ class "toolbar-top" ]        
+                [ fontSelector
+                        model                        
+                        [ ["Oswald","sans-serif"]
+                        , ["Playfair Display", "serif"]
+                        , ["Ubuntu Mono","monospace"]
+                        ]
+
+                , fontSizeSelector
+                        model
+                        ( List.range 1 10
+                          |> List.map (\a -> 10*a)
+                          |> List.map toFloat
+                        )
+                ]
 
 
 ---== Components

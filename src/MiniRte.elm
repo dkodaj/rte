@@ -272,7 +272,7 @@ setFontSizeUnit str rte =
     else
         apply0 (\x -> { x | fontSizeUnit = Just str }) rte
 
-{-| See [MiniRte.Types](#MiniRte.Types) on highlighters.
+{-| See MiniRte.Types on highlighters.
 -}
 setHighlighter : Maybe (Content -> Content) -> Rte -> Rte
 setHighlighter f rte =

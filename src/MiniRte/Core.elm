@@ -399,16 +399,24 @@ update msg e0 =
                 ( e, Cmd.none )
 
         PlaceCursor1_EditorViewport scroll (Ok data) ->
-            ( { e | viewport = data }, Task.attempt (Internal << PlaceCursor2_EditorElement scroll) (Dom.getElement e.editorID) )
+            ( { e | viewport = data }
+            , Task.attempt
+                ( Internal << PlaceCursor2_EditorElement scroll )
+                ( Dom.getElement e.editorID ) 
+            )
 
         PlaceCursor1_EditorViewport _ (Err err) ->
-            ( { e | locating = Idle }, Cmd.none )
+            ( detectFontStyle { e | locating = Idle }
+            , Cmd.none 
+            )
 
         PlaceCursor2_EditorElement scroll (Ok data) ->
             locateCursorParent { e | editorElement = data } scroll
 
         PlaceCursor2_EditorElement _ (Err err) ->
-            ( { e | locating = Idle }, Cmd.none )
+            ( detectFontStyle  { e | locating = Idle }
+            , Cmd.none 
+            )
 
         PlaceCursor3_CursorElement scroll (Ok data) ->
             let
@@ -417,6 +425,7 @@ update msg e0 =
                         | cursorElement = data
                         , locating = Idle
                     }
+                    |> detectFontStyle
             in
             case scroll of
                 ScrollIfNeeded ->
@@ -431,7 +440,9 @@ update msg e0 =
                     locateNext (f e)
 
         PlaceCursor3_CursorElement _ (Err err) ->
-            ( { e | locating = Idle }, Cmd.none )
+            ( detectFontStyle { e | locating = Idle }
+            , Cmd.none 
+            )
 
         Scrolled ->
             placeCursor NoScroll { e | locating = Idle }
@@ -1128,6 +1139,16 @@ diacritical char =
         , 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ', 'Ő'
         , 'ő', 'Ű', 'ű'
         ]
+
+
+detectFontStyle : Editor -> Editor
+detectFontStyle e =
+    case Array.get (e.cursor - 1) e.content of
+        Just (Character c) ->
+            { e | fontStyle = c.fontStyle }
+
+        _ ->
+            e
 
 
 embed : EmbeddedHtmlRecord -> Editor -> ( Editor, Cmd Msg )

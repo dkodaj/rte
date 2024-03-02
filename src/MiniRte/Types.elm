@@ -26,11 +26,11 @@ import Html.Styled exposing (Html)
 import MiniRte.TypesThatAreNotPublic exposing (..)
 
 
-{-|   CharacterLimitReached int -- get notified if too much text is entered
-    | FromBrowserClipboard String
-                        -- see package description
-    | Internal msg      -- not part of the API
-    | ToBrowserClipboard String
+{-| `CharacterLimitReached` allows you to get notified if too much text is entered.
+
+`FromBrowserClipboard` and `ToBrowserClipboard` can be used to handle copy/pasting text from the RTE to other apps and vice versa. See the [example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm).
+
+The `msg` at `Internal` is not part of the API.
 -}
 type Msg
     = CharacterLimitReached Int

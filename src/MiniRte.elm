@@ -103,10 +103,10 @@ You can build a rich text editor toolbar from these (see the [example](https://g
 
 - `Ctrl-0`: en dash (–)
 - `Ctrl-1`: em dash (—)
-- `Ctrl-C`: copy
+- `Ctrl-C`: copy (to use copied content outside the RTE, you need to add a port; see the [example](https://github.com/dkodaj/rte/blob/master/example/html/index.html))
 - `Ctrl-X`: cut
 - `Ctrl-Z`: undo
-- `Ctrl-V`: paste (but to paste stuff copied outside the RTE, you need to add a port; see the [example](https://github.com/dkodaj/rte/blob/master/example/html/index.html))
+- `Ctrl-V`: paste (to paste stuff that was copied to the clipboard outside the RTE, you need to add a port; see the [example](https://github.com/dkodaj/rte/blob/master/example/html/index.html))
 
 -}
 
@@ -137,7 +137,8 @@ init id =
     |> Opaque
 
 
-{-|-}
+{-| Doesn't do anything when the RTE is [freeze](#freeze)d.
+-}
 subscriptions : Rte -> Sub Msg
 subscriptions model =
     case model of
@@ -275,7 +276,7 @@ setFontSizeUnit str rte =
     else
         apply0 (\x -> { x | fontSizeUnit = Just str }) rte
 
-{-| See MiniRte.Types on highlighters.
+{-| See [MiniRte.Types](/packages/dkodaj/rte/latest/MiniRte-Types) on highlighters.
 -}
 setHighlighter : Maybe (Content -> Content) -> Rte -> Rte
 setHighlighter f rte =
@@ -299,6 +300,7 @@ setSelectionStyle list rte =
 
 {-|  When you paste an image link `x`, it becomes an img element with `src=x`.
 Something qualifies as an image link iff it starts with `data:image/` or it ends with `.jpeg`, `.jpg`, `.gif`, `.png`, `.apng`, `.svg`, `.bmp`, or `.ico`.
+Defaults to `False`.
 -}
 turnPastedImageLinksIntoImgElements : Bool -> Rte -> Rte
 turnPastedImageLinksIntoImgElements bool rte =

@@ -1,7 +1,19 @@
-module MiniRte.TypesThatAreNotPublic exposing (InternalMsg(..), ScrollMode(..), State(..), StyleTags)
+module MiniRte.TypesThatAreNotPublic exposing (
+      InternalMsg(..)
+    , Drag(..)
+    , Locating(..)
+    , MouseLocator
+    , ScreenElement
+    , ScrollMode(..)
+    , Select(..)
+    , State(..)
+    , StyleTags
+    , Vertical(..)
+    )
 
 import Array exposing (Array)
 import Browser.Dom as Dom exposing (Error, Viewport)
+import Time exposing (Posix)
 
 
 type InternalMsg =
@@ -25,9 +37,42 @@ type InternalMsg =
     | UndoAction
 
 
+type Drag
+    = DragFrom Int
+    | DragInit
+    | NoDrag
+
+
+type Locating
+    = Cursor
+    | Idle
+    | LineBoundary Vertical ( Int, Int )
+    | LineJump Vertical ( Int, Int )
+    | Mouse Select ( Float, Float ) ( Int, Int )
+    | Page Int Vertical ( Int, Int )
+
+
+type alias MouseLocator =
+    { previous : Maybe ScreenElement
+    , winner : Maybe ScreenElement
+    }
+
+
+type alias ScreenElement =
+    { idx : Int
+    , x : Float
+    , y : Float
+    , height : Float
+    }
+
 type ScrollMode
     = ScrollIfNeeded
     | NoScroll
+
+
+type Select
+    = SelectNone
+    | SelectWord
 
 
 type State
@@ -38,3 +83,8 @@ type State
 
 type alias StyleTags =
     List ( String, String )
+
+
+type Vertical
+    = Down
+    | Up

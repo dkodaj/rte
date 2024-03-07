@@ -103,6 +103,7 @@ You can build a rich text editor toolbar from these (see the [example](https://g
 
 - `Ctrl-0`: en dash (–)
 - `Ctrl-1`: em dash (—)
+- `Ctrl-A`: select all
 - `Ctrl-C`: copy (to use copied content outside the RTE, you need to add a port; see the [example](https://github.com/dkodaj/rte/blob/master/example/html/index.html))
 - `Ctrl-X`: cut
 - `Ctrl-Z`: undo

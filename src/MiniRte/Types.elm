@@ -109,9 +109,11 @@ type alias LineBreakRecord =
     , highlightClasses : List String
     , highlightIndent : Int
     , highlightStyling : List (String, String)
+    , id : String
     , indent : Int
     , nodeType : Maybe String
     , styling : List (String, String)
+    , textAlign : TextAlignType
     }
 
 

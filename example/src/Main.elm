@@ -95,6 +95,7 @@ init _ =
             Rte.init "MyRTE"
             |> Rte.replaceContent content
             |> Rte.setHighlighter (Just Highlighter.highlighter)
+            |> Rte.setCharacterLimit 10000
     in
     ( { rte = rte
       , fontSelector = False
@@ -103,8 +104,7 @@ init _ =
       , notification = Nothing
       , readingMode = False
       , showEmojis = False
-      }
-    
+      }    
     , Cmd.none
     )
 
@@ -267,8 +267,8 @@ update msg model =
         Strikethrough ->
             apply Rte.toggleStrikethrough model
 
-        TextAlign itsType ->
-            apply (Rte.setTextAlignment itsType) model
+        TextAlign alignType ->
+            apply (Rte.setTextAlignment alignType) model
 
         ToggleImageBox ->
             case model.inputBox of

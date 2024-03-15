@@ -527,7 +527,7 @@ view userDefinedStyles e =
     in
     case e.state of
         Display ->
-            HtmlLazy.lazy (showContent userDefinedStyles) e
+            showContent userDefinedStyles e
 
         Edit ->
             Html.div
@@ -544,7 +544,6 @@ view userDefinedStyles e =
 
 
 --- === Helper functions === ---
-
 
 addBreakToEnd : Content -> Content
 addBreakToEnd x =
@@ -3060,7 +3059,7 @@ showPara e p =
                     ys
 
                 Character ch ->
-                    showChar e idx ch :: ys
+                    HtmlLazy.lazy (showChar e idx) ch :: ys
 
                 EmbeddedHtml html ->
                     showEmbedded html :: ys
@@ -3325,7 +3324,7 @@ typed_ activeLink txt e modifyClipboard =
                         maxIdx - 1
                     else
                         x
-                -- prevent last Break from being deleted
+                -- prevent last LineBreak from being deleted
             in
             placeCursor ScrollIfNeeded
                 { e
@@ -3371,11 +3370,12 @@ undoRefreshHead e =
     in
     case e.undo of
         [] ->
-            e
-
         -- e.undo should never be empty. This is supposed to be
         -- taken care of by initWithContent, initWithText, and restore.
+            e
+            
         _ :: rest ->
+
             { e
                 | undo = current :: rest
             }
@@ -3442,12 +3442,12 @@ wrap (amount, unit) l words =
             [ css
                 [ displayFlex
                 , alignItems start
-                , justifyContent myCssAlignment
+                , justifyContent myJusfifyContent
                 , flexWrap Css.wrap
                 ]
             ]
 
-        myCssAlignment =
+        myJusfifyContent =
             case l.textAlign of
                 Center -> Css.center
                 Left -> Css.start

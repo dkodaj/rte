@@ -30,7 +30,7 @@ import MiniRte.TypesThatAreNotPublic exposing (..)
 
 `FromBrowserClipboard` and `ToBrowserClipboard` can be used to handle copy/pasting text from the RTE to other apps and vice versa. See the [example](https://github.com/dkodaj/rte/blob/master/example/src/Main.elm).
 
-The `msg` at `Internal` is not part of the API.
+`InternalMsg` is not part of the API.
 -}
 type Msg
     = CharacterLimitReached Int

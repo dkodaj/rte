@@ -116,20 +116,22 @@ subscriptions model =
             Sub.none
 
         False ->
+            Sub.map Internal <|
             Sub.batch
                 [ Rte.subscriptions model.rte
                 , fromBrowserClipboard RteTypes.FromBrowserClipboard
                 ]
-            |> Sub.map Internal
 
 
 apply : (Rte -> (Rte, Cmd RteTypes.Msg)) -> Model -> (Model, Cmd Msg)
 apply f model =
     let
-        (rte,cmd) =
+        (rte, cmd) =
             f model.rte
     in
-    ( { model | rte = rte }, Cmd.map Internal cmd)
+    ( { model | rte = rte }
+    , Cmd.map Internal cmd
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -236,10 +238,13 @@ update msg model =
             )
             
         Internal (RteTypes.CharacterLimitReached int) ->
+            let
+                clearCmd =
+                    Process.sleep 3000
+                    |> Task.perform (\_ -> ClearNotification)
+            in
             ( { model | notification = Just ("Max " ++ String.fromInt int ++ " characters (incl. line breaks)") }
-
-            , Process.sleep 3000
-              |> Task.perform (\_ -> ClearNotification)
+            , clearCmd
             )
 
         Internal (RteTypes.ToBrowserClipboard txt) ->
@@ -314,16 +319,11 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     let
-        textarea =
-            Html.map Internal <|
-                Rte.textarea
-                    model.rte
-                    [ class "rte-wrap" ]                
-
-        wrappedTextarea =
+        rte =            
             div
                 [ Events.onClick CloseInputBox ]
-                [ textarea ]
+                [ Html.map Internal <| Rte.textarea model.rte [class "rte-wrap"]
+                ]
 
         customization =
             { highlighter = Just Highlighter.highlighter
@@ -333,10 +333,10 @@ view model =
 
         editedContent =
             Html.map Internal <|
-                Rte.showContentCustom
-                    customization  
-                    (Rte.content model.rte)
-                    [ class "blogpost" ]
+            Rte.showContentCustom
+                customization  
+                (Rte.content model.rte)
+                [ class "blogpost" ]
     in
     { title = "RTE demo"
     , body =
@@ -345,7 +345,7 @@ view model =
             [ toolbarTop model
             , toolbar model
             
-            , if model.readingMode then editedContent else wrappedTextarea
+            , if model.readingMode then editedContent else rte
             
             , notification model
 
@@ -369,16 +369,15 @@ view model =
 
 notification : Model -> Html Msg
 notification model =
-    case model.notification of
-        Nothing ->
-            div
-                [ class "notification" ]
-                []
-
-        Just txt ->
-            div
-                [ class "notification" ]
-                [ text txt ]
+    let
+        content =
+            case model.notification of
+                Just txt -> [ text txt ]
+                Nothing -> []
+    in
+    div
+        [ class "notification" ]
+        content
 
 
 onOffSwitch : Bool -> Html Msg
@@ -617,9 +616,6 @@ fontSizeSelector model sizes =
 
                 Just y ->
                     x == y
-
-        msg x =
-            Maybe.map FontSize (String.toFloat x)
 
         option x =
             div
